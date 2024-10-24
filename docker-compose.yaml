@@ -1,0 +1,22 @@
+version: "1.1"
+services:
+  db:
+    image: mysql:8.1.0
+    restart: always
+    environment:
+      MYSQL_DATABASE: "db"
+      MYSQL_USER: "admin"
+      MYSQL_PASSWORD: "admin"
+      MYSQL_ROOT_PASSWORD: "admin"
+    ports:
+      # <Port exposed> : <MySQL Port running inside container>
+      - "3306:3306"
+    expose:
+      # Opens port 3306 on the container
+      - "3306"
+    volumes:
+      - ./db-data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+# Names our volume
+volumes:
+  db-data:
