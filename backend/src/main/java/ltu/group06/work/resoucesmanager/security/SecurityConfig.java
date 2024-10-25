@@ -13,23 +13,10 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                .csrf(csrf -> csrf.disable())  // Tắt CSRF (tùy trường hợp của bạn)
+                .csrf(csrf -> csrf.disable())  // Tắt CSRF cho việc test API
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/app/register").permitAll()  // Cho phép truy cập không cần xác thực
                         .anyRequest().authenticated()
-                )
-                .formLogin(form -> form
-                        .loginPage("/login")  // Trang login tùy chỉnh
-                        .defaultSuccessUrl("/home", true)  // Chuyển hướng sau khi login thành công
-                        .failureUrl("/login?error=true")  // Chuyển hướng nếu login thất bại
-                        .permitAll()
-                )
-                .logout(logout -> logout
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/login")
-                        .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
-                        .permitAll()
                 );
 
         return http.build();

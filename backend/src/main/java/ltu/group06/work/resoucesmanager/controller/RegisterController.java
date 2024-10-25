@@ -1,8 +1,6 @@
 package ltu.group06.work.resoucesmanager.controller;
 
-
-import ltu.group06.work.resoucesmanager.dto.RegisterRequest;
-import ltu.group06.work.resoucesmanager.service.RegisterService;
+import jakarta.mail.MessagingException;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -16,7 +14,7 @@ public class RegisterController {
     }
 
     @PostMapping("/register")
-    public String registerUser(@RequestBody RegisterRequest registerRequest) {
+    public String registerUser(@RequestBody RegisterRequest registerRequest) throws MessagingException {
         return registerService.registerUser(registerRequest);
     }
 }
