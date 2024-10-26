@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.net.Authenticator;
 import java.net.PasswordAuthentication;
 import java.security.SecureRandom;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.Random;
 
@@ -25,6 +26,14 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public Optional<User> findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
     public User registerUser(String username, String email, String password) {
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User();
@@ -37,13 +46,18 @@ public class UserService {
 
     public String generateOTP() {
         int otpLength = 6;
-        String digits = "0123456789";
         StringBuilder otp = new StringBuilder(otpLength);
-        SecureRandom random = new SecureRandom();
-
         for (int i = 0; i < otpLength; i++) {
-            otp.append(digits.charAt(random.nextInt(digits.length())));
+            otp.append(random.nextInt(10)); // Tạo số từ 0-9
         }
         return otp.toString();
+    }
+
+    public User save(User user) {
+        return userRepository.save(user);
+    }
+
+    public boolean checkPassword(String rawPassword, String encodedPassword) {
+        return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 }

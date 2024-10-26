@@ -15,15 +15,18 @@ public class EmailService {
         this.mailSender = mailSender;
     }
 
-    public void sendOtpEmail(String to, String otp) throws MessagingException {
-        MimeMessage message = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
+    public void sendOTPEmail(String to, String otp) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
 
-        helper.setFrom("your-email@gmail.com");
-        helper.setTo(to);
-        helper.setSubject("Your OTP Code");
-        helper.setText("<h1>Your OTP is: " + otp + "</h1>", true);  // Nội dung HTML
+            helper.setTo(to);
+            helper.setSubject("Your OTP Code");
+            helper.setText("Your OTP is: " + otp);
 
-        mailSender.send(message);
+            mailSender.send(message);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
     }
 }

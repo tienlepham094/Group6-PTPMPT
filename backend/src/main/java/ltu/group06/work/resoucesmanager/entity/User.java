@@ -3,6 +3,7 @@ package ltu.group06.work.resoucesmanager.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -28,6 +29,12 @@ public class User {
     @Column(unique = true)
     private Long telegramId;
 
+    @Column(nullable = false)
+    private boolean isActivated = false;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OTP> otps;
+
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Request> requests;
 
@@ -39,4 +46,17 @@ public class User {
 
     @Column(nullable = false)
     private Timestamp updatedAt;
+    // Khởi tạo thời gian trước khi lưu bản ghi mới
+    @PrePersist
+    protected void onCreate() {
+        Timestamp now = Timestamp.from(Instant.now());
+        this.createdAt = now;
+        this.updatedAt = now;
+    }
+
+    // Cập nhật thời gian trước khi cập nhật bản ghi
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = Timestamp.from(Instant.now());
+    }
 }
