@@ -27,6 +27,9 @@ public class OTP {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(nullable = false)
+    private boolean expired = false;
+
     // Khởi tạo giá trị cho thời gian tạo và hết hạn
     @PrePersist
     protected void onCreate() {
@@ -35,6 +38,6 @@ public class OTP {
     }
 
     public boolean isExpired() {
-        return Instant.now().isAfter(expiresAt.toInstant());
+        return this.expired || Instant.now().isAfter(this.expiresAt.toInstant());
     }
 }

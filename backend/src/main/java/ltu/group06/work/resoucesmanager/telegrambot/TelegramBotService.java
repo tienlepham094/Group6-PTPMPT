@@ -51,7 +51,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
                 sendMessage(chatId, "/active - Kích hoạt tài khoản bằng email\n/help - Hiển thị các tùy chọn");
             } else if (messageText.equalsIgnoreCase("/active")) {
                 sendMessage(chatId, "Vui lòng nhập email của bạn để kích hoạt.");
-                awaitingEmailMap.put(chatId, true);  // Đánh dấu người dùng đang chờ nhập email
+                awaitingEmailMap.put(chatId, true);
             } else if (awaitingEmailMap.getOrDefault(chatId, false)) {
                 handleEmailInput(chatId, messageText);
             } else if (awaitingOtpMap.containsKey(chatId)) {
@@ -67,35 +67,52 @@ public class TelegramBotService extends TelegramLongPollingBot {
 
         if (userOpt.isPresent()) {
             User user = userOpt.get();
-            OTP otp = otpService.sendOTP(user);  // Gửi OTP và lưu vào DB
+
+            // Kiểm tra nếu Telegram ID đã được liên kết
+            if (user.getTelegramId() != null && user.getTelegramId().equals(chatId)) {
+                sendMessage(chatId, "Tài khoản của bạn đã được liên kết với bot Telegram.");
+                awaitingEmailMap.remove(chatId);  // Xóa trạng thái chờ email
+                return;
+            }
+
+            OTP otp = otpService.sendOTP(user);  // Gửi OTP mới và lưu vào DB
             sendMessage(chatId, "OTP đã được gửi đến email của bạn. Vui lòng nhập OTP trong vòng 15 phút.");
-            awaitingOtpMap.put(chatId, otp);  // Lưu OTP vào Map để kiểm tra sau
-            awaitingEmailMap.remove(chatId);  // Xóa trạng thái chờ email
+            awaitingOtpMap.put(chatId, otp);
+            awaitingEmailMap.remove(chatId);
         } else {
             sendMessage(chatId, "Email không tồn tại trong hệ thống. Vui lòng thử lại.");
         }
     }
 
-    private void handleOtpInput(Long chatId, String otpCode) {
+    private void handleOtpInput(Long chatId, String messageText) {
         OTP otp = awaitingOtpMap.get(chatId);
 
-        if (otp.isExpired() || !otp.getOtpCode().equals(otpCode)) {
-            sendMessage(chatId, "OTP không hợp lệ hoặc đã hết hạn. Bạn có muốn gửi lại OTP không? (Trả lời 'yes' để gửi lại)");
-            awaitingOtpMap.remove(chatId);  // Xóa trạng thái chờ OTP
+        if (messageText.equalsIgnoreCase("yes")) {
+            resendOtp(chatId, otp.getUser());
+        } else if (messageText.equalsIgnoreCase("no")) {
+            sendMessage(chatId, "Hãy thử nhập lại OTP cho đúng.");
         } else {
-            Optional<User> userOpt = userService.findByEmail(otp.getUser().getEmail());
-
-            if (userOpt.isPresent()) {
-                User user = userOpt.get();
-                user.setTelegramId(chatId);  // Lưu Telegram ID vào User
-                userService.save(user);  // Cập nhật thông tin User trong DB
-
-                sendMessage(chatId, "Kích hoạt thành công! Tài khoản của bạn đã được liên kết với bot Telegram.");
-                awaitingOtpMap.remove(chatId);  // Xóa trạng thái chờ OTP
+            if (otp.isExpired() || !otp.getOtpCode().equals(messageText)) {
+                sendMessage(chatId, "OTP không hợp lệ hoặc đã hết hạn. Bạn có muốn gửi lại OTP không? (Trả lời 'yes' để gửi lại)");
             } else {
-                sendMessage(chatId, "Đã xảy ra lỗi. Không tìm thấy tài khoản.");
+                activateUserAccount(chatId, otp.getUser());
             }
         }
+    }
+
+    private void resendOtp(Long chatId, User user) {
+        otpService.disableOldOtps(user);  // Vô hiệu hóa OTP cũ
+        OTP newOtp = otpService.sendOTP(user);  // Gửi OTP mới
+        sendMessage(chatId, "OTP mới đã được gửi đến email của bạn. Vui lòng nhập OTP mới.");
+        awaitingOtpMap.put(chatId, newOtp);  // Cập nhật với OTP mới
+    }
+
+    private void activateUserAccount(Long chatId, User user) {
+        user.setTelegramId(chatId);
+        user.setActivated(true);
+        userService.save(user);  // Lưu vào DB
+        sendMessage(chatId, "Kích hoạt thành công! Tài khoản của bạn đã được liên kết với bot Telegram.");
+        awaitingOtpMap.remove(chatId);  // Xóa trạng thái chờ OTP
     }
 
     private void sendMessage(Long chatId, String text) {

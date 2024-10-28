@@ -6,6 +6,7 @@ import ltu.group06.work.resoucesmanager.repository.OtpRepository;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.List;
 
 @Service
 public class OtpService {
@@ -36,6 +37,11 @@ public class OtpService {
         return otp;
     }
 
+    public void disableOldOtps(User user) {
+        List<OTP> oldOtps = otpRepository.findByUser(user);
+        oldOtps.forEach(otp -> otp.setExpired(true));  // Đánh dấu OTP cũ là hết hạn
+        otpRepository.saveAll(oldOtps);
+    }
     // Tạo OTP và lưu vào DB
     private OTP createAndSaveOTP(User user, String otpCode) {
         OTP otp = new OTP();
