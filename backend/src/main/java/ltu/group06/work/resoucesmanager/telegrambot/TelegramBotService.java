@@ -71,7 +71,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
             // Kiểm tra nếu Telegram ID đã được liên kết
             if (user.getTelegramId() != null && user.getTelegramId().equals(chatId)) {
                 sendMessage(chatId, "Tài khoản của bạn đã được liên kết với bot Telegram.");
-                awaitingEmailMap.remove(chatId);  // Xóa trạng thái chờ email
+                awaitingEmailMap.remove(chatId);
                 return;
             }
 
@@ -101,16 +101,19 @@ public class TelegramBotService extends TelegramLongPollingBot {
     }
 
     private void resendOtp(Long chatId, User user) {
-        otpService.disableOldOtps(user);  // Vô hiệu hóa OTP cũ
+        // Vô hiệu hóa OTP cũ nếu user muốn gửi 1 OTP mới
+        otpService.disableOldOtps(user);
+        // OTP moi dc gui đi
         OTP newOtp = otpService.sendOTP(user);  // Gửi OTP mới
         sendMessage(chatId, "OTP mới đã được gửi đến email của bạn. Vui lòng nhập OTP mới.");
-        awaitingOtpMap.put(chatId, newOtp);  // Cập nhật với OTP mới
+        // Cập nhật với OTP mới
+        awaitingOtpMap.put(chatId, newOtp);
     }
 
     private void activateUserAccount(Long chatId, User user) {
         user.setTelegramId(chatId);
         user.setActivated(true);
-        userService.save(user);  // Lưu vào DB
+        userService.save(user);
         sendMessage(chatId, "Kích hoạt thành công! Tài khoản của bạn đã được liên kết với bot Telegram.");
         awaitingOtpMap.remove(chatId);  // Xóa trạng thái chờ OTP
     }
@@ -120,7 +123,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         message.setChatId(chatId.toString());
         message.setText(text);
         try {
-            execute(message);  // Gửi tin nhắn tới người dùng
+            execute(message);
         } catch (Exception e) {
             e.printStackTrace();
         }

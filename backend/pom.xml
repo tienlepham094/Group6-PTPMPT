@@ -106,6 +106,12 @@
             <artifactId>telegrambots-spring-boot-starter</artifactId>
             <version>5.5.0</version> <!-- Bạn có thể thay thế bằng phiên bản mới nhất -->
         </dependency>
+        <dependency>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+            <version>2.5</version>
+        </dependency>
+
     </dependencies>
     <build>
         <plugins>

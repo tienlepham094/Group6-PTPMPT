@@ -44,11 +44,13 @@ public class UserService {
         return userRepository.save(user);
     }
 
+
     public String generateOTP() {
         int otpLength = 6;
         StringBuilder otp = new StringBuilder(otpLength);
         for (int i = 0; i < otpLength; i++) {
-            otp.append(random.nextInt(10)); // Tạo số từ 0-9
+            // Tạo số từ 0-9 ngẫu nhiên
+            otp.append(random.nextInt(10));
         }
         return otp.toString();
     }
