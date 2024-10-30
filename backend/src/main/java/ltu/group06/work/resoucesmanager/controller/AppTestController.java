@@ -9,13 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class AppTestController {
 
     // Endpoint cho Home User
-    @GetMapping("/home")
+    @GetMapping("/app/home")
     public String home() {
         return "This is home user";
     }
 
     // Endpoint cho Admin Dashboard
-    @GetMapping("/admin/dashboard")
+    @GetMapping(".app/admin/dashboard")
     public String adminDashboard() {
         return "Đây là admin dashboard";
     }

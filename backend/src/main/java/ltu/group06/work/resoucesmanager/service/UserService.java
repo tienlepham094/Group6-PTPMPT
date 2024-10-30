@@ -22,6 +22,10 @@ public class UserService {
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
     private final SecureRandom random = new SecureRandom();
 
+    public User getUserById(int userId) {
+        return userRepository.findById(userId).orElse(null);
+    }
+
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
     }
@@ -43,7 +47,6 @@ public class UserService {
         user.setRole("user");
         return userRepository.save(user);
     }
-
 
     public String generateOTP() {
         int otpLength = 6;

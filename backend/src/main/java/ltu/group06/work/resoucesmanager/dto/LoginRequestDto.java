@@ -1,6 +1,6 @@
 package ltu.group06.work.resoucesmanager.dto;
 
-public class LoginRequest {
+public class LoginRequestDto {
     private String username;
     private String password;
 

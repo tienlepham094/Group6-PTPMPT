@@ -1,8 +1,7 @@
 package ltu.group06.work.resoucesmanager.controller;
 
-import jakarta.mail.MessagingException;
-import ltu.group06.work.resoucesmanager.dto.LoginRequest;
-import ltu.group06.work.resoucesmanager.dto.RegisterRequest;
+import ltu.group06.work.resoucesmanager.dto.LoginRequestDto;
+import ltu.group06.work.resoucesmanager.dto.RegisterRequestDto;
 import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.service.EmailService;
 import ltu.group06.work.resoucesmanager.service.UserService;
@@ -11,12 +10,10 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.view.RedirectView;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 
-import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -31,7 +28,7 @@ public class AuthController {
 
     // Đăng ký người dùng với JSON body
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDto request) {
         try {
             if (userService.findByUsername(request.getUsername()).isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
@@ -58,11 +55,11 @@ public class AuthController {
 
     // Xử lý đăng nhập người dùng với JSON body mà không cần DTO
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest,
+    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto,
                                         HttpServletRequest request) {
 
-        String username = loginRequest.getUsername();
-        String password = loginRequest.getPassword();
+        String username = loginRequestDto.getUsername();
+        String password = loginRequestDto.getPassword();
 
         if (username == null || username.trim().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vui lòng nhập tên đăng nhập.");
