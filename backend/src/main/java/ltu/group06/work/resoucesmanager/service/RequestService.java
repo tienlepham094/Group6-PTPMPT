@@ -23,6 +23,10 @@ public class RequestService {
         return requestRepository.findById(requestId);
     }
 
+    public List<Request> getAllRequests() {
+        return requestRepository.findAll();
+    }
+
     public Request updateRequest(Request request) {
         return requestRepository.save(request);
     }

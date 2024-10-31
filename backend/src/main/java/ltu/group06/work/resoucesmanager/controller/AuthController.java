@@ -4,6 +4,7 @@ import ltu.group06.work.resoucesmanager.dto.LoginRequestDto;
 import ltu.group06.work.resoucesmanager.dto.RegisterRequestDto;
 import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.service.EmailService;
+import ltu.group06.work.resoucesmanager.service.LogService;
 import ltu.group06.work.resoucesmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -26,7 +27,9 @@ public class AuthController {
     @Autowired
     private EmailService emailService;
 
-    // Đăng ký người dùng với JSON body
+    @Autowired
+    private LogService logService;
+
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDto request) {
         try {
@@ -38,8 +41,15 @@ public class AuthController {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Email already exists.");
             }
-            // Lưu thông tin người dùng vào database
-            userService.registerUser(request.getUsername(), request.getEmail(), request.getPassword());
+            // Lưu acc nguoi dùng vào db sau khi đăng ký
+            User user = userService.registerUser(request.getUsername(), request.getEmail(), request.getPassword());
+
+            logService.createLog(
+                    user.getUserId(),
+                    null,
+                    "REGISTER",
+                    "User registered with username: " + user.getUsername()
+            );
 
             return ResponseEntity.ok("Registration successful! Please activate your account via Telegram bot.");
 
@@ -85,6 +95,13 @@ public class AuthController {
         session.setAttribute("role", user.getRole());
         // Hết hạn session sau 15 phút
         session.setMaxInactiveInterval(15 * 60);
+
+        logService.createLog(
+                user.getUserId(),
+                null,
+                "LOGIN",
+                "User logged in with username: " + user.getUsername()
+        );
 
         String targetUrl = getTargetUrl(user.getRole());
         return ResponseEntity.ok(targetUrl);

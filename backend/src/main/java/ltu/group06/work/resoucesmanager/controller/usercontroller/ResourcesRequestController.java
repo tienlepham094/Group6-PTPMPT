@@ -3,6 +3,7 @@ package ltu.group06.work.resoucesmanager.controller.usercontroller;
 import ltu.group06.work.resoucesmanager.dto.RequestResourcesDto;
 import ltu.group06.work.resoucesmanager.entity.Request;
 import ltu.group06.work.resoucesmanager.entity.User;
+import ltu.group06.work.resoucesmanager.service.LogService;
 import ltu.group06.work.resoucesmanager.service.RequestService;
 import ltu.group06.work.resoucesmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class ResourcesRequestController {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LogService logService;
     /**
      * Tạo yêu cầu (issue) sử dụng tài nguyên
      * @param là 1 dto định sẵn
@@ -66,6 +70,13 @@ public class ResourcesRequestController {
 
         Request savedRequest = requestService.createRequest(request);
 
+        logService.createLog(
+                user.getUserId(),
+                savedRequest.getRequestId(),
+                "CREATE_REQUEST",
+                "User created a request with resource type: " + savedRequest.getResourceType()
+        );
+
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Request created successfully");
         response.put("request_id", savedRequest.getRequestId());
@@ -95,6 +106,13 @@ public class ResourcesRequestController {
         // Cap nhat trang thai cua request sang cancelled
         request.setStatusRequest(Request.RequestStatus.cancelled);
         requestService.updateRequest(request);
+
+        logService.createLog(
+                request.getUser().getUserId(),
+                request.getRequestId(),
+                "CANCEL_REQUEST",
+                "User cancelled request with ID: " + request.getRequestId()
+        );
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Request has been cancelled");
