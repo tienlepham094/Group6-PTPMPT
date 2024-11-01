@@ -35,11 +35,11 @@ public class ApprovalRequestController {
 
     @Autowired
     private LogService logService;
-    @PutMapping("/request/{requestId}/approve")
-    public ResponseEntity<Map<String, Object>> approveRequest(
-            @PathVariable int requestId,
-            @RequestParam("action") String action, // "approve", "reject", "queue"
-            @RequestParam(value = "comments", required = false) String comments) {
+    @PostMapping("/request/approve")
+    public ResponseEntity<Map<String, Object>> approveRequest(@RequestBody Map<String, String> requestBody) {
+        int requestId = Integer.parseInt(requestBody.get("requestId"));
+        String action = requestBody.get("action"); // "approve", "reject", "queue"
+        String comments = requestBody.get("comments"); // Optional comment
 
         Optional<Request> optionalRequest = requestService.getRequestById(requestId);
         if (optionalRequest.isEmpty()) {
@@ -56,8 +56,8 @@ public class ApprovalRequestController {
         }
 
         // Check resource availability
-        Optional<Resource> resource = resourceService.findAvailableResource(request.getResourceType());
-        boolean isEnoughResource = resource != null && resource.getQuantity() >= request.getQuantity();
+        Optional<Resource> optionalResource  = resourceService.findAvailableResource(request.getResourceType());
+        boolean isEnoughResource = optionalResource.isPresent() && optionalResource.get().getQuantity() >= request.getQuantity();
 
         Map<String, Object> response = new HashMap<>();
         Approval approval = new Approval();
@@ -66,47 +66,47 @@ public class ApprovalRequestController {
 
         if ("approve".equalsIgnoreCase(action)) {
             if (!isEnoughResource) {
-                response.put("message", "Not enough resources available. Do you want to queue this request?");
+                response.put("message222", "Not enough resources available. Please queue the request or reject it.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
-            // Approve request
+            // Cập nhật trạng thái request và tài nguyên
             request.setStatusRequest(Request.RequestStatus.approved);
             approval.setApprovalStatus(Approval.ApprovalStatus.approved);
             approval.setApprovedAt(Timestamp.from(Instant.now()));
             approvalService.saveApproval(approval);
 
             // Allocate resources
-            resource.setQuantity(resource.getQuantity() - request.getQuantity());
-            resourceService.updateResource(resource);
+            if (optionalResource.isPresent()) {
+                Resource resource = optionalResource.get();
+                resource.setQuantity(resource.getQuantity() - request.getQuantity());
+                resourceService.updateResource(resource);
 
-            Allocation allocation = new Allocation();
-            allocation.setRequest(request);
-            allocation.setResource(resource);
-            allocation.setAllocatedQuantity(request.getQuantity());
-            allocation.setAllocatedAt(Timestamp.from(Instant.now()));
-            allocationService.saveAllocation(allocation);
+                Allocation allocation = new Allocation();
+                allocation.setRequest(request);
+                allocation.setResource(resource);
+                allocation.setAllocatedQuantity(request.getQuantity());
+                allocation.setAllocatedAt(Timestamp.from(Instant.now()));
+                allocationService.saveAllocation(allocation);
 
-            // Log the action
-            logService.createLog(
-                    null, // Admin ID, if available, replace null
-                    request.getRequestId(),
-                    "APPROVE_REQUEST",
-                    "Request approved and resources allocated."
-            );
+                logService.createLog(
+                        null,
+                        request.getRequestId(),
+                        "APPROVE_REQUEST",
+                        "Request approved and resources allocated."
+                );
 
-            response.put("message", "Request approved successfully and resources allocated.");
+                response.put("message", "Request approved successfully and resources allocated.");
+            }
 
         } else if ("reject".equalsIgnoreCase(action)) {
-            // Reject the request
             request.setStatusRequest(Request.RequestStatus.rejected);
             approval.setApprovalStatus(Approval.ApprovalStatus.rejected);
             approval.setApprovedAt(Timestamp.from(Instant.now()));
             approvalService.saveApproval(approval);
 
-            // Log the action
             logService.createLog(
-                    null, // Admin ID, if available, replace null
+                    null,
                     request.getRequestId(),
                     "REJECT_REQUEST",
                     "Request rejected by admin."
@@ -115,15 +115,13 @@ public class ApprovalRequestController {
             response.put("message", "Request rejected successfully.");
 
         } else if ("queue".equalsIgnoreCase(action)) {
-            // Queue the request
             request.setStatusRequest(Request.RequestStatus.queued);
             approval.setApprovalStatus(Approval.ApprovalStatus.queued);
             approval.setApprovedAt(Timestamp.from(Instant.now()));
             approvalService.saveApproval(approval);
 
-            // Log the action
             logService.createLog(
-                    null, // Admin ID, if available, replace null
+                    null,
                     request.getRequestId(),
                     "QUEUE_REQUEST",
                     "Request queued due to insufficient resources."
@@ -137,7 +135,6 @@ public class ApprovalRequestController {
             );
         }
 
-        // Update request status and save
         requestService.updateRequest(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }

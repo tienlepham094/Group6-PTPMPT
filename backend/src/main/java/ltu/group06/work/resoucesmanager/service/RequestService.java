@@ -4,7 +4,6 @@ import ltu.group06.work.resoucesmanager.entity.Request;
 import ltu.group06.work.resoucesmanager.repository.RequestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.w3c.dom.stylesheets.LinkStyle;
 
 import java.util.List;
 import java.util.Optional;

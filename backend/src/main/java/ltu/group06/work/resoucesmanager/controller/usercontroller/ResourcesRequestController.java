@@ -11,14 +11,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.sql.Timestamp;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static ltu.group06.work.resoucesmanager.controller.AppTestController.getsR;
 
 @RestController
 @RequestMapping("/app")
@@ -33,8 +33,10 @@ public class ResourcesRequestController {
 
     @Autowired
     private LogService logService;
+
     /**
      * Tạo yêu cầu (issue) sử dụng tài nguyên
+     *
      * @param là 1 dto định sẵn
      * @return
      */
@@ -52,20 +54,23 @@ public class ResourcesRequestController {
         request.setReason(requestResourcesDto.getReason());
         request.setStatusRequest(Request.RequestStatus.pending);
 
-        // Cho start time la thoi diem hien tai
-        Timestamp startTime = Timestamp.from(Instant.now());
+        // Thiết lập `startTime` với thời gian hiện tại
+        LocalDateTime startTime = LocalDateTime.now();
+        System.out.println("Setting start time: " + startTime);
+        System.out.println("Start time: " + getsR());
         request.setStartTime(startTime);
+        System.out.println("Start time created: " + request.getStartTime());
 
-        // Kiem tra input cua end_time
+        // Kiểm tra `end_time` từ input và tính toán
         if (requestResourcesDto.getEndTimeHours() != null) {
-            // Tinh end_time cho request dua tren thoi gian bat dau bang cach tinh start_time + so gio (input)
-            request.setEnd_time(Timestamp.from(startTime.toInstant().plus(requestResourcesDto.getEndTimeHours(), ChronoUnit.HOURS)));
+            // Tính `end_time` bằng cách cộng thêm số giờ vào `startTime`
+            request.setEnd_time(startTime.plusHours(requestResourcesDto.getEndTimeHours()));
         } else if (requestResourcesDto.getEndTime() != null) {
-            // Set time la thoi gian cu the voi kieu du lieu DATETIME
-            request.setEnd_time(Timestamp.valueOf(requestResourcesDto.getEndTime()));
+            // Set `end_time` nếu được cung cấp với định dạng `yyyy-MM-ddTHH:mm:ss`
+            request.setEnd_time(LocalDateTime.parse(requestResourcesDto.getEndTime()));
         } else {
-            // Default neu khong co thoi gian ket thuc thi mac dinh la 24h sau thoi diem bat dau
-            request.setEnd_time(Timestamp.from(startTime.toInstant().plus(24, ChronoUnit.HOURS)));
+            // Nếu không có `end_time`, mặc định là 24 giờ sau `startTime`
+            request.setEnd_time(startTime.plusHours(24));
         }
 
         Request savedRequest = requestService.createRequest(request);
@@ -121,8 +126,10 @@ public class ResourcesRequestController {
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
+
     /**
      * API để lấy danh sách các yêu cầu của một user
+     *
      * @param requestBody JSON body chứa user_id
      * @return Danh sách yêu cầu dưới dạng JSON
      */

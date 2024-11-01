@@ -4,6 +4,9 @@ import jakarta.persistence.*;
 import lombok.Data;
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
@@ -26,10 +29,10 @@ public class Request {
     private int quantity;
 
     @Column(nullable = false)
-    private Timestamp startTime;
+    private LocalDateTime startTime;
 
     @Column(nullable = false)
-    private Timestamp end_time;
+    private LocalDateTime end_time;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -44,10 +47,10 @@ public class Request {
     private List<Allocation> allocations;
 
     @Column(nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     public enum RequestStatus {
         pending, approved, rejected, cancelled, queued
@@ -55,14 +58,14 @@ public class Request {
     // tự động điền thời gian khi tạo mới
     @PrePersist
     protected void onCreate() {
-        this.createdAt = Timestamp.from(Instant.now());
-        this.updatedAt = this.createdAt;
-        this.startTime = this.createdAt; // Đặt startTime bằng thời điểm tạo
+        LocalDateTime currentTime = LocalDateTime.now();
+        this.createdAt = currentTime;
+        this.updatedAt = currentTime;
+        this.startTime = currentTime;
     }
 
-    // tự động cập nhật updatedAt mỗi khi có thay đổi
     @PreUpdate
     protected void onUpdate() {
-        this.updatedAt = Timestamp.from(Instant.now());
+        this.updatedAt = LocalDateTime.now();
     }
 }
