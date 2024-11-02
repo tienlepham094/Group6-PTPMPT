@@ -4,7 +4,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import Dashboard from "../views/Dashboard";
 import Home from "../views/Home";
 import Register from "../views/Register";
-import Login from "../views/Login";
+import Login from "../views/Login/Login";
 
 export const router = createBrowserRouter([
   {

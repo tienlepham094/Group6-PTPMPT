@@ -1,8 +1,8 @@
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/useAuth";
-
+import { useAuth } from "../../context/useAuth";
+import "./Login.css";
 // type Props = {};
 
 type LoginFormsInputs = {
@@ -28,33 +28,35 @@ const Login = () => {
   };
   return (
     <section>
-      <div>
+      <div className="form-container">
         <div>
           <div>
-            <h1>Sign in to your account</h1>
-            <form onSubmit={handleSubmit(handleLogin)}>
-              <div>
-                <label htmlFor="email">Username</label>
+            <h3>Account Login</h3>
+            <h3>Hey, Enter your details to get sign in to your account</h3>
+            <form
+              onSubmit={handleSubmit(handleLogin)}
+              className="form-container"
+            >
+              <div className="form-item">
                 <input
                   type="text"
                   id="username"
-                  placeholder="Username"
+                  placeholder="Enter Email "
                   {...register("userName")}
                 />
                 {errors.userName ? <p>{errors.userName.message}</p> : ""}
               </div>
-              <div>
-                <label htmlFor="password">Password</label>
+              <div className="form-item">
                 <input
                   type="password"
                   id="password"
-                  placeholder="••••••••"
+                  placeholder="Password"
                   {...register("password")}
                 />
                 {errors.password ? <p>{errors.password.message}</p> : ""}
               </div>
               <div>
-                <a href="#">Forgot password?</a>
+                <a href="#">Having trouble in sign in ?</a>
               </div>
               <button type="submit">Sign in</button>
               <p>

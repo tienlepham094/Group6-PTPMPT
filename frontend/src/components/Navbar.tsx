@@ -1,25 +1,32 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/useAuth";
+import "./Navbar.css";
 
-interface Props {}
-
-const Navbar = (props: Props) => {
+const Navbar = () => {
   const { isLoggedIn, user, logout } = useAuth();
   return (
-    <nav>
-      <div>
-        <div>
-          <Link to="/">Home</Link>
-        </div>
+    <nav className="navbar">
+      <div className="navbar-left">
+        <Link to="/" className="navbar-brand">
+          Resource Management
+        </Link>
+      </div>
+      <div className="navbar-right">
         {isLoggedIn() ? (
-          <div>
-            <div>Welcome, {user?.userName}</div>
-            <a onClick={logout}>Logout</a>
+          <div className="navbar-user">
+            <span>Welcome, {user?.userName}</span>
+            <button onClick={logout} className="logout-button">
+              Logout
+            </button>
           </div>
         ) : (
-          <div>
-            <Link to="/login">Login</Link>
-            <Link to="/register">Signup</Link>
+          <div className="navbar-auth-buttons">
+            <Link to="/login" className="auth-button sign-in-button">
+              Sign in
+            </Link>
+            <Link to="/register" className="auth-button sign-up-button">
+              Sign up
+            </Link>
           </div>
         )}
       </div>
