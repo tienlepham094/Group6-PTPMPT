@@ -1,6 +1,7 @@
-import { UserProvider } from "./context/useAuth";
-import Navbar from "./components/Navbar";
+import "./App.css";
 import { Outlet } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import { UserProvider } from "./context/useAuth";
 
 function App() {
   return (
