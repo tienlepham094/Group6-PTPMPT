@@ -17,13 +17,19 @@ public class ResourceService {
     public Optional<Resource> findAvailableResource(Resource.ResourceType resourceType) {
         return resourceRepository.findByResourceTypeAndStatusResources(resourceType, Resource.ResourceStatus.available);
     }
+    public Optional<Resource> findAllocatedResource(Resource.ResourceType resourceType) {
+        return resourceRepository.findByResourceTypeAndStatusResources(resourceType, Resource.ResourceStatus.allocated);
+    }
 
     public List<Resource> getAllResources() {
         return resourceRepository.findAll();
     }
 
+    public Optional<Resource> findByResourceTypeAndStatus(Resource.ResourceType resourceType, Resource.ResourceStatus statusResources) {
+        return resourceRepository.findByResourceTypeAndStatusResources(resourceType, statusResources);
+    }
+
     public void updateResource(Resource resource) {
         resourceRepository.save(resource);
     }
-
 }

@@ -76,15 +76,35 @@ public class ApprovalRequestController {
             approval.setApprovedAt(Timestamp.from(Instant.now()));
             approvalService.saveApproval(approval);
 
-            // Allocate resources
+            // Phan phat tai nguyen
             if (optionalResource.isPresent()) {
-                Resource resource = optionalResource.get();
-                resource.setQuantity(resource.getQuantity() - request.getQuantity());
-                resourceService.updateResource(resource);
+                Resource availableResource = optionalResource.get();
+
+                // Giảm số lượng `available`
+                int newAvailableQuantity = availableResource.getQuantity() - request.getQuantity();
+                availableResource.setQuantity(newAvailableQuantity);
+                resourceService.updateResource(availableResource);
+
+                // Tìm hoặc tạo tài nguyên `allocated`
+                Optional<Resource> optionalAllocatedResource = resourceService.findAllocatedResource(request.getResourceType());
+                Resource allocatedResource;
+                if (optionalAllocatedResource.isPresent()) {
+                    allocatedResource = optionalAllocatedResource.get();
+                    allocatedResource.setQuantity(allocatedResource.getQuantity() + request.getQuantity());
+                } else {
+                    allocatedResource = new Resource();
+                    allocatedResource.setResourceType(request.getResourceType());
+                    allocatedResource.setQuantity(request.getQuantity());
+                    allocatedResource.setStatusResources(Resource.ResourceStatus.allocated);
+                    allocatedResource.setCreatedAt(Timestamp.from(Instant.now()));
+                    allocatedResource.setUpdatedAt(Timestamp.from(Instant.now()));
+                }
+                resourceService.updateResource(allocatedResource);
+
 
                 Allocation allocation = new Allocation();
                 allocation.setRequest(request);
-                allocation.setResource(resource);
+                allocation.setResource(allocatedResource);
                 allocation.setAllocatedQuantity(request.getQuantity());
                 allocation.setAllocatedAt(Timestamp.from(Instant.now()));
                 allocationService.saveAllocation(allocation);
