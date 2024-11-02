@@ -1,11 +1,21 @@
 #root {
   max-width: 100%;
-  width: 1890px;
+  width: 100%;
+  height: 100vh;
   margin: 0 auto;
-  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
   text-align: center;
 }
-
+.content-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-grow: 1; /* Allows the container to grow and take available space */
+  width: 100%;
+}
 .logo {
   height: 6em;
   padding: 1.5em;

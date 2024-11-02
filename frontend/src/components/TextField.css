@@ -1,0 +1,8 @@
+input {
+  width: 450px;
+  height: 30px;
+  border: 1px;
+  border-radius: 10px;
+  font-family: "Jaro", sans-serif;
+  border-color: black;
+}

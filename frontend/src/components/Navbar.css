@@ -3,10 +3,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background-color: #f9f4ed; /* Light background to match screenshot */
   padding-top: 10px;
   width: 100%;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); /* Optional: Adds subtle shadow */
+  height: 8vh;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 /* Navbar Left Section (Title) */

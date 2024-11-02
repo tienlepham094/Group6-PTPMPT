@@ -7,7 +7,9 @@ function App() {
   return (
     <UserProvider>
       <Navbar />
-      <Outlet />
+      <div className="content-container">
+        <Outlet />
+      </div>
     </UserProvider>
   );
 }

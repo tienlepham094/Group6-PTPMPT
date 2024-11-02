@@ -5,19 +5,17 @@ h3 {
   text-align: center;
 }
 .form-container {
+  background-color: #ffffff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  width: 50%;
+  height: 80%;
+  gap: 0px;
+  border-radius: 25px;
+  opacity: 0px;
 }
 
 .form-item {
   flex: auto;
-}
-input {
-  width: 450px;
-  height: 30px;
-  border: 1px 0px 0px 0px;
-  border-radius: 10px;
-  font-family: "Jaro", sans-serif; /* Apply Jaro font */
 }

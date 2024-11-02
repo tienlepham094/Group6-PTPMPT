@@ -3,6 +3,7 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../../context/useAuth";
 import "./Login.css";
+import TextField from "../../components/TextField";
 // type Props = {};
 
 type LoginFormsInputs = {
@@ -27,46 +28,37 @@ const Login = () => {
     loginUser(form.userName, form.password);
   };
   return (
-    <section>
-      <div className="form-container">
-        <div>
-          <div>
-            <h3>Account Login</h3>
-            <h3>Hey, Enter your details to get sign in to your account</h3>
-            <form
-              onSubmit={handleSubmit(handleLogin)}
-              className="form-container"
-            >
-              <div className="form-item">
-                <input
-                  type="text"
-                  id="username"
-                  placeholder="Enter Email "
-                  {...register("userName")}
-                />
-                {errors.userName ? <p>{errors.userName.message}</p> : ""}
-              </div>
-              <div className="form-item">
-                <input
-                  type="password"
-                  id="password"
-                  placeholder="Password"
-                  {...register("password")}
-                />
-                {errors.password ? <p>{errors.password.message}</p> : ""}
-              </div>
-              <div>
-                <a href="#">Having trouble in sign in ?</a>
-              </div>
-              <button type="submit">Sign in</button>
-              <p>
-                Don’t have an account yet? <a href="/register">Sign up</a>
-              </p>
-            </form>
-          </div>
+    <div className="form-container">
+      <h3>Account Login</h3>
+      <h3>Hey, Enter your details to get sign in to your account</h3>
+      <form onSubmit={handleSubmit(handleLogin)}>
+        <div className="form-item">
+          <TextField
+            type="text"
+            id="username"
+            placeholder="Enter Email "
+            {...register("userName")}
+          />
+          {errors.userName ? <p>{errors.userName.message}</p> : ""}
         </div>
-      </div>
-    </section>
+        <div className="form-item">
+          <TextField
+            type="password"
+            id="password"
+            placeholder="Password"
+            {...register("password")}
+          />
+          {errors.password ? <p>{errors.password.message}</p> : ""}
+        </div>
+        <div>
+          <a href="#">Having trouble in sign in ?</a>
+        </div>
+        <button type="submit">Sign in</button>
+        <p>
+          Don’t have an account yet? <a href="/register">Sign up</a>
+        </p>
+      </form>
+    </div>
   );
 };
 
