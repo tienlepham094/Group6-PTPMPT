@@ -3,6 +3,10 @@ package ltu.group06.work.resoucesmanager.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.sql.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 @Entity
@@ -25,10 +29,10 @@ public class Request {
     private int quantity;
 
     @Column(nullable = false)
-    private Timestamp startTime;
+    private LocalDateTime startTime;
 
     @Column(nullable = false)
-    private Timestamp endTime;
+    private LocalDateTime end_time;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -43,12 +47,25 @@ public class Request {
     private List<Allocation> allocations;
 
     @Column(nullable = false, updatable = false)
-    private Timestamp createdAt;
+    private LocalDateTime createdAt;
 
     @Column(nullable = false)
-    private Timestamp updatedAt;
+    private LocalDateTime updatedAt;
 
     public enum RequestStatus {
-        pending, approved, rejected
+        pending, approved, rejected, cancelled, queued
+    }
+    // tự động điền thời gian khi tạo mới
+    @PrePersist
+    protected void onCreate() {
+        LocalDateTime currentTime = LocalDateTime.now();
+        this.createdAt = currentTime;
+        this.updatedAt = currentTime;
+        this.startTime = currentTime;
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        this.updatedAt = LocalDateTime.now();
     }
 }

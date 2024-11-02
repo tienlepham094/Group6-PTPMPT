@@ -30,6 +30,6 @@ public class Approval {
     private Timestamp approvedAt;
 
     public enum ApprovalStatus {
-        approved, rejected
+        approved, rejected, queued
     }
 }
