@@ -1,18 +1,14 @@
 import "./App.css";
-import { Route, Routes } from "react-router-dom";
-import Home from "./views/Home";
-import Login from "./views/Login";
-import Register from "./views/Register";
+import { Outlet } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import { UserProvider } from "./context/useAuth";
 
 function App() {
   return (
-    <>
-      <Routes>
-        <Route path="/home" element={<Home />} />
-        <Route path="/" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Routes>
-    </>
+    <UserProvider>
+      <Navbar />
+      <Outlet />
+    </UserProvider>
   );
 }
 
