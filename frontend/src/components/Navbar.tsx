@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { useAuth } from "../context/useAuth";
-
+import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 const Navbar = () => {
   const { isLoggedIn, user, logout } = useAuth();
   return (
@@ -21,6 +21,7 @@ const Navbar = () => {
           </div>
         ) : (
           <div className="navbar-auth-buttons">
+            <HelpOutlineIcon />
             <Link to="/login" className="auth-button sign-in-button">
               Sign in
             </Link>

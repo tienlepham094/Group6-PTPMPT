@@ -7,7 +7,7 @@ import {
   Typography,
   Button,
 } from "@mui/material";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../../context/useAuth";
 
 const Dashboard = () => {
   const { logout, user } = useAuth();

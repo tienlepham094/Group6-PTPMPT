@@ -7,6 +7,7 @@
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: #f6f2eb;
 }
 .root-container {
   justify-items: center;
@@ -43,7 +44,7 @@ button:focus-visible {
   outline: 4px auto -webkit-focus-ring-color;
 }
 
-@media (prefers-color-scheme: light) {
+/* @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
     background-color: #f6f2eb;
@@ -54,4 +55,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-}
+} */
