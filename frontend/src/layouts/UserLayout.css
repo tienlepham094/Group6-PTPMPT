@@ -1,0 +1,19 @@
+.user-layout {
+  display: flex;
+  flex-direction: row;
+}
+
+.layout-content {
+  display: flex;
+  flex-grow: 1;
+}
+
+.side-menu {
+  width: 250px;
+  background-color: #f5f5f5;
+}
+
+.main-content {
+  padding: 20px;
+  flex-grow: 1;
+}

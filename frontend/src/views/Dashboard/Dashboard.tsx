@@ -23,32 +23,33 @@ const Dashboard = () => {
   };
 
   return (
-    <Box sx={{ display: "flex" }}>
-      <Drawer
-        variant="permanent"
-        sx={{
-          width: 240,
-          flexShrink: 0,
-          [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
-        }}
-      >
-        <List>
-          {sidebarItems.map((text) => (
-            <ListItem component="button" key={text}>
-              <ListItemText primary={text} />
-            </ListItem>
-          ))}
-        </List>
-        <Button onClick={handleLogout} color="error" sx={{ mt: 2 }}>
-          Logout
-        </Button>
-      </Drawer>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
-        <Typography variant="h4">
-          Welcome {user?.userName} to the {user?.role} Dashboard
-        </Typography>
-      </Box>
-    </Box>
+    <>Dashboard worked!</>
+    // <Box sx={{ display: "flex" }}>
+    //   <Drawer
+    //     variant="permanent"
+    //     sx={{
+    //       width: 240,
+    //       flexShrink: 0,
+    //       [`& .MuiDrawer-paper`]: { width: 240, boxSizing: "border-box" },
+    //     }}
+    //   >
+    //     <List>
+    //       {sidebarItems.map((text) => (
+    //         <ListItem component="button" key={text}>
+    //           <ListItemText primary={text} />
+    //         </ListItem>
+    //       ))}
+    //     </List>
+    //     <Button onClick={handleLogout} color="error" sx={{ mt: 2 }}>
+    //       Logout
+    //     </Button>
+    //   </Drawer>
+    //   <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+    //     <Typography variant="h4">
+    //       Welcome {user?.userName} to the {user?.role} Dashboard
+    //     </Typography>
+    //   </Box>
+    // </Box>
   );
 };
 

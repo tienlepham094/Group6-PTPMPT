@@ -11,12 +11,12 @@
   font-size: 18px;
   font-weight: bold;
   color: #000;
-  padding: 10px;
   text-decoration: none;
 }
 
 .navbar-right {
   display: flex;
+
   align-items: center;
   padding: 10px;
 }
@@ -55,4 +55,9 @@
 
 .navbar-auth-buttons .MuiSvgIcon-root {
   margin-right: 5px; /* Add some space between the icon and buttons */
+}
+
+.navbar-user {
+  display: flex;
+  flex-direction: row;
 }
