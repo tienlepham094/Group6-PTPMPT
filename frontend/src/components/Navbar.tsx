@@ -1,25 +1,36 @@
+// components/Navbar.tsx
 import { Link } from "react-router-dom";
 import "./Navbar.css";
 import { useAuth } from "../context/useAuth";
 import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
+import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
+import SearchField from "./SearchField";
+import AccountSetting from "./AccountSetting";
 
-const Navbar = () => {
-  const { isLoggedIn, user, logout } = useAuth();
+interface NavbarProps {
+  page: string;
+}
+
+const Navbar = ({ page }: NavbarProps) => {
+  const { isLoggedIn, user } = useAuth();
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <Link to="/" className="navbar-brand">
-          Resource Management
-        </Link>
+        {isLoggedIn() ? (
+          <span>{page}</span>
+        ) : (
+          <Link to="/" className="navbar-brand">
+            {page}
+          </Link>
+        )}
       </div>
       <div className="navbar-right">
         {isLoggedIn() ? (
           <div className="navbar-user">
-            <div>Tiltle text</div>
-            <span>Welcome, {user?.userName}</span>
-            <button onClick={logout} className="logout-button">
-              Logout
-            </button>
+            <SearchField />
+            <NotificationsNoneIcon className="notification-icon" />
+            <AccountSetting userName={user?.userName} />
           </div>
         ) : (
           <div className="navbar-auth-buttons">

@@ -7,18 +7,26 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
+.navbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  padding: 10px;
+}
+
+.navbar-right {
+  flex: 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 10px;
+}
+
 .navbar-left .navbar-brand {
   font-size: 18px;
   font-weight: bold;
   color: #000;
   text-decoration: none;
-}
-
-.navbar-right {
-  display: flex;
-
-  align-items: center;
-  padding: 10px;
 }
 
 .navbar-auth-buttons {
@@ -58,6 +66,11 @@
 }
 
 .navbar-user {
+  width: 80%;
   display: flex;
   flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+  height: fit-content;
 }

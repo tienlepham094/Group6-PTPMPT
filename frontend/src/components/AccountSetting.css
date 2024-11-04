@@ -1,0 +1,21 @@
+.account-setting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 10px;
+  cursor: pointer;
+}
+
+.account-icon {
+  font-size: 24px;
+  color: #666; /* Optional color for the icon */
+}
+
+.account-setting .MuiTypography-root {
+  font-weight: 500; /* Optional font weight */
+  color: #333; /* Optional text color */
+}
+
+.icon-button {
+  padding: 0;
+}

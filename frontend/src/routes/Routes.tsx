@@ -9,11 +9,16 @@ import { About } from "../views/About/About";
 import { Request } from "../views/Request/Request";
 import { Resource } from "../views/Resource/Resource";
 import { Account } from "../views/Account/Account";
+import { UserProvider } from "../context/useAuth"; // Import UserProvider
 
 export const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <UserProvider>
+        <App />
+      </UserProvider>
+    ),
     children: [
       { path: "", element: <Home /> },
       { path: "login", element: <Login /> },

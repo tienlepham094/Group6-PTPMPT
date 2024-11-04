@@ -1,86 +1,34 @@
+import DashboardManageAccountsOutlinedIconIcon from "@mui/icons-material/Dashboard";
+import ManageAccountsManageAccountsOutlinedIconIcon from "@mui/icons-material/ManageAccounts";
+import DeveloperBoardManageAccountsOutlinedIconIcon from "@mui/icons-material/DeveloperBoard";
+import ContentPasteManageAccountsOutlinedIconIcon from "@mui/icons-material/ContentPaste";
+import InfoManageAccountsOutlinedIconIcon from "@mui/icons-material/Info";
+
 const navigation = () => [
   {
     title: "Dashboard",
-    path: "/dashboard",
-    icon: "",
+    path: "dashboard",
+    icon: <DashboardManageAccountsOutlinedIconIcon />,
   },
   {
-    title: "Quản lý",
-    icon: "eos-icons:file-system-outlined",
-    children: [
-      {
-        title: "Takeout",
-        subject: "takeout-page",
-        icon: "",
-        path: "/manage/takeout",
-      },
-      {
-        title: "Máy quét",
-        subject: "machine-page",
-        icon: "material-symbols:scanner",
-        path: "/manage/machine",
-      },
-      {
-        title: "Xe chuyên dụng",
-        subject: "product-page",
-        icon: "tabler:trolley",
-        path: "/manage/product",
-      },
-      {
-        title: "Kho",
-        subject: "warehouse-page",
-        icon: "ic:outline-warehouse",
-        path: "/manage/warehouse",
-      },
-      {
-        title: "Maker",
-        subject: "maker-page",
-        icon: "material-symbols:factory-outline",
-        path: "/manage/maker",
-      },
-      {
-        title: "Xe chở hàng",
-        subject: "delivery-page",
-        icon: "iconamoon:delivery-fast-bold",
-        path: "/manage/delivery",
-      },
-      {
-        title: "Lịch sử",
-        subject: "history-page",
-        icon: "material-symbols:history",
-        path: "/manage/history",
-      },
-    ],
+    title: "Account",
+    path: "account",
+    icon: <ManageAccountsManageAccountsOutlinedIconIcon />,
   },
   {
-    title: "Hệ thống",
-    icon: "fluent-mdl2:file-system",
-    children: [
-      {
-        title: "Loại xe",
-        subject: "category-page",
-        icon: "carbon:category",
-        path: "/system/category",
-      },
-      {
-        title: "Tài khoản",
-        subject: "account-page",
-        icon: "mdi:account-outline",
-        path: "/system/account",
-      },
-      {
-        title: "Phân quyền",
-        subject: "role-page",
-        icon: "ic:baseline-category",
-        path: "/system/role",
-      },
-      {
-        title: "Cài đặt",
-        subject: "setting-page",
-        icon: "uiw:setting-o",
-        path: "/system/setting",
-      },
-    ],
+    title: "Resource",
+    path: "resource",
+    icon: <DeveloperBoardManageAccountsOutlinedIconIcon />,
+  },
+  {
+    title: "Request",
+    path: "request",
+    icon: <ContentPasteManageAccountsOutlinedIconIcon />,
+  },
+  {
+    title: "About",
+    path: "about",
+    icon: <InfoManageAccountsOutlinedIconIcon />,
   },
 ];
 
