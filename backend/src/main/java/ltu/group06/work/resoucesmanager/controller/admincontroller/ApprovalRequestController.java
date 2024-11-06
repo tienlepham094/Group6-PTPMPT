@@ -66,7 +66,7 @@ public class ApprovalRequestController {
 
         if ("approve".equalsIgnoreCase(action)) {
             if (!isEnoughResource) {
-                response.put("message222", "Not enough resources available. Please queue the request or reject it.");
+                response.put("message", "Not enough resources available. Please queue the request or reject it.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 

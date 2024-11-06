@@ -7,12 +7,17 @@ import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.List;
 
 @Service
 public class LogService {
 
     @Autowired
     private LogRepository logRepository;
+
+    public List<Log> getAllLogs() {
+        return logRepository.findAll();
+    }
 
     public void createLog(Integer userId, Integer requestId, String action, String description) {
         Log log = new Log();
