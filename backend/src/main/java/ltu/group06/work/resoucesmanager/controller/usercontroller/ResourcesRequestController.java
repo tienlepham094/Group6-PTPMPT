@@ -53,25 +53,13 @@ public class ResourcesRequestController {
         request.setQuantity(requestResourcesDto.getQuantity());
         request.setReason(requestResourcesDto.getReason());
         request.setStatusRequest(Request.RequestStatus.pending);
+        request.setTimeUsage(requestResourcesDto.getTimeUsage());
 
         // Thiết lập `startTime` với thời gian hiện tại
         LocalDateTime startTime = LocalDateTime.now();
-        System.out.println("Setting start time: " + startTime);
-        System.out.println("Start time: " + getsR());
-        request.setStartTime(startTime);
-        System.out.println("Start time created: " + request.getStartTime());
-
-        // Kiểm tra `end_time` từ input và tính toán
-        if (requestResourcesDto.getEndTimeHours() != null) {
-            // Tính `end_time` bằng cách cộng thêm số giờ vào `startTime`
-            request.setEnd_time(startTime.plusHours(requestResourcesDto.getEndTimeHours()));
-        } else if (requestResourcesDto.getEndTime() != null) {
-            // Set `end_time` nếu được cung cấp với định dạng `yyyy-MM-ddTHH:mm:ss`
-            request.setEnd_time(LocalDateTime.parse(requestResourcesDto.getEndTime()));
-        } else {
-            // Nếu không có `end_time`, mặc định là 24 giờ sau `startTime`
-            request.setEnd_time(startTime.plusHours(24));
-        }
+        System.out.println("New request created at: " + startTime);
+        request.setCreatedAt(startTime);
+        request.setUpdatedAt(startTime);
 
         Request savedRequest = requestService.createRequest(request);
 

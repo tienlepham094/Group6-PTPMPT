@@ -13,7 +13,7 @@ public class RequestResourcesDto {
     private ResourceType resourceType;
     private int quantity;
     private String reason;
-    private Integer endTimeHours;
+    private int timeUsage;
     private String endTime;
     private int userId;
 
