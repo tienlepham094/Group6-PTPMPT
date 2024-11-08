@@ -1,0 +1,88 @@
+Register API:
+curl --location 'http://localhost:8080/app/register' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data-raw '{
+    "username": "admin",
+    "email": "string@gmail.com",
+    "password": "string"
+}'
+
+Login API:
+curl --location 'http://localhost:8080/app/login' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=A8550970CDE6FE0B0098CB7D09F2C560; JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data '{
+    "username": "username",
+    "password": "password"
+}'
+
+
+Create-request API:
+curl --location 'http://localhost:8080/app/user/create-request' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data '{
+    "resourceType": "GPU",
+    "quantity": 2,
+    "reason": "Need GPU for praactice",
+    "timeUsage": 1,
+    "userId": 10
+}'
+
+
+Cancel request API (User cancel những request đang pending) - có parameter:
+curl --location --request PUT 'http://localhost:8080/app/user/cancel-request/1' \
+
+
+User xem tất cả các request của mình:
+curl --location 'http://localhost:8080/app/user/requests' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data '{
+    "user_id": 10
+}'
+
+Admin xem tất cả các tài nguyên trong hệ thống:
+curl --location 'http://localhost:8080/app/admin/get/available-resources' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682'
+
+
+Admin xem tất cả các request và trạng thái các request trong hệ thống:
+curl --location 'http://localhost:8080/app/admin/get/requests-issue' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682'
+
+
+Admin kiểm duyệt các request mà user gửi tới:
+curl --location 'http://localhost:8080/app/admin/request/approve' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data '{
+    "requestId": "37",
+    "action": "approve",
+    "comments": "Request approved by admin due to sufficient resources"
+}'
+
+
+Admin thêm tài nguyên cho hệ thống:
+curl --location 'http://localhost:8080/app/admin/resource/add' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data '{
+    "userId": 11,
+    "resourceType": "GPU",
+    "quantity": 18,
+    "statusResources": "available"
+}'
+
+
+Admin sửa và xóa tài nguyên hệ thống:
+curl --location --request PUT 'http://localhost:8080/app/admin/resource/update' \
+--header 'Content-Type: application/json' \
+--header 'Cookie: JSESSIONID=FCBD0B46E922809FC0D50254E1005682' \
+--data '{
+    "userId": 11,
+    "resourceType": "GPU",
+    "quantity": -1,
+    "statusResources": "available"
+}'

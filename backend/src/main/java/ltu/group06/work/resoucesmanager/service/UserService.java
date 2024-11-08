@@ -1,19 +1,14 @@
 package ltu.group06.work.resoucesmanager.service;
 
 
-import jakarta.websocket.Session;
 import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.security.SecureRandom;
+import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
-import java.util.Random;
 
 @Service
 public class UserService {
@@ -64,5 +59,24 @@ public class UserService {
 
     public boolean checkPassword(String rawPassword, String encodedPassword) {
         return passwordEncoder.matches(rawPassword, encodedPassword);
+    }
+
+    public User updateUser(int id, User userDetails) {
+        User user = getUserById(id);
+        if (user != null) {
+            user.setUsername(userDetails.getUsername());
+            user.setEmail(userDetails.getEmail());
+            return userRepository.save(user);
+        }
+        return null;
+    }
+    public void deleteUser(int id) {
+        userRepository.deleteById(id);
+    }
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+    public Optional<User> searchUsersByName(String name) {
+        return userRepository.findByUsername(name);
     }
 }
