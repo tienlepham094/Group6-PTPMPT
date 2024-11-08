@@ -35,9 +35,9 @@ public class ReturnResourcesService {
 
         List<Allocation> allocationsToRecover = allocationRepository.findAllocationsDueForRecovery(LocalDateTime.now());
         System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Number of allocations to recover: " + allocationsToRecover.size());
-        System.out.println("checkeded");
         for (Allocation allocation : allocationsToRecover) {
             LocalDateTime releaseTime = allocation.getRequest().getEnd_time();
+            System.out.println("Into for loop");
             if (!now.isBefore(releaseTime)) {
                 System.out.println("Processing recovery for Resource ID " + allocation.getResource().getResourceId() + " from Request ID " + allocation.getRequest().getRequestId());
 
