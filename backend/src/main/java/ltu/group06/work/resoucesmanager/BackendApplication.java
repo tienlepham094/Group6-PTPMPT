@@ -13,8 +13,14 @@ import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 @SpringBootApplication
 public class BackendApplication implements CommandLineRunner {
 
-    @Autowired
+//    @Autowired
     private TelegramBotService botService;
+    private final TelegramBotsApi telegramBotsApi;
+
+    public BackendApplication(TelegramBotService botService) throws TelegramApiException {
+        this.botService = botService;
+        this.telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+    }
 
     public static void main(String[] args) {
         SpringApplication.run(BackendApplication.class, args);
@@ -26,7 +32,7 @@ public class BackendApplication implements CommandLineRunner {
     }
     public void startBot() {
         try {
-            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
+//            TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
             telegramBotsApi.registerBot(botService);
             System.out.println("Bot đã được đăng ký thành công!");
         } catch (TelegramApiException e) {
