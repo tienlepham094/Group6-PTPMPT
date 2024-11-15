@@ -10,6 +10,9 @@ import java.util.List;
 
 @Repository
 public interface AllocationRepository extends JpaRepository<Allocation, Integer> {
-    @Query("select a from Allocation a where a.releasedAt is null and a.request.end_time >= :now")
+    @Query("select a from Allocation a where a.releasedAt is null and a.request.end_time <= :now")
     List<Allocation> findAllocationsDueForRecovery(LocalDateTime now);
+
+    @Query("SELECT a FROM Allocation a WHERE a.releasedAt IS NULL AND a.request.end_time >= :now")
+    List<Allocation> findAllocationsNotDueForRecovery(LocalDateTime now);
 }

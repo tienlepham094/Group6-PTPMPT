@@ -28,34 +28,53 @@ public class ReturnResourcesService {
     private RequestRepository requestRepository;
 
     @Transactional
-    @Scheduled(fixedRate = 60000, initialDelay = 0) // Chạy mỗi phút 1 lâần
+    @Scheduled(fixedRate = 60000, initialDelay = 0) // Chạy mỗi phút một lần
     public void checkAndRecoverResources() {
         LocalDateTime now = LocalDateTime.now();
         System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Checking for resources due for recovery...");
 
+        List<Allocation> allocationsNotDue = allocationRepository.findAllocationsNotDueForRecovery(LocalDateTime.now());
+        System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Number of allocations not due for recovery: " + allocationsNotDue.size());
+
         List<Allocation> allocationsToRecover = allocationRepository.findAllocationsDueForRecovery(LocalDateTime.now());
         System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Number of allocations to recover: " + allocationsToRecover.size());
+
+        if (allocationsToRecover.isEmpty()) {
+            System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] No allocations to recover at this time.");
+            return;
+        }
+
         for (Allocation allocation : allocationsToRecover) {
             LocalDateTime releaseTime = allocation.getRequest().getEnd_time();
             System.out.println("Into for loop");
-            if (!now.isBefore(releaseTime)) {
+            if (!now.isBefore(allocation.getRequest().getEnd_time())) {
                 System.out.println("Processing recovery for Resource ID " + allocation.getResource().getResourceId() + " from Request ID " + allocation.getRequest().getRequestId());
 
-                Resource resource = allocation.getResource();
-                Request request = allocation.getRequest();
+                Resource allocatedResource = allocation.getResource();
+                int quantityToRecover = allocation.getAllocatedQuantity();
 
-                resource.setQuantity(resource.getQuantity() + allocation.getAllocatedQuantity());
-                resourceRepository.save(resource);
+                Resource availableResource = resourceRepository.findAvailableResourceByType(allocatedResource.getResourceType());
+                if (availableResource != null) {
+                    availableResource.setQuantity(availableResource.getQuantity() + quantityToRecover);
+                    resourceRepository.save(availableResource);
+                }
+
+                allocatedResource.setQuantity(allocatedResource.getQuantity() - quantityToRecover);
+                resourceRepository.save(allocatedResource);
 
                 allocation.setReleasedAt(Timestamp.valueOf(now));
                 allocationRepository.save(allocation);
 
+                Request request = allocation.getRequest();
                 request.setStatusRequest(Request.RequestStatus.completed);
                 requestRepository.save(request);
 
-                System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Resource ID " + resource.getResourceId() + " has been recovered and request marked as completed.");
+                System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Resource ID " + allocatedResource.getResourceId() + " has been recovered and request marked as completed.");
             } else {
                 System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Resource ID " + allocation.getResource().getResourceId() + " from Request ID " + allocation.getRequest().getRequestId() + " not yet due for recovery.");
+                System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Resource ID " + allocation.getResource().getResourceId() +
+                        " from Request ID " + allocation.getRequest().getRequestId() +
+                        " is not due for recovery yet. Due in " + java.time.Duration.between(now, releaseTime).toMinutes() + " minutes.");
             }
         }
     }
