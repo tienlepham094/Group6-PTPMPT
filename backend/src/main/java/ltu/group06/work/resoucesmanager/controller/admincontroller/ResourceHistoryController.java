@@ -27,7 +27,7 @@ public class ResourceHistoryController {
     @Autowired
     private LogService logService;
 
-    // Kiểm tra xem user có phải admin hay không
+    // Check ADMIN, chỉ có admin mới có quyền xem lịch sử sử dụng tài nguyên
     private boolean isAdmin(int userId) {
         Optional<User> user = Optional.ofNullable(userService.getUserById(userId));
         return user.isPresent() && "ADMIN".equalsIgnoreCase(user.get().getRole());
@@ -67,10 +67,8 @@ public class ResourceHistoryController {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admin can perform this action.");
         }
 
-        // Lấy toàn bộ log lịch sử sử dụng tài nguyên, bao gồm cả user_id đã thực hiện thao tác
         List<Log> resourceUsageLogs = logService.getAllLogs();
 
-        // Tạo response để trả về lịch sử và tình trạng hiện tại của tài nguyên
         Map<String, Object> response = new HashMap<>();
         response.put("resourceUsageLogs", resourceUsageLogs);
 

@@ -37,11 +37,11 @@ public class ReturnResourcesService {
         System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Number of allocations not due for recovery: " + allocationsNotDue.size());
 
         List<Allocation> allocationsToRecover = allocationRepository.findAllocationsDueForRecovery(LocalDateTime.now());
-        System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Number of allocations to recover: " + allocationsToRecover.size());
 
-        if (allocationsToRecover.isEmpty()) {
+        if (!allocationsToRecover.isEmpty()) {
+            System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] Number of allocations to recover: " + allocationsToRecover.size());
+        } else {
             System.out.println("[" + now.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + "] No allocations to recover at this time.");
-            return;
         }
 
         for (Allocation allocation : allocationsToRecover) {
@@ -55,10 +55,12 @@ public class ReturnResourcesService {
 
                 Resource availableResource = resourceRepository.findAvailableResourceByType(allocatedResource.getResourceType());
                 if (availableResource != null) {
+                    // Tra lai so lượng tài nguyên đã cấp phát sau khi sd xong (+ số lượng tai nguyen co status = available)
                     availableResource.setQuantity(availableResource.getQuantity() + quantityToRecover);
                     resourceRepository.save(availableResource);
                 }
 
+                // Trừ đi gia tri so luong tai nguyen có stauts = allocated sau khi sd xong và phải tra lại tài nguyên
                 allocatedResource.setQuantity(allocatedResource.getQuantity() - quantityToRecover);
                 resourceRepository.save(allocatedResource);
 
