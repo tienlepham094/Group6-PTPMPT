@@ -84,7 +84,7 @@ public class UserService {
     }
     public Optional<User> searchUsersByName(String name) {
         return userRepository.findByUsername(name);
-
+    }
     public String updatePassword(String usernameOrEmail, String currentPassword, String newPassword) {
         if (!StringUtils.hasText(newPassword) || newPassword.length() < 8) {
             return "New password must be at least 8 characters long.";
