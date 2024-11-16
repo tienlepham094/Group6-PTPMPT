@@ -1,8 +1,10 @@
 package ltu.group06.work.resoucesmanager.controller;
 
 import ltu.group06.work.resoucesmanager.dto.LoginRequestDto;
+import ltu.group06.work.resoucesmanager.dto.PasswordChangeDto;
 import ltu.group06.work.resoucesmanager.dto.RegisterRequestDto;
 import ltu.group06.work.resoucesmanager.entity.User;
+import ltu.group06.work.resoucesmanager.repository.UserRepository;
 import ltu.group06.work.resoucesmanager.service.EmailService;
 import ltu.group06.work.resoucesmanager.service.LogService;
 import ltu.group06.work.resoucesmanager.service.UserService;
@@ -10,6 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +34,12 @@ public class AuthController {
 
     @Autowired
     private LogService logService;
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDto request) {
@@ -62,8 +73,6 @@ public class AuthController {
         }
     }
 
-
-    // Xử lý đăng nhập người dùng với JSON body mà không cần DTO
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto,
                                         HttpServletRequest request) {
@@ -127,4 +136,16 @@ public class AuthController {
         }
         return ResponseEntity.ok("Đăng xuất thành công.");
     }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeDto passwordUpdateDTO) {
+        String result = userService.updatePassword(passwordUpdateDTO.getUsernameOrEmail(), passwordUpdateDTO.getCurrentPassword(), passwordUpdateDTO.getNewPassword());
+
+        if ("success".equals(result)) {
+            return ResponseEntity.ok("Password updated successfully.");
+        } else {
+            return ResponseEntity.badRequest().body(result);
+        }
+    }
+
 }

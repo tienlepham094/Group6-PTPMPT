@@ -19,4 +19,5 @@ public class AllocationService {
     public void saveAllocation(Allocation allocation) {
         allocationRepository.save(allocation);
     }
+
 }

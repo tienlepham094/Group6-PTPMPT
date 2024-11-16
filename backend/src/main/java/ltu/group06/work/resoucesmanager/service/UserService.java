@@ -5,6 +5,7 @@ import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -15,6 +16,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+
     private final SecureRandom random = new SecureRandom();
 
     public User getUserById(int userId) {
@@ -23,6 +25,10 @@ public class UserService {
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
+    }
+
+    public Optional<User> findByUsernameOrEmail(String usernameOrEmail) {
+        return userRepository.findByUsernameOrEmail(usernameOrEmail);
     }
 
     public Optional<User> findByUsername(String username) {
@@ -78,5 +84,30 @@ public class UserService {
     }
     public Optional<User> searchUsersByName(String name) {
         return userRepository.findByUsername(name);
+
+    public String updatePassword(String usernameOrEmail, String currentPassword, String newPassword) {
+        if (!StringUtils.hasText(newPassword) || newPassword.length() < 8) {
+            return "New password must be at least 8 characters long.";
+        }
+
+        Optional<User> userOptional = findByUsernameOrEmail(usernameOrEmail);
+        if (!userOptional.isPresent()) {
+            return "User not found.";
+        }
+
+        User user = userOptional.get();
+
+        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
+            return "Current password is incorrect.";
+        }
+
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            return "New password cannot be the same as the current password.";
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+        return "success";
+
     }
 }

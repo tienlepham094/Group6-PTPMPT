@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -47,6 +48,9 @@ public class ApprovalRequestController {
         }
 
         Request request = optionalRequest.get();
+        if(request.getStatusRequest() != Request.RequestStatus.pending){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "Request has already been processed, it's not pending"));
+        }
 
         // Check if the request is already processed
         if (request.getStatusRequest() != Request.RequestStatus.pending) {
@@ -66,12 +70,14 @@ public class ApprovalRequestController {
 
         if ("approve".equalsIgnoreCase(action)) {
             if (!isEnoughResource) {
-                response.put("message222", "Not enough resources available. Please queue the request or reject it.");
+                response.put("message", "Not enough resources available. Please queue the request or reject it.");
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
             }
 
             // Cập nhật trạng thái request và tài nguyên
             request.setStatusRequest(Request.RequestStatus.approved);
+            request.setStartTime(LocalDateTime.now());
+            request.setEnd_time(request.getStartTime().plusHours(request.getTimeUsage()));
             approval.setApprovalStatus(Approval.ApprovalStatus.approved);
             approval.setApprovedAt(Timestamp.from(Instant.now()));
             approvalService.saveApproval(approval);
@@ -109,13 +115,11 @@ public class ApprovalRequestController {
                 allocation.setAllocatedAt(Timestamp.from(Instant.now()));
                 allocationService.saveAllocation(allocation);
 
-                logService.createLog(
-                        null,
-                        request.getRequestId(),
-                        "APPROVE_REQUEST",
-                        "Request approved and resources allocated."
-                );
+                String logDescription = "Request approved and resources allocated. Status: " + request.getStatusRequest().toString() +
+                        ", Start time: " + (request.getStartTime() != null ? request.getStartTime().toString() : "N/A") +
+                        ", End time: " + (request.getEnd_time() != null ? request.getEnd_time().toString() : "N/A");
 
+                logService.createLog(null, request.getRequestId(), "APPROVE_REQUEST", logDescription);
                 response.put("message", "Request approved successfully and resources allocated.");
             }
 
