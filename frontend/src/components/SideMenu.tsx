@@ -2,7 +2,8 @@ import { Link, useLocation } from "react-router-dom";
 import "./SideMenu.css";
 import navigation from "../navigation";
 import { useAuth } from "../context/useAuth";
-
+import { IconButton } from "@mui/material";
+import LogoutIcon from "@mui/icons-material/Logout";
 const SideMenu = () => {
   const location = useLocation();
   const { logout } = useAuth();
@@ -26,9 +27,10 @@ const SideMenu = () => {
         ))}
       </div>
       <div className="menu-footer">
-        <button className="logout-button" onClick={logout}>
+        <IconButton onClick={logout} className="logout-button">
+          <LogoutIcon />
           <span>Log out</span>
-        </button>
+        </IconButton>
       </div>
     </div>
   );

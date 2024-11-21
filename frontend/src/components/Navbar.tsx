@@ -6,22 +6,23 @@ import HelpOutlineIcon from "@mui/icons-material/HelpOutline";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import SearchField from "./SearchField";
 import AccountSetting from "./AccountSetting";
+import { IconButton } from "@mui/material";
 
 interface NavbarProps {
-  page: string;
+  pageName: string;
 }
 
-const Navbar = ({ page }: NavbarProps) => {
+const Navbar = ({ pageName }: NavbarProps) => {
   const { isLoggedIn, user } = useAuth();
 
   return (
     <nav className="navbar">
       <div className="navbar-left">
         {isLoggedIn() ? (
-          <span>{page}</span>
+          <span className="page-name">{pageName}</span>
         ) : (
           <Link to="/" className="navbar-brand">
-            {page}
+            {pageName}
           </Link>
         )}
       </div>
@@ -29,7 +30,9 @@ const Navbar = ({ page }: NavbarProps) => {
         {isLoggedIn() ? (
           <div className="navbar-user">
             <SearchField />
-            <NotificationsNoneIcon className="notification-icon" />
+            <IconButton style={{ backgroundColor: "white" }}>
+              <NotificationsNoneIcon className="notification-icon" />
+            </IconButton>
             <AccountSetting userName={user?.userName} />
           </div>
         ) : (

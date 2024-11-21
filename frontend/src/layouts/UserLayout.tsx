@@ -12,7 +12,8 @@ const UserLayout = () => {
   const currentPage = navigation().find(
     (item) => `/${item.path}` === location.pathname
   );
-  const pageTitle = currentPage ? currentPage.title : "";
+  const pageName = currentPage ? currentPage.title : "Resource Management";
+  console.log(pageName);
 
   return (
     <>
@@ -20,7 +21,7 @@ const UserLayout = () => {
       <div
         className={`container ${isLoggedIn() ? "logged-in" : "not-logged-in"}`}
       >
-        <Navbar page={pageTitle} />
+        <Navbar pageName={pageName} />
         <div className="content-container">
           <Outlet />
         </div>
