@@ -2,10 +2,13 @@ package ltu.group06.work.resoucesmanager.controller.usercontroller;
 
 import ltu.group06.work.resoucesmanager.dto.RequestResourcesDto;
 import ltu.group06.work.resoucesmanager.entity.Request;
+import ltu.group06.work.resoucesmanager.entity.TelegramUser;
 import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.service.LogService;
 import ltu.group06.work.resoucesmanager.service.RequestService;
+import ltu.group06.work.resoucesmanager.service.TelegramUserService;
 import ltu.group06.work.resoucesmanager.service.UserService;
+import ltu.group06.work.resoucesmanager.telegrambot.TelegramBotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +27,11 @@ import static ltu.group06.work.resoucesmanager.controller.AppTestController.gets
 @RequestMapping("/app")
 @CrossOrigin(origins = "*") // Cho phép tất cả các nguồn gửi request
 public class ResourcesRequestController {
+    @Autowired
+    private TelegramUserService telegramUserService;
+
+    @Autowired
+    private TelegramBotService telegramBotService;
 
     @Autowired
     private RequestService requestService;
@@ -70,6 +78,17 @@ public class ResourcesRequestController {
                 "User created a request with resource type: " + savedRequest.getResourceType()
         );
 
+        // Gửi thông báo Telegram
+        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(user.getUserId());
+        if (telegramUser != null) {
+            telegramBotService.sendMessageToUser(
+                    telegramUser.getTelegramId(),
+                    "Bạn vừa tạo một yêu cầu mới với loại tài nguyên: " +
+                            requestResourcesDto.getResourceType() +
+                            ". Yêu cầu của bạn đang chờ phê duyệt."
+            );
+        }
+
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Request created successfully");
         response.put("request_id", savedRequest.getRequestId());
@@ -106,6 +125,15 @@ public class ResourcesRequestController {
                 "CANCEL_REQUEST",
                 "User cancelled request with ID: " + request.getRequestId()
         );
+
+        // Gửi thông báo Telegram
+        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(request.getUser().getUserId());
+        if (telegramUser != null) {
+            telegramBotService.sendMessageToUser(
+                    telegramUser.getTelegramId(),
+                    "Yêu cầu của bạn với ID: " + requestId + " đã bị hủy."
+            );
+        }
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Request has been cancelled");

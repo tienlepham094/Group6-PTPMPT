@@ -28,4 +28,8 @@ public class TelegramUserService {
     public boolean isTelegramLinked(Long telegramId, User user) {
         return telegramUserRepository.existsByTelegramIdAndUser(telegramId, user);
     }
+
+    public TelegramUser getTelegramUserByUserId(int userId) {
+        return telegramUserRepository.findByUser_UserId(userId).orElse(null);
+    }
 }

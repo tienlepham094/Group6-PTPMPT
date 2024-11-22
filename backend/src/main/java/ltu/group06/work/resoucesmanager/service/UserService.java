@@ -81,15 +81,19 @@ public class UserService {
         }
         return null;
     }
+
     public void deleteUser(int id) {
         userRepository.deleteById(id);
     }
+
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
+
     public Optional<User> searchUsersByName(String name) {
         return userRepository.findByUsername(name);
     }
+
     public String updatePassword(String usernameOrEmail, String currentPassword, String newPassword) {
         if (!StringUtils.hasText(newPassword) || newPassword.length() < 8) {
             return "New password must be at least 8 characters long.";
@@ -115,6 +119,7 @@ public class UserService {
         return "success";
 
     }
+
     public void linkTelegramAccount(Long telegramId, User user) {
         // Kiểm tra nếu Telegram ID đã được liên kết với User
         boolean alreadyLinked = telegramUserRepository.existsByTelegramIdAndUser(telegramId, user);

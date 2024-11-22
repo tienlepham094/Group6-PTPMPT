@@ -13,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+
 @Service
 public class TelegramBotService extends TelegramLongPollingBot {
 
@@ -134,6 +135,18 @@ public class TelegramBotService extends TelegramLongPollingBot {
         message.setText(text);
         try {
             execute(message);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendMessageToUser(Long chatId, String message) {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(chatId.toString());
+        sendMessage.setText(message);
+
+        try {
+            execute(sendMessage);
         } catch (Exception e) {
             e.printStackTrace();
         }

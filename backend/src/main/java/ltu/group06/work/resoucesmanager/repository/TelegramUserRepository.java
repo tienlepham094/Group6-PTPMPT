@@ -11,6 +11,7 @@ import java.util.Optional;
 @Repository
 public interface TelegramUserRepository extends JpaRepository<TelegramUser, Long> {
     List<TelegramUser> findByTelegramId(Long telegramId);
+    Optional<TelegramUser> findByUser_UserId(int userId);
     boolean existsByTelegramIdAndUser(Long telegramId, User user);
 
 }
