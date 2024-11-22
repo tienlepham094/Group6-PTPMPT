@@ -1,8 +1,10 @@
 package ltu.group06.work.resoucesmanager.telegrambot;
 
+import lombok.NoArgsConstructor;
 import ltu.group06.work.resoucesmanager.entity.OTP;
 import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.service.OtpService;
+import ltu.group06.work.resoucesmanager.service.TelegramUserService;
 import ltu.group06.work.resoucesmanager.service.UserService;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -11,12 +13,12 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-
 @Service
 public class TelegramBotService extends TelegramLongPollingBot {
 
     private final UserService userService;
     private final OtpService otpService;
+    private final TelegramUserService telegramUserService;
 
     // Map để theo dõi trạng thái người dùng đang chờ nhập OTP
     private final ConcurrentHashMap<Long, OTP> awaitingOtpMap = new ConcurrentHashMap<>();
@@ -24,9 +26,10 @@ public class TelegramBotService extends TelegramLongPollingBot {
     // Map để theo dõi người dùng đang chờ nhập email
     private final ConcurrentHashMap<Long, Boolean> awaitingEmailMap = new ConcurrentHashMap<>();
 
-    public TelegramBotService(UserService userService, OtpService otpService) {
+    public TelegramBotService(UserService userService, OtpService otpService, TelegramUserService telegramUserService) {
         this.userService = userService;
         this.otpService = otpService;
+        this.telegramUserService = telegramUserService;
     }
 
     @Override
@@ -69,13 +72,13 @@ public class TelegramBotService extends TelegramLongPollingBot {
             User user = userOpt.get();
 
             // Kiểm tra nếu Telegram ID đã được liên kết
-            if (user.getTelegramId() != null && user.getTelegramId().equals(chatId)) {
+            if (telegramUserService.isTelegramLinked(chatId, user)) { // Dùng phương thức kiểm tra
                 sendMessage(chatId, "Tài khoản của bạn đã được liên kết với bot Telegram.");
                 awaitingEmailMap.remove(chatId);
                 return;
             }
 
-            OTP otp = otpService.sendOTP(user);  // Gửi OTP mới và lưu vào DB
+            OTP otp = otpService.sendOTP(user); // Gửi OTP mới và lưu vào DB
             sendMessage(chatId, "OTP đã được gửi đến email của bạn. Vui lòng nhập OTP trong vòng 15 phút.");
             awaitingOtpMap.put(chatId, otp);
             awaitingEmailMap.remove(chatId);
@@ -111,11 +114,18 @@ public class TelegramBotService extends TelegramLongPollingBot {
     }
 
     private void activateUserAccount(Long chatId, User user) {
-        user.setTelegramId(chatId);
-        user.setActivated(true);
-        userService.save(user);
-        sendMessage(chatId, "Kích hoạt thành công! Tài khoản của bạn đã được liên kết với bot Telegram.");
-        awaitingOtpMap.remove(chatId);  // Xóa trạng thái chờ OTP
+        try {
+            // Liên kết Telegram ID với User
+            telegramUserService.linkTelegramAccount(chatId, user);
+            sendMessage(chatId, "Kích hoạt thành công! Tài khoản của bạn đã được liên kết với bot Telegram.");
+            user.setActive(true);
+            userService.save(user);
+        } catch (IllegalStateException e) {
+            sendMessage(chatId, e.getMessage());
+        } finally {
+            // Xóa trạng thái chờ OTP
+            awaitingOtpMap.remove(chatId);
+        }
     }
 
     private void sendMessage(Long chatId, String text) {

@@ -1,7 +1,9 @@
 package ltu.group06.work.resoucesmanager.service;
 
 
+import ltu.group06.work.resoucesmanager.entity.TelegramUser;
 import ltu.group06.work.resoucesmanager.entity.User;
+import ltu.group06.work.resoucesmanager.repository.TelegramUserRepository;
 import ltu.group06.work.resoucesmanager.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final TelegramUserRepository telegramUserRepository;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     private final SecureRandom random = new SecureRandom();
@@ -23,8 +26,9 @@ public class UserService {
         return userRepository.findById(userId).orElse(null);
     }
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, TelegramUserRepository telegramUserRepository) {
         this.userRepository = userRepository;
+        this.telegramUserRepository = telegramUserRepository;
     }
 
     public Optional<User> findByUsernameOrEmail(String usernameOrEmail) {
@@ -38,6 +42,7 @@ public class UserService {
     public Optional<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+
 
     public User registerUser(String username, String email, String password) {
         String encodedPassword = passwordEncoder.encode(password);
@@ -109,5 +114,22 @@ public class UserService {
         userRepository.save(user);
         return "success";
 
+    }
+    public void linkTelegramAccount(Long telegramId, User user) {
+        // Kiểm tra nếu Telegram ID đã được liên kết với User
+        boolean alreadyLinked = telegramUserRepository.existsByTelegramIdAndUser(telegramId, user);
+        if (alreadyLinked) {
+            throw new IllegalStateException("Telegram ID đã được liên kết với tài khoản này.");
+        }
+
+        // Tạo bản ghi liên kết trong bảng TelegramUser
+        TelegramUser telegramUser = new TelegramUser();
+        telegramUser.setTelegramId(telegramId);
+        telegramUser.setUser(user);
+        telegramUserRepository.save(telegramUser);
+
+        // Đánh dấu tài khoản là active
+        user.setActive(true);
+        userRepository.save(user);
     }
 }

@@ -26,11 +26,8 @@ public class User {
     @Column(nullable = false, length = 20)
     private String role;  // 'user', 'admin'
 
-    @Column(unique = true)
-    private Long telegramId;
-
     @Column(nullable = false)
-    private boolean isActivated = false;
+    private boolean isActive = false;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OTP> otps;
