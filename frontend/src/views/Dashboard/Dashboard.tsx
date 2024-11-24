@@ -107,13 +107,13 @@ const Dashboard = () => {
   return (
     <div className="dashboard-container">
       <div className="info-container">
-        {cardProps().map((cardItem) => (
+        {/* {cardProps().map((cardItem) => (
           <CardInfo
             icon={cardItem.icon}
             title={cardItem.title}
             description={cardItem.description}
           />
-        ))}
+        ))} */}
       </div>
       <div className="task-container">
         <CustomeTable data={data} columns={columns} />

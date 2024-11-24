@@ -1,27 +1,35 @@
 import React, { createContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { UserProfile } from "../models/User";
+import {
+  ErrCallbackType,
+  LoginParams,
+  RegisterParams,
+  UserContextType,
+  UserDataType,
+} from "./types";
+import authApi from "../api/auth";
 
-type UserContextType = {
-  user: UserProfile | null;
-  token: string | null;
-  registerUser: (
-    email: string,
-    userName: string,
-    password: string,
-    role: "ADMIN" | "USER"
-  ) => void;
-  loginUser: (userName: string, password: string) => void;
-  logout: () => void;
-  isLoggedIn: () => boolean;
+const defaultProvider: UserContextType = {
+  user: null,
+  loading: true,
+  setUser: () => null,
+  setLoading: () => Boolean,
+  login: () => Promise.resolve(),
+  logout: () => Promise.resolve(),
+  token: null,
+  registerUser: () => Promise.resolve(),
+  isLoggedIn: function (): boolean {
+    throw new Error("Function not implemented.");
+  },
 };
 type Props = { children: React.ReactNode };
-const UserContext = createContext<UserContextType>({} as UserContextType);
+const UserContext = createContext(defaultProvider);
 export const UserProvider = ({ children }: Props) => {
   const navigate = useNavigate();
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserDataType | null>(defaultProvider.user);
   const [isReady, setIsReady] = useState(false);
+  const [loading, setLoading] = useState<boolean>(defaultProvider.loading);
   useEffect(() => {
     const user = localStorage.getItem("user");
     const token = localStorage.getItem("token");
@@ -31,54 +39,72 @@ export const UserProvider = ({ children }: Props) => {
     }
     setIsReady(true);
   }, []);
-  const registerUser = (
-    email: string,
-    userName: string,
-    password: string,
-    role: "ADMIN" | "USER"
+
+  const handleLogin = (
+    params: LoginParams,
+    errorCallback?: ErrCallbackType
   ) => {
-    const newUser = { userName, email, password, role };
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    users.push(newUser);
-    localStorage.setItem("users", JSON.stringify(users));
-    navigate("/");
+    authApi
+      .login(params)
+      .then(async (res) => {
+        const token = res.headers["authorization"];
+        if (params.rememberMe) {
+          window.localStorage.setItem("storageTokenKeyName", token);
+        }
+        const userData = {
+          username: params.username,
+          password: params.password,
+        };
+        setUser(userData);
+        setToken(token);
+        localStorage.setItem("user", JSON.stringify(userData));
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        if (errorCallback) errorCallback(err);
+      });
+  };
+  const handleRegister = (
+    params: RegisterParams,
+    errorCallback?: ErrCallbackType
+  ) => {
+    authApi
+      .register(params)
+      .then(async () => {
+        navigate("/login");
+      })
+      .catch((err) => {
+        if (errorCallback) errorCallback(err);
+      });
   };
 
-  const loginUser = (userName: string, password: string) => {
-    const users = JSON.parse(localStorage.getItem("users") || "[]");
-    const userObj = users.find(
-      (user: UserProfile & { password: string }) =>
-        user.userName === userName && user.password === password
-    );
-
-    if (userObj) {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { password, ...loggedInUser } = userObj;
-      setUser(loggedInUser);
-      setToken("fake-jwt-token");
-      localStorage.setItem("user", JSON.stringify(loggedInUser));
-      localStorage.setItem("token", "fake-jwt-token");
-      navigate("/dashboard");
-    } else {
-      alert("Invalid username or password");
-    }
-  };
   const isLoggedIn = () => {
     return !!user;
   };
-  const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("token");
+
+  const handleLogout = () => {
     setUser(null);
-    setToken("");
-    navigate("/");
+    window.localStorage.removeItem("userData");
+    window.localStorage.removeItem("storageTokenKeyName");
+    navigate("/login");
   };
+  const values = {
+    isLoggedIn: isLoggedIn,
+    registerUser: handleRegister,
+    user,
+    token,
+    loading,
+    setUser,
+    setLoading,
+    login: handleLogin,
+    logout: handleLogout,
+  };
+
   return (
-    <UserContext.Provider
-      value={{ registerUser, loginUser, isLoggedIn, user, token, logout }}
-    >
+    <UserContext.Provider value={values}>
       {isReady ? children : null}
     </UserContext.Provider>
   );
 };
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => React.useContext(UserContext);

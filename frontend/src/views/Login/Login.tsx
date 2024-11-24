@@ -8,27 +8,23 @@ import TextField from "../../components/TextField";
 import AppleIcon from "../../assets/images/Apple_icon.png";
 import FacebookIcon from "../../assets/images/Facebook_icon.png";
 import InstagramIcon from "../../assets/images/Instagram_icon.png";
-
-type LoginFormsInputs = {
-  userName: string;
-  password: string;
-};
+import { LoginParams } from "../../context/types";
 
 const validation = Yup.object().shape({
-  userName: Yup.string().required("Username is required"),
+  username: Yup.string().required("Username is required"),
   password: Yup.string().required("Password is required"),
 });
 
 const Login = () => {
-  const { loginUser } = useAuth();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<LoginFormsInputs>({ resolver: yupResolver(validation) });
+  } = useForm<LoginParams>({ resolver: yupResolver(validation) });
 
-  const handleLogin = (form: LoginFormsInputs) => {
-    loginUser(form.userName, form.password);
+  const handleLogin = (form: LoginParams) => {
+    login(form);
   };
   return (
     <div className="card-container">
@@ -42,9 +38,9 @@ const Login = () => {
             type="text"
             id="username"
             placeholder="Enter Email "
-            {...register("userName")}
+            {...register("username")}
           />
-          {errors.userName ? <p>{errors.userName.message}</p> : ""}
+          {errors.username ? <p>{errors.username.message}</p> : ""}
         </div>
         <div className="form-controller">
           <TextField

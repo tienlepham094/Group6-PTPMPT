@@ -11,22 +11,18 @@ import InstagramIcon from "../../assets/images/Instagram_icon.png";
 
 type RegisterFormsInputs = {
   email: string;
-  userName: string;
+  username: string;
   password: string;
   confirmPassword: string;
-  role: "ADMIN" | "USER";
 };
 
 const validationSchema = Yup.object().shape({
   email: Yup.string().required("Email is required"),
-  userName: Yup.string().required("Username is required"),
+  username: Yup.string().required("Username is required"),
   password: Yup.string().required("Password is required"),
   confirmPassword: Yup.string()
     .oneOf([Yup.ref("password")], "Passwords must match")
     .required("Please confirm your password"),
-  role: Yup.mixed<"ADMIN" | "USER">()
-    .oneOf(["ADMIN", "USER"], "Role is required")
-    .required("Role is required"),
 });
 
 const Register = () => {
@@ -40,7 +36,9 @@ const Register = () => {
   });
 
   const handleRegister = (form: RegisterFormsInputs) => {
-    registerUser(form.email, form.userName, form.password, form.role);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { confirmPassword, ...registerParams } = form; // Exclude confirmPassword
+    registerUser(registerParams); // Pass the remaining fields
   };
 
   return (
@@ -63,9 +61,9 @@ const Register = () => {
             type="text"
             id="username"
             placeholder="Username"
-            {...register("userName")}
+            {...register("username")}
           />
-          {errors.userName && <p>{errors.userName.message}</p>}
+          {errors.username && <p>{errors.username.message}</p>}
         </div>
         <div className="form-controller">
           <TextField
@@ -84,14 +82,6 @@ const Register = () => {
             {...register("confirmPassword")}
           />
           {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
-        </div>
-        <div className="form-controller">
-          <select id="role" {...register("role")} className="custom-select">
-            <option value="">Select Role</option>
-            <option value="ADMIN">Admin</option>
-            <option value="USER">User</option>
-          </select>
-          {errors.role && <p>{errors.role.message}</p>}
         </div>
         <div className="form-controller">
           <Button type="submit" label="Sign up" className="login-button" />
