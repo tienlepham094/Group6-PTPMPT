@@ -1,6 +1,6 @@
 import axiosClient from "../axiosClient ";
 
-const authApi = {
+const adminApi = {
   getAllResources: async () => {
     const response = await axiosClient.get("app/admin/get/available-resources");
 
@@ -33,4 +33,4 @@ const authApi = {
   },
 };
 
-export default authApi;
+export default adminApi;

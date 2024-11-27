@@ -3,7 +3,7 @@ import axiosClient from "../axiosClient ";
 
 const requestApi = {
   create: async (data: RequestParams) => {
-    const response = await axiosClient.post(`/app/user/login`, data);
+    const response = await axiosClient.post(`/app/user/create-request`, data);
 
     return response;
   },

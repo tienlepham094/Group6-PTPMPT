@@ -38,6 +38,7 @@ export const UserProvider = ({ children }: Props) => {
       setToken(token);
     }
     setIsReady(true);
+    console.log(user);
   }, []);
 
   const handleLogin = (
@@ -46,24 +47,29 @@ export const UserProvider = ({ children }: Props) => {
   ) => {
     authApi
       .login(params)
-      .then(async (res) => {
-        const token = res.headers["authorization"];
-        if (params.rememberMe) {
-          window.localStorage.setItem("storageTokenKeyName", token);
-        }
+      .then(async () => {
+        // Generate a dummy token
+        const token = generateDummyToken(params.username);
+
+        // Save token and user to localStorage
+        // if (params.rememberMe) {
+        localStorage.setItem("token", token);
+        // }
         const userData = {
           username: params.username,
-          password: params.password,
+          password: params.password, // Note: Avoid storing plain passwords in production!
         };
         setUser(userData);
         setToken(token);
         localStorage.setItem("user", JSON.stringify(userData));
+
         navigate("/dashboard");
       })
       .catch((err) => {
         if (errorCallback) errorCallback(err);
       });
   };
+
   const handleRegister = (
     params: RegisterParams,
     errorCallback?: ErrCallbackType
@@ -98,6 +104,16 @@ export const UserProvider = ({ children }: Props) => {
     setLoading,
     login: handleLogin,
     logout: handleLogout,
+  };
+  const generateDummyToken = (username: string): string => {
+    const payload = {
+      username: username,
+      issuedAt: new Date().toISOString(),
+      expiry: new Date(Date.now() + 3600 * 1000).toISOString(), // 1-hour expiry
+    };
+
+    // Convert payload to a Base64-encoded string
+    return btoa(JSON.stringify(payload));
   };
 
   return (
