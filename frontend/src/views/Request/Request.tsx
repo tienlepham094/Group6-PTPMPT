@@ -25,7 +25,7 @@ export const Request = () => {
   const fetchResources = async () => {
     try {
       const request = await adminApi.getAllRequest();
-      setData(request as RequestParams);
+      setData(request);
     } catch (error) {
       console.error("Error fetching request:", error);
     }
