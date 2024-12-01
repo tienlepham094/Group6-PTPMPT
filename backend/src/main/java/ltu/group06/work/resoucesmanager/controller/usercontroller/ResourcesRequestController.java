@@ -145,13 +145,11 @@ public class ResourcesRequestController {
 
     /**
      * API để lấy danh sách các yêu cầu của một user
-     *
-     * @param requestBody JSON body chứa user_id
+     * @param userId ID của user
      * @return Danh sách yêu cầu dưới dạng JSON
      */
-    @PostMapping("/user/requests")
-    public ResponseEntity<Map<String, Object>> getAllUserRequests(@RequestBody Map<String, Integer> requestBody) {
-        Integer userId = requestBody.get("user_id");
+    @GetMapping("/user/requests")
+    public ResponseEntity<Map<String, Object>> getAllUserRequests(@RequestParam Integer userId) {
 
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -173,8 +171,8 @@ public class ResourcesRequestController {
             requestMap.put("requestId", request.getRequestId());
             requestMap.put("resourceType", request.getResourceType().name());
             requestMap.put("quantity", request.getQuantity());
-            requestMap.put("startTime", request.getStartTime().toString());
-            requestMap.put("end_time", request.getEnd_time().toString());
+            requestMap.put("start_time", request.getStartTime() != null ? request.getStartTime().toString() : "The time has not yet been set");
+            requestMap.put("end_time", request.getEnd_time() != null ? request.getEnd_time().toString() : "The time has not yet been set");
             requestMap.put("statusRequest", request.getStatusRequest().name());
             requestMap.put("reason", request.getReason());
             requestMap.put("createdAt", request.getCreatedAt().toString());
