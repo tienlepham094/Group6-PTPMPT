@@ -1,3 +1,4 @@
+import { RequestParams } from "../../context/types";
 import axiosClient from "../axiosClient ";
 
 const adminApi = {
