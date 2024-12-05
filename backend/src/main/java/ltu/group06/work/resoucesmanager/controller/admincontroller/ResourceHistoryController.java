@@ -56,12 +56,11 @@ public class ResourceHistoryController {
 
     /**
      * Xem lịch sử sử dụng tài nguyên của các user
-      * @param requestBody
+     * @param userId
      * @return
      */
-    @PostMapping("/resource/usage/history")
-    public ResponseEntity<?> getResourceUsageHistory(@RequestBody Map<String, Integer> requestBody) {
-        int userId = requestBody.get("userId");
+    @GetMapping("/resource/usage/history")
+    public ResponseEntity<?> getResourceUsageHistory(@RequestParam int userId) {
 
         if (!isAdmin(userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admin can perform this action.");

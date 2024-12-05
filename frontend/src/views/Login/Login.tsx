@@ -10,6 +10,9 @@ import FacebookIcon from "../../assets/images/Facebook_icon.png";
 import InstagramIcon from "../../assets/images/Instagram_icon.png";
 import { LoginParams } from "../../context/types";
 
+import { useState } from "react";
+
+
 const validation = Yup.object().shape({
   username: Yup.string().required("Username is required"),
   password: Yup.string().required("Password is required"),
@@ -26,6 +29,9 @@ const Login = () => {
   const handleLogin = (form: LoginParams) => {
     login(form);
   };
+
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="card-container">
       <div className="title">
@@ -42,15 +48,26 @@ const Login = () => {
           />
           {errors.username ? <p>{errors.username.message}</p> : ""}
         </div>
+        
         <div className="form-controller">
-          <TextField
-            type="password"
-            id="password"
-            placeholder="Password"
-            {...register("password")}
-          />
+          <div className="password-field-container">
+            <TextField
+              type={showPassword ? "text" : "password"}
+              id="password"
+              placeholder="Password"
+              {...register("password")}
+            />
+            <button
+              type="button"
+              className="password-toggle"
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? "👁️" : "👁️‍🗨️"}
+            </button>
+          </div>
           {errors.password ? <p>{errors.password.message}</p> : ""}
         </div>
+
         <div style={{ alignSelf: "flex-start" }}>
           <a href="#">Having trouble in sign in ?</a>
         </div>

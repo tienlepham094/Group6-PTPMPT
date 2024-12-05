@@ -15,7 +15,7 @@ const TableRows = <T,>({ data, columns }: TableRowsProps<T>): JSX.Element => {
   const rows = data?.map((row, index) => {
     return (
       <tr key={`row-${index}`}>
-        {columns.map((column, index2) => {
+        {columns?.map((column, index2) => {
           const cellContent =
             column.render && column.key === "actions"
               ? column.render(row)
