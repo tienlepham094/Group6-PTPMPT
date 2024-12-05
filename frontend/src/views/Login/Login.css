@@ -1,6 +1,7 @@
 .title {
   padding: 10px;
 }
+
 .card-container {
   background-color: #ffffff;
   display: flex;
@@ -44,4 +45,30 @@
   background: none;
   cursor: pointer;
   padding: 0;
+}
+
+.icon-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.icon-button {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 1rem;
+  border: 1px solid #000;
+  border-radius: 5px;
+  background-color: #fff;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.icon-button img {
+  margin-right: 0.5rem;
+}
+
+.icon-button:hover {
+  background-color: #f0f0f0;
 }
