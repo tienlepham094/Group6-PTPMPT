@@ -11,11 +11,15 @@ Member name
 - Message khi commit VD:"[FE/BE][Tên Project(PTPTPT)]taskName"
 - Tạo nhánh tên cũng tương tự VD: fe/projectName/sprint-1 hoặc be/projectName/sprint-1
 
-## Run docker mysql
-
+## Run docker
+Cách chạy docker cho ứng dụng
+- Thay trong file ./frontend/vite.config.ts target: "http://localhost:8080" -> target: "http://backend-app:8080"
 ```
 docker compose up -d
 docker exec -it container_id /bin/bash
-mysql -u admin -p
+```
+- Khi update lại code sử dụng lệnh
+```
+docker-compose up -d --build
 ```
 
