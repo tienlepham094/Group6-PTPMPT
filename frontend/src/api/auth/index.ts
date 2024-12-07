@@ -3,6 +3,7 @@ import axiosClient from "../axiosClient ";
 
 const authApi = {
   login: async (data: LoginParams) => {
+    console.log(data);
     const response = await axiosClient.post("/app/login", data);
 
     return response;

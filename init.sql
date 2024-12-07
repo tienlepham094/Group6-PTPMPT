@@ -90,8 +90,7 @@ VALUES
 INSERT INTO db.requests (user_id, resource_type, quantity, start_time, end_time, status_request, reason)
 VALUES 
     (1, 'GPU', 2, '2024-10-10 09:00:00', '2024-10-11 09:00:00', 'pending', 'Need GPU for machine learning'),
-    (2, 'CPU', 4, '2024-10-12 10:00:00', '2024-10-13 10:00:00', 'approved', 'High-performance computing'),
-    (1, 'RAM', 16, '2024-10-14 08:00:00', '2024-10-15 08:00:00', 'rejected', 'Memory-intensive task');
+    (2, 'CPU', 4, '2024-10-12 10:00:00', '2024-10-13 10:00:00', 'approved', 'High-performance computing');
 
 -- Insert data into approvals table
 INSERT INTO db.approvals (request_id, admin_id, approval_status, comments)

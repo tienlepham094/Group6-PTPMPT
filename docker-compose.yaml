@@ -1,6 +1,6 @@
-version: "1.1"
+version: "3.7"
 services:
-  db:
+  mysqldb:
     image: mysql:8.1.0
     restart: always
     environment:
@@ -11,12 +11,43 @@ services:
     ports:
       # <Port exposed> : <MySQL Port running inside container>
       - "3306:3306"
-    expose:
-      # Opens port 3306 on the container
-      - "3306"
     volumes:
       - ./db-data:/var/lib/mysql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-# Names our volume
-volumes:
-  db-data:
+
+  # backend
+  backend-app:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: springboot_app
+    volumes:
+      - ./log:/log
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - mysqldb
+    environment:
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT}
+      SPRING_JPA_HIBERNATE_DDL_AUTO: ${SPRING_JPA_HIBERNATE_DDL_AUTO}
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: ${LOGGING_LEVEL_ORG_HIBERNATE_SQL}
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USERNAME: ${SMTP_USERNAME}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+      EMAIL_FROM: ${EMAIL_FROM}
+
+  # frontend
+  react-app:
+    container_name: react-frontend
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    command: npm run dev -- --host
