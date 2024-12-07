@@ -5,6 +5,7 @@ Member name
 - Nguyen Xuan Son 20207648
 - Nguyen Duy Thai 20207630
 - Le Pham Thuy Tien 20207633
+
   Quy tắc:
 - Mỗi lần commit không được quá 10 files
 - Message khi commit VD:"[FE/BE][Tên Project(PTPTPT)]taskName"
@@ -17,3 +18,4 @@ docker compose up -d
 docker exec -it container_id /bin/bash
 mysql -u admin -p
 ```
+
