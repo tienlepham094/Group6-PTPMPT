@@ -1,0 +1,11 @@
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.info-container {
+  display: flex;
+  flex-direction: row;
+  gap: 50px;
+  padding-top: 10px;
+}

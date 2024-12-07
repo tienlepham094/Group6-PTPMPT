@@ -1,0 +1,81 @@
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+.navbar-right {
+  flex: 4;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+}
+
+.navbar-left .navbar-brand {
+  font-size: 18px;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+  padding: 10px;
+}
+
+.navbar-auth-buttons {
+  display: flex;
+  align-items: center;
+}
+
+.navbar-auth-buttons .auth-button {
+  font-weight: bold;
+  padding: 5px;
+  margin: 0 5px;
+  text-decoration: none;
+  border-radius: 5px;
+  height: 100%;
+  width: 100px;
+}
+
+.sign-in-button {
+  background-color: #ffffff;
+  color: #000;
+  border: 2px solid #000000;
+}
+
+.sign-up-button {
+  background-color: #ffa500;
+  border: 2px solid #000000;
+  color: #000000;
+}
+
+.sign-in-button:hover,
+.sign-up-button:hover {
+  opacity: 0.8;
+}
+
+.navbar-auth-buttons .MuiSvgIcon-root {
+  margin-right: 5px; /* Add some space between the icon and buttons */
+}
+
+.navbar-user {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+.page-name {
+  padding: 10px;
+  font-size: large;
+}

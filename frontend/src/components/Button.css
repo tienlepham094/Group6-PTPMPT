@@ -1,0 +1,11 @@
+.custom-button {
+  background: #fec887;
+  color: #000;
+  border-radius: 10px;
+  border: 2px solid black;
+}
+
+.custom-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}

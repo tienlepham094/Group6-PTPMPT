@@ -1,0 +1,11 @@
+.custom-textField {
+  min-height: 30px;
+  border: 2px solid black;
+  border-radius: 10px;
+  width: calc(100% - 0.5rem); /* Corrected calculation */
+  font-family: "Jaro", sans-serif;
+  color: blue;
+  padding-left: 0.5rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}

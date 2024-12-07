@@ -1,0 +1,28 @@
+.table-container {
+  background-color: #F5F5F1;  /* Màu trắng ngà nhẹ */
+  border-radius: 8px;
+  padding: 16px;
+  margin: 16px 0;
+}
+
+.custom-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #FAFAF7;  /* Màu nền cho table */
+}
+
+.custom-table th {
+  background-color: #F5F5F1;  /* Màu nền cho header */
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #E8E8E3;
+}
+
+.custom-table td {
+  padding: 12px;
+  border-bottom: 1px solid #E8E8E3;
+}
+
+.custom-table tr:hover {
+  background-color: #F8F8F5;  /* Màu khi hover */
+} 
