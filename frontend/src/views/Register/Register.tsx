@@ -8,6 +8,7 @@ import "./Register.css";
 import AppleIcon from "../../assets/images/Apple_icon.png";
 import FacebookIcon from "../../assets/images/Facebook_icon.png";
 import InstagramIcon from "../../assets/images/Instagram_icon.png";
+import { toast } from 'react-toastify';
 
 type RegisterFormsInputs = {
   email: string;
@@ -35,10 +36,30 @@ const Register = () => {
     resolver: yupResolver(validationSchema),
   });
 
-  const handleRegister = (form: RegisterFormsInputs) => {
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const { confirmPassword, ...registerParams } = form; // Exclude confirmPassword
-    registerUser(registerParams); // Pass the remaining fields
+  const handleRegister = async (form: RegisterFormsInputs) => {
+    try {
+      const { confirmPassword, ...registerParams } = form;
+      await registerUser(registerParams);
+      toast.success('Đăng ký tài khoản thành công!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+    } catch (error) {
+      toast.error('Đăng ký thất bại. Vui lòng thử lại!', {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: "light",
+      });
+    }
   };
 
   return (
