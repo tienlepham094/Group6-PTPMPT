@@ -18,7 +18,7 @@ Cách chạy docker cho ứng dụng
 docker compose up -d
 docker exec -it container_id /bin/bash
 ```
-- Khi update lại code sử dụng lệnh
+- Khi update lại code sử dụng lệnh. Update code backend cần mvn package lại
 ```
 docker-compose up -d --build
 ```
