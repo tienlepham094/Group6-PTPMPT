@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/app/admin")
 @CrossOrigin(origins = "*")
-public class GetInformationController {
+public class GetInfoResourcesController {
     @Autowired
     private ResourceService resourceService;
 

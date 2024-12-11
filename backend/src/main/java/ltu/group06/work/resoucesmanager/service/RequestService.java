@@ -30,7 +30,31 @@ public class RequestService {
         return requestRepository.save(request);
     }
 
+    public Optional<Request> updateRequest(Integer requestId, Request requestDetails) {
+        Optional<Request> existingRequest = requestRepository.findById(requestId);
+        if (existingRequest.isPresent()) {
+            Request requestToUpdate = existingRequest.get();
+            requestToUpdate.setQuantity(requestDetails.getQuantity());
+            requestToUpdate.setReason(requestDetails.getReason());
+            return Optional.of(requestRepository.save(requestToUpdate));
+        }
+        return Optional.empty();
+    }
+
+    public List<Request> getAllRequestsByUserId(Integer userId) {
+        return requestRepository.findByUser_UserId(userId);
+    }
+
+    public void deleteRequest(Integer requestId) {
+        requestRepository.deleteById(requestId);
+    }
+
     public List<Request> getAllIssueRequestByUserId(int userId) {
         return requestRepository.findByUser_UserId(userId);
     }
+
+    public Request save(Request request) {
+        return requestRepository.save(request);
+    }
+
 }
