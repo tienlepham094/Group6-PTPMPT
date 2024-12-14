@@ -86,3 +86,6 @@ curl --location --request PUT 'http://localhost:8080/app/admin/resource/update' 
     "quantity": -1,
     "statusResources": "available"
 }'
+
+Theo dõi chỉ số cpu, ram ở server (hiện tại đang là máy tính cá nhân)
+curl --location --request GET 'http://localhost:8080/monitor/cpu-ram'
