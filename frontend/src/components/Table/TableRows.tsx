@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { ColumnDefinitionType } from "./ColumnDefinitionType";
-
+import "./TableRows.css";
 type TableRowsProps<T> = {
   data: Array<T> | undefined;
   columns: Array<ColumnDefinitionType<T>>;

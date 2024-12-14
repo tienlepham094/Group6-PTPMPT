@@ -21,11 +21,11 @@ export const CustomeDialog = ({
   open,
 }: CustomeDialogParams) => {
   const [formData, setFormData] = useState<RequestParams>({
-    resourceType: RESOURCETYPE.GPU,
+    resource_type: RESOURCETYPE.GPU,
     quantity: 1,
     reason: "",
     timeUsage: "",
-    userId: 0,
+    user_id: 0,
   });
 
   const handleChange = (key: keyof RequestParams, value: unknown) => {
@@ -45,9 +45,9 @@ export const CustomeDialog = ({
           fullWidth
           margin="normal"
           label="Resource Type"
-          value={formData.resourceType}
+          value={formData.resource_type}
           onChange={(e) =>
-            handleChange("resourceType", e.target.value as RESOURCETYPE)
+            handleChange("resource_type", e.target.value as RESOURCETYPE)
           }
         >
           {Object.values(RESOURCETYPE).map((type) => (
@@ -83,8 +83,8 @@ export const CustomeDialog = ({
           margin="normal"
           label="User ID"
           type="number"
-          value={formData.userId}
-          onChange={(e) => handleChange("userId", parseInt(e.target.value))}
+          value={formData.user_id}
+          onChange={(e) => handleChange("user_id", parseInt(e.target.value))}
         />
       </DialogContent>
       <DialogActions>

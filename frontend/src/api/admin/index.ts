@@ -5,32 +5,32 @@ const adminApi = {
   getAllResources: async () => {
     const response = await axiosClient.get("app/admin/get/available-resources");
 
-    return response;
+    return response.data;
   },
   getAllRequest: async () => {
     const response = await axiosClient.get("app/admin/get/requests-issue");
 
-    return response;
+    return response.data;
   },
   approve: async () => {
     const response = await axiosClient.get("app/admin/request/approve");
 
-    return response;
+    return response.data;
   },
   addResource: async () => {
     const response = await axiosClient.get("app/admin/resource/add");
 
-    return response;
+    return response.data;
   },
   updateResource: async () => {
     const response = await axiosClient.get("app/admin/resource/update");
 
-    return response;
+    return response.data;
   },
   deleteResource: async () => {
     const response = await axiosClient.get("app/admin/resource/delete");
 
-    return response;
+    return response.data;
   },
 };
 

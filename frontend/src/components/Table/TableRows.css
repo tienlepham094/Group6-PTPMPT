@@ -1,0 +1,30 @@
+.custom-table td {
+  padding: 14px; /* Cell padding */
+  border-bottom: 1px solid #eee; /* Light border for separation */
+  font-size: 14px; /* Comfortable font size */
+  text-align: left; /* Align text */
+}
+
+.custom-table tr:nth-child(even) {
+  background-color: #f9f9fc; /* Alternating row background */
+}
+
+.custom-table tr:hover {
+  background-color: #e6f7ff; /* Highlight row on hover */
+  transition: background-color 0.3s ease; /* Smooth hover transition */
+}
+
+/* Styling for actions column */
+.action-cell button {
+  background-color: #007bff; /* Blue button */
+  color: #fff; /* White text */
+  border: none; /* Remove border */
+  border-radius: 4px; /* Rounded edges */
+  padding: 6px 12px; /* Button padding */
+  cursor: pointer; /* Pointer on hover */
+  font-size: 13px; /* Smaller font size */
+}
+
+.action-cell button:hover {
+  background-color: #0056b3; /* Darker blue on hover */
+}
