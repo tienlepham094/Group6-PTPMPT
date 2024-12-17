@@ -108,16 +108,16 @@ const columns: ColumnDefinitionType<Cat>[] = [
 
 // Chart Config
 const Dashboard = () => {
-  const [chartData,setChartData]=useState<Request>()
-  useEffect(()=>{
-    try {
-      const res = await requestApi.create()
-setChartData(res)
-    } catch (error) {
+//   const [chartData,setChartData]=useState<Request>()
+//   useEffect(()=>{
+//     try {
+//       const res = await requestApi.create()
+// setChartData(res)
+//     } catch (error) {
       
-    }
-// End Chart Config
-  },[])
+//     }
+// // End Chart Config
+//   },[])
   return (
     <div className="dashboard-container">
       <div className="info-container">
