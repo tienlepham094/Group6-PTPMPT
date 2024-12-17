@@ -3,6 +3,9 @@ import CardInfo from "../../components/CardInfo";
 import "./Dashboard.css";
 import { ColumnDefinitionType } from "../../components/Table/ColumnDefinitionType";
 import CustomeTable from "../../components/Table/CustomeTable";
+import { useEffect, useState } from "react";
+import requestApi from "../../api/request";
+import { Request } from "../../api/types";
 const cardProps = () => [
   {
     title: "CPU",
@@ -103,7 +106,18 @@ const columns: ColumnDefinitionType<Cat>[] = [
   },
 ];
 
+// Chart Config
 const Dashboard = () => {
+  const [chartData,setChartData]=useState<Request>()
+  useEffect(()=>{
+    try {
+      const res = await requestApi.create()
+setChartData(res)
+    } catch (error) {
+      
+    }
+// End Chart Config
+  },[])
   return (
     <div className="dashboard-container">
       <div className="info-container">
