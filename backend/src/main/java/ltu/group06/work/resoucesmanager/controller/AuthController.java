@@ -147,5 +147,24 @@ public class AuthController {
             return ResponseEntity.badRequest().body(result);
         }
     }
+    @GetMapping("/user-id")
+    public ResponseEntity<String> getCurrentUserId() {
+        // Retrieve the currently authenticated user
+        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
+        if (principal instanceof UserDetails) {
+            String username = ((UserDetails) principal).getUsername();
+
+            // Query user by username
+            Optional<User> userOptional = userService.findByUsername(username);
+            if (userOptional.isPresent()) {
+                int userId = userOptional.get().getUserId();
+                return ResponseEntity.ok("User ID: " + userId);
+            } else {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+            }
+        } else {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated.");
+        }
+    }
 }

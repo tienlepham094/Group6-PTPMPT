@@ -45,7 +45,7 @@ public class ResourcesRequestController {
     /**
      * Tạo yêu cầu (issue) sử dụng tài nguyên
      *
-     * @param là 1 dto định sẵn
+     * @param
      * @return
      */
     @PostMapping("user/create-request")

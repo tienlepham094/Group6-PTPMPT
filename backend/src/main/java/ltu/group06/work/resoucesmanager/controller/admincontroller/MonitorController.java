@@ -18,13 +18,15 @@ public class MonitorController {
         this.resourceMonitorService = resourceMonitorService;
     }
 
-    @GetMapping("/cpu-ram")
+    @GetMapping("/metrics")
     public Map<String, Object> getCpuAndRamUsage() {
-        Map<String, Object> response = new HashMap<>();
-        response.put("cpu usage", resourceMonitorService.getCpuUsage());
-        response.put("total memory", resourceMonitorService.getTotalMemory());
-        response.put("percent of used memory", resourceMonitorService.getMemoryUsagePercent());
-        response.put("metric", resourceMonitorService.getCpuMetrics());
-        return response;
+        Map<String, Object> metrics = new HashMap<>();
+
+        // Collect all metrics
+        metrics.put("cpuMetrics", resourceMonitorService.getCpuMetrics());
+        metrics.put("memoryMetrics", resourceMonitorService.getMemoryMetrics());
+        metrics.put("diskMetrics", resourceMonitorService.getDiskMetrics());
+        metrics.put("networkTraffic", resourceMonitorService.getNetworkTraffic());
+        return metrics;
     }
 }
