@@ -53,45 +53,58 @@ export const UserProvider = ({ children }: Props) => {
     console.log(user);
   }, []);
 
-  const handleLogin = (
+  const handleLogin = async (
     params: LoginParams,
     errorCallback?: ErrCallbackType
   ) => {
-    authApi
-      .login(params)
-      .then(async () => {
-        // Generate a dummy token
-        const token = generateDummyToken(params.username);
+    try {
+      const res = await authApi.login(params);
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      setMessage("Đăng nhập thành công!");
+      setSeverity("success");
+      setOpenAlert(true);
+      navigate("/dashboard");
+    } catch (error) {
+      console.log(error);
+    }
+    // authApi
+    //   .login(params)
+    //   .then(async () => {
+    //     // Generate a dummy token
+    //     const token = generateDummyToken(params.username);
 
-        // Save token and user to localStorage
-        // if (params.rememberMe) {
-        localStorage.setItem("token", token);
-        // }
-        const userData = {
-          id: params.id,
-          username: params.username,
-          password: params.password, // Note: Avoid storing plain passwords in production!
-        };
-        setUser(userData);
-        setToken(token);
-        console.log(userData);
+    //     // Save token and user to localStorage
+    //     // if (params.rememberMe) {
+    //     localStorage.setItem("token", token);
+    //     // }
+    //     const userData = {
+    //       id: params.id,
+    //       username: params.username,
+    //       password: params.password, // Note: Avoid storing plain passwords in production!
+    //       // role: params.role,
+    //     };
+    //     console.log(userData);
 
-        localStorage.setItem("user", JSON.stringify(userData));
+    //     setUser(userData);
+    //     setToken(token);
 
-        setMessage("Đăng nhập thành công!");
-        setSeverity("success");
-        setOpenAlert(true);
-        console.log("first");
+    //     localStorage.setItem("user", JSON.stringify(userData));
 
-        navigate("/dashboard");
-      })
-      .catch((err) => {
-        if (errorCallback) {
-          errorCallback(err);
-          setMessage("Đăng nhập thất bại!");
-          setOpenAlert(true);
-        }
-      });
+    //     setMessage("Đăng nhập thành công!");
+    //     setSeverity("success");
+    //     setOpenAlert(true);
+    //     console.log("first");
+
+    //     navigate("/dashboard");
+    //   })
+    //   .catch((err) => {
+    //     if (errorCallback) {
+    //       errorCallback(err);
+    //       setMessage("Đăng nhập thất bại!");
+    //       setOpenAlert(true);
+    //     }
+    //   });
   };
 
   const handleRegister = (

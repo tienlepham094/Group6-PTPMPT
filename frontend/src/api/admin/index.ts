@@ -12,11 +12,43 @@ const adminApi = {
 
     return response.data;
   },
-  approve: async () => {
-    const response = await axiosClient.get("app/admin/request/approve");
+  editRequest: async (
+    requestId: number,
+    adminId?: number,
+    data?: RequestParams
+  ) => {
+    const response = await axiosClient.put(
+      `app/admin//edit/requests/${requestId}?adminId=${adminId}`,
+      data
+    );
 
     return response.data;
   },
+  deleteRequest: async (id: number, adminId?: number) => {
+    const response = await axiosClient.delete(
+      `app/admin/delete/requests/${id}?adminId=${adminId}`
+    );
+    return response.data;
+  },
+
+  approve: async (
+    requestId: number,
+    action: "approve" | "reject" | "queue",
+    comments?: string
+  ) => {
+    try {
+      const response = await axiosClient.post("app/admin/request/approve", {
+        requestId,
+        action,
+        comments,
+      });
+      return response.data;
+    } catch (error) {
+      console.error("Error approving request:", error);
+      throw error;
+    }
+  },
+
   addResource: async () => {
     const response = await axiosClient.get("app/admin/resource/add");
 
@@ -29,6 +61,16 @@ const adminApi = {
   },
   deleteResource: async () => {
     const response = await axiosClient.get("app/admin/resource/delete");
+
+    return response.data;
+  },
+  getAllApproval: async () => {
+    const response = await axiosClient.get("app/admin/approvals");
+
+    return response.data;
+  },
+  getAllAccount: async () => {
+    const response = await axiosClient.get("app/admin/user_management/getall");
 
     return response.data;
   },

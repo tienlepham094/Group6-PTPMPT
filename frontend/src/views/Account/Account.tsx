@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import adminApi from "../../api/admin";
 import { Button } from "@mui/material";
 import { RegisterParams } from "../../context/types";
 import { EditAccount } from "./EditAccount";
+import axios from "axios";
+import adminApi from "../../api/admin";
 
 export const Account = () => {
   const [data, setData] = useState<RegisterParams[]>([]);
@@ -16,42 +17,18 @@ export const Account = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-
-  // const fields = [
-  //   {
-  //     name: "resource_type",
-  //     type: "select",
-  //     label: "Resource Type",
-  //     options: Object.values(RESOURCETYPE),
-  //   },
-  //   { name: "quantity", type: "number", label: "Quantity" },
-  //   { name: "reason", type: "text", label: "Reason" },
-  //   { name: "timeUsage", type: "text", label: "Time Usage" },
-  //   { name: "user_id", type: "number", label: "User ID" },
-  //   { name: "start_time", type: "date", label: "Start Time" },
-  //   { name: "end_time", type: "date", label: "End Time" },
-  //   {
-  //     name: "status_account",
-  //     type: "select",
-  //     label: "Status",
-  //     options: ["Pending", "Approved", "Rejected"],
-  //   },
-  // ];
-
   const fetchAllAccounts = async () => {
-    // try {
-    //   const accountData = await adminApi.getAllAccount();
-    //   const accounts = (accountData.accounts || []).map(
-    //     (account: RegisterParams) => ({
-    //       ...account,
-    //       id: account.account_id, // Ensure DataGrid has unique `id`
-    //     })
-    //   );
-    //   setData(accounts);
-    //   setFilteredData(accounts);
-    // } catch (error) {
-    //   console.error("Error fetching accounts:", error);
-    // }
+    try {
+      const accountData = await adminApi.getAllAccount();
+      const accounts = (accountData || []).map((account: RegisterParams) => ({
+        ...account,
+        id: account.id, // Ensure DataGrid has unique `id`
+      }));
+      setData(accounts);
+      setFilteredData(accounts);
+    } catch (error) {
+      console.error("Error fetching accounts:", error);
+    }
   };
 
   useEffect(() => {
@@ -76,16 +53,6 @@ export const Account = () => {
   const handleEdit = async (updatedAccount: RegisterParams) => {
     try {
       await accountApi.edit(updatedAccount.account_id!, updatedAccount);
-      setData((prev) =>
-        prev.map((item) =>
-          item.account_id === updatedAccount.account_id ? updatedAccount : item
-        )
-      );
-      setFilteredData((prev) =>
-        prev.map((item) =>
-          item.account_id === updatedAccount.account_id ? updatedAccount : item
-        )
-      );
       setDialogOpen(false);
     } catch (error) {
       console.error("Error updating account:", error);
@@ -160,7 +127,7 @@ export const Account = () => {
         }}
         sx={{ marginBottom: 10 }}
       >
-        Thêm yêu cầu
+        Thêm tài khoản
       </Button>
       <Paper sx={{ height: 400, width: "100%" }}>
         <DataGrid

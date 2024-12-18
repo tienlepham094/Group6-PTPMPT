@@ -72,7 +72,22 @@ export const ResourceDialog = ({
   const handleSubmit = () => {
     if (validateForm()) {
       onSubmit(formData); // Send data to parent component
+      setFormData({
+        userId: data?.userId || user?.id || 0,
+        quantity: 0,
+        resourceType: RESOURCETYPE.CPU,
+        statusResources: RESOURCESTATUS.AVAILABLE,
+      });
     }
+  };
+  const handleClose = () => {
+    setFormData({
+      userId: data?.userId || user?.id || 0,
+      quantity: 0,
+      resourceType: RESOURCETYPE.CPU,
+      statusResources: RESOURCESTATUS.AVAILABLE,
+    });
+    onClose();
   };
 
   return (
@@ -84,21 +99,25 @@ export const ResourceDialog = ({
       </DialogTitle>
       <DialogContent>
         <Box component="form" display="flex" flexDirection="column" gap={3}>
-          <TextField
-            fullWidth
-            name="userId"
-            type="number"
-            label="Id người dùng"
-            value={formData?.userId || ""}
-            onChange={(e) => {
-              const numericValue = e.target.value.replace(/[^0-9]/g, "");
-              setFormData((prev) => ({
-                ...prev,
-                userId: Number(numericValue),
-              }));
-            }}
-            // disabled
-          />
+          {user?.role === "admin" ? (
+            <TextField
+              fullWidth
+              name="userId"
+              type="number"
+              label="Id người dùng"
+              value={formData?.userId || ""}
+              onChange={(e) => {
+                const numericValue = e.target.value.replace(/[^0-9]/g, "");
+                setFormData((prev) => ({
+                  ...prev,
+                  userId: Number(numericValue),
+                }));
+              }}
+              // disabled
+            />
+          ) : (
+            ""
+          )}
           <FormControl fullWidth>
             <InputLabel id="resource-type-label">Loại tài nguyên</InputLabel>
             <Select
@@ -148,7 +167,7 @@ export const ResourceDialog = ({
         </Box>
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={handleClose} color="secondary">
           Hủy
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">

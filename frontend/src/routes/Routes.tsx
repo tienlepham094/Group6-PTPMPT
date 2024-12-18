@@ -11,6 +11,7 @@ import { Request } from "../views/Request/Request";
 import { Resource } from "../views/Resource/Resource";
 import { Account } from "../views/Account/Account";
 import { UserProvider } from "../context/useAuth"; // Import UserProvider
+import { Approval } from "../views/Approval/Approval";
 
 export const router = createBrowserRouter([
   {
@@ -67,6 +68,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Request />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "approval",
+        element: (
+          <ProtectedRoute>
+            <Approval />
           </ProtectedRoute>
         ),
       },

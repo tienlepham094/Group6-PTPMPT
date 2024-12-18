@@ -1,3 +1,34 @@
-.about-button {
-  background-color: brown;
+.about-container {
+  background-color: #f9f9f9;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  text-align: center;
+  max-width: 500px;
+  margin: 20px auto;
+}
+
+.about-title {
+  font-weight: bold;
+  color: #3f51b5;
+  margin-bottom: 10px;
+}
+
+.about-subtitle {
+  font-style: italic;
+  color: #555;
+  margin-bottom: 5px;
+}
+
+.about-divider {
+  margin: 10px 0;
+  background-color: #3f51b5;
+  height: 2px;
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.about-members {
+  color: #333;
 }

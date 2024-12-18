@@ -12,6 +12,7 @@ export const Resource = () => {
   const [editData, setEditData] = useState<RegisterParams | undefined>(
     undefined
   );
+
   // const [searchText, setSearchText] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -40,18 +41,9 @@ export const Resource = () => {
 
   const handleAdd = async (newResource: ResourceParams) => {
     try {
-      console.log("first");
-
       const response = await resourceApi.create(newResource);
-      console.log(response);
-
-      // const addedResource = {
-      //   id: response.resource.id!,
-      //   ...newResource,
-      // };
-      // setData((prev) => [...prev, addedResource]);
-      // setFilteredData((prev) => [...prev, addedResource]);
       setDialogOpen(false);
+      setEditData(undefined);
     } catch (error) {
       console.error("Error creating resource:", error);
     }
@@ -59,6 +51,9 @@ export const Resource = () => {
 
   const handleEdit = async (updatedResource: ResourceParams) => {
     try {
+      const response = await resourceApi.edit(updatedResource);
+      setDialogOpen(false);
+      setEditData(undefined);
     } catch (error) {
       console.error("Error updating resource:", error);
     }
@@ -72,6 +67,7 @@ export const Resource = () => {
         // setFilteredData((prev) =>
         //   prev.filter((item) => item.resource_id !== id)
         // );
+        setEditData(undefined);
       } catch (error) {
         console.error("Error deleting resource:", error);
       }

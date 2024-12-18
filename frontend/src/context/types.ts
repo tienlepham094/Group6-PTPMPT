@@ -1,4 +1,4 @@
-import { RESOURCESTATUS, RESOURCETYPE } from "../api/enum";
+import { APPROVALSTATUS, RESOURCESTATUS, RESOURCETYPE } from "../api/enum";
 
 export type ErrCallbackType = (err: { [key: string]: string }) => void;
 
@@ -17,19 +17,20 @@ export type UserDataType = {
   id?: number;
   username: string;
   password: string;
+  role?: "admin" | "user";
 };
 export type RequestParams = {
-  resource_type: RESOURCETYPE;
+  resourceType: RESOURCETYPE;
   quantity: number;
   reason: string;
-  timeUsage: string;
-  user_id: number;
+  timeUsage: number;
+  userId: number;
   created_at?: string; // Optional
   end_time?: string; // Optional
-  request_id?: string; // Optional
+  requestId?: number; // Optional
   start_time?: string; // Optional
-  status_request?: string; // Optional
-  updated_at?: string; // Optional
+  statusRequest?: string; // Optional
+  updatedAt?: string; // Optional
 };
 
 export type ResourceParams = {
@@ -41,6 +42,14 @@ export type ResourceParams = {
   resourceType: RESOURCETYPE;
   quantity: number;
   statusResources: RESOURCESTATUS;
+};
+export type ApprovalParams = {
+  approvalId: string;
+  request_id: string;
+  admin_id: string;
+  comments: string;
+  approvedAt: string;
+  approvalStatus: APPROVALSTATUS;
 };
 
 export type UserContextType = {
