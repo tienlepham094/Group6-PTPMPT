@@ -28,4 +28,6 @@ const requestApi = {
   //   },
 };
 
+// Create GetAll Funtion and Config It with backend api
+
 export default requestApi;

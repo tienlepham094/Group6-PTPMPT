@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
+import org.springframework.web.client.RestTemplate;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,7 +21,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
     private final UserService userService;
     private final OtpService otpService;
     private final TelegramUserService telegramUserService;
-
+    private final RestTemplate restTemplate;
     // Map để theo dõi trạng thái người dùng đang chờ nhập OTP
     private final ConcurrentHashMap<Long, OTP> awaitingOtpMap = new ConcurrentHashMap<>();
 
@@ -31,6 +32,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
         this.userService = userService;
         this.otpService = otpService;
         this.telegramUserService = telegramUserService;
+        this.restTemplate = new RestTemplate();
     }
 
     @Override
@@ -151,4 +153,5 @@ public class TelegramBotService extends TelegramLongPollingBot {
             e.printStackTrace();
         }
     }
+
 }
