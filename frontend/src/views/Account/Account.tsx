@@ -1,5 +1,184 @@
-import React from "react";
+import { useEffect, useState } from "react";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import Paper from "@mui/material/Paper";
+import adminApi from "../../api/admin";
+import { Button } from "@mui/material";
+import { RegisterParams } from "../../context/types";
+import { EditAccount } from "./EditAccount";
 
 export const Account = () => {
-  return <div>Account</div>;
+  const [data, setData] = useState<RegisterParams[]>([]);
+  const [filteredData, setFilteredData] = useState<RegisterParams[]>([]);
+  const [editData, setEditData] = useState<RegisterParams | undefined>(
+    undefined
+  );
+  // const [searchText, setSearchText] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
+
+  // const fields = [
+  //   {
+  //     name: "resource_type",
+  //     type: "select",
+  //     label: "Resource Type",
+  //     options: Object.values(RESOURCETYPE),
+  //   },
+  //   { name: "quantity", type: "number", label: "Quantity" },
+  //   { name: "reason", type: "text", label: "Reason" },
+  //   { name: "timeUsage", type: "text", label: "Time Usage" },
+  //   { name: "user_id", type: "number", label: "User ID" },
+  //   { name: "start_time", type: "date", label: "Start Time" },
+  //   { name: "end_time", type: "date", label: "End Time" },
+  //   {
+  //     name: "status_account",
+  //     type: "select",
+  //     label: "Status",
+  //     options: ["Pending", "Approved", "Rejected"],
+  //   },
+  // ];
+
+  const fetchAllAccounts = async () => {
+    // try {
+    //   const accountData = await adminApi.getAllAccount();
+    //   const accounts = (accountData.accounts || []).map(
+    //     (account: RegisterParams) => ({
+    //       ...account,
+    //       id: account.account_id, // Ensure DataGrid has unique `id`
+    //     })
+    //   );
+    //   setData(accounts);
+    //   setFilteredData(accounts);
+    // } catch (error) {
+    //   console.error("Error fetching accounts:", error);
+    // }
+  };
+
+  useEffect(() => {
+    fetchAllAccounts();
+  }, []);
+
+  const handleAdd = async (newAccount: RegisterParams) => {
+    try {
+      const response = await accountApi.create(newAccount);
+      const addedAccount = {
+        id: response.account.id!,
+        ...newAccount,
+      };
+      setData((prev) => [...prev, addedAccount]);
+      setFilteredData((prev) => [...prev, addedAccount]);
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error creating account:", error);
+    }
+  };
+
+  const handleEdit = async (updatedAccount: RegisterParams) => {
+    try {
+      await accountApi.edit(updatedAccount.account_id!, updatedAccount);
+      setData((prev) =>
+        prev.map((item) =>
+          item.account_id === updatedAccount.account_id ? updatedAccount : item
+        )
+      );
+      setFilteredData((prev) =>
+        prev.map((item) =>
+          item.account_id === updatedAccount.account_id ? updatedAccount : item
+        )
+      );
+      setDialogOpen(false);
+    } catch (error) {
+      console.error("Error updating account:", error);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this account?")) {
+      try {
+        await accountApi.delete(id);
+        setData((prev) => prev.filter((item) => item.account_id !== id));
+        setFilteredData((prev) =>
+          prev.filter((item) => item.account_id !== id)
+        );
+      } catch (error) {
+        console.error("Error deleting account:", error);
+      }
+    }
+  };
+
+  const paginatedData = filteredData.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+    }
+  };
+
+  const columns: GridColDef[] = [
+    { field: "email", headerName: "Email", width: 300 },
+    { field: "username", headerName: "Tên đăng nhập", width: 300 },
+    { field: "password", headerName: "Mật khẩu", width: 300 },
+    {
+      field: "actions",
+      headerName: "",
+      width: 200,
+      renderCell: (params) => (
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            className="action-btn edit-btn"
+            onClick={() => {
+              setEditData(params.row);
+              setDialogOpen(true);
+            }}
+          >
+            Chỉnh sửa
+          </button>
+          <button
+            className="action-btn delete-btn"
+            onClick={() => handleDelete(params.row.account_id)}
+          >
+            Xóa
+          </button>
+        </div>
+      ),
+    },
+  ];
+  const paginationModel = { page: 0, pageSize: 5 };
+  return (
+    <div className="account-container" style={{ width: "95%" }}>
+      {/* <Typography variant="h2">Accounts</Typography> */}
+      {/* <h1 className="account-header">Accounts</h1> */}
+      <Button
+        variant="contained"
+        onClick={() => {
+          setEditData(undefined); // Clear edit data
+          setDialogOpen(true); // Open dialog for new account
+        }}
+        sx={{ marginBottom: 10 }}
+      >
+        Thêm yêu cầu
+      </Button>
+      <Paper sx={{ height: 400, width: "100%" }}>
+        <DataGrid
+          rows={paginatedData}
+          columns={columns}
+          getRowId={(row) => row.id}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          sx={{ border: 0 }}
+          initialState={{ pagination: { paginationModel } }}
+        />
+      </Paper>
+      <EditAccount
+        open={dialogOpen}
+        onClose={() => setDialogOpen(false)}
+        onSubmit={editData ? handleEdit : handleAdd}
+        data={editData}
+      />
+    </div>
+  );
 };

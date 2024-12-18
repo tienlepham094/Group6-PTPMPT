@@ -9,8 +9,6 @@ type TableProps<T> = {
 };
 
 const CustomeTable = <T,>({ data, columns }: TableProps<T>): JSX.Element => {
-  console.log("first", data);
-
   return (
     <div className="table-container">
       <table className="custom-table">

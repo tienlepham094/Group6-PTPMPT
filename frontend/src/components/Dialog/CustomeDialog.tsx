@@ -14,26 +14,38 @@ type CustomeDialogParams = {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: RequestParams) => void;
+  data?: RequestParams | undefined;
 };
 export const CustomeDialog = ({
   onClose,
   onSubmit,
   open,
+  data,
 }: CustomeDialogParams) => {
-  const [formData, setFormData] = useState<RequestParams>({
-    resource_type: RESOURCETYPE.GPU,
-    quantity: 1,
-    reason: "",
-    timeUsage: "",
-    user_id: 0,
+  const [formData, setFormData] = useState<RequestParams | undefined>({
+    resource_type: data?.resource_type || RESOURCETYPE.GPU, // Default to GPU
+    quantity: data?.quantity || 0,
+    reason: data?.reason || "",
+    timeUsage: data?.timeUsage || "",
+    user_id: data?.user_id || 0,
+    created_at: data?.created_at || "",
+    end_time: data?.end_time || "",
+    request_id: data?.request_id || "",
+    start_time: data?.start_time || "",
+    status_request: data?.status_request || "",
+    updated_at: data?.updated_at || "",
   });
 
-  const handleChange = (key: keyof RequestParams, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+  const handleChange = (key: keyof RequestParams, value: any) => {
+    setFormData((prev) => ({
+      ...prev!,
+      [key]: value, // Ensure the value is always defined
+    }));
   };
 
   const handleSubmit = () => {
-    onSubmit(formData);
+    onSubmit(formData!);
+    setFormData(undefined);
     onClose();
   };
   return (
@@ -45,7 +57,7 @@ export const CustomeDialog = ({
           fullWidth
           margin="normal"
           label="Resource Type"
-          value={formData.resource_type}
+          value={formData?.resource_type || data?.resource_type}
           onChange={(e) =>
             handleChange("resource_type", e.target.value as RESOURCETYPE)
           }
@@ -61,21 +73,21 @@ export const CustomeDialog = ({
           margin="normal"
           label="Quantity"
           type="number"
-          value={formData.quantity}
+          value={formData?.quantity || data?.quantity}
           onChange={(e) => handleChange("quantity", parseInt(e.target.value))}
         />
         <TextField
           fullWidth
           margin="normal"
           label="Reason"
-          value={formData.reason}
+          value={formData?.reason || data?.reason}
           onChange={(e) => handleChange("reason", e.target.value)}
         />
         <TextField
           fullWidth
           margin="normal"
           label="Time Usage"
-          value={formData.timeUsage}
+          value={formData?.timeUsage || data?.timeUsage}
           onChange={(e) => handleChange("timeUsage", e.target.value)}
         />
         <TextField
@@ -83,7 +95,7 @@ export const CustomeDialog = ({
           margin="normal"
           label="User ID"
           type="number"
-          value={formData.user_id}
+          value={formData?.user_id || data?.user_id}
           onChange={(e) => handleChange("user_id", parseInt(e.target.value))}
         />
       </DialogContent>

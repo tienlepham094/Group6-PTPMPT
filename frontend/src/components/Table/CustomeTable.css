@@ -1,14 +1,12 @@
 .table-container {
   background-color: #ffffff; /* White background for the table */
   border-radius: 12px; /* Smooth rounded corners */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-  margin: 20px auto; /* Center alignment */
-  /* padding: 24px;  */
-  width: 100%; /* Responsive width to fit background */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  height: 90%;
 }
 
 .custom-table {
-  width: 100%; /* Table takes full width of container */
   border-collapse: collapse; /* Combine table borders */
   font-family: "Arial", sans-serif; /* Clean font style */
   color: #333; /* Default text color */

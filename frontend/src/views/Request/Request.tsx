@@ -1,69 +1,110 @@
 import { useEffect, useState } from "react";
-import { ColumnDefinitionType } from "../../components/Table/ColumnDefinitionType";
-import CustomeTable from "../../components/Table/CustomeTable";
+import { DataGrid, GridColDef } from "@mui/x-data-grid";
+import Paper from "@mui/material/Paper";
 import { RequestParams } from "../../context/types";
-import { CustomeDialog } from "../../components/Dialog/CustomeDialog";
 import requestApi from "../../api/request";
 import adminApi from "../../api/admin";
-import "./Request.css";
+import { CustomeDialog } from "../../components/Dialog/CustomeDialog";
+import { Button, Typography } from "@mui/material";
 
 export const Request = () => {
   const [data, setData] = useState<RequestParams[]>([]);
   const [filteredData, setFilteredData] = useState<RequestParams[]>([]);
-  const [searchText, setSearchText] = useState("");
+  const [editData, setEditData] = useState<RequestParams | undefined>(
+    undefined
+  );
+  // const [searchText, setSearchText] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editingRequestId, setEditingRequestId] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // const fields = [
+  //   {
+  //     name: "resource_type",
+  //     type: "select",
+  //     label: "Resource Type",
+  //     options: Object.values(RESOURCETYPE),
+  //   },
+  //   { name: "quantity", type: "number", label: "Quantity" },
+  //   { name: "reason", type: "text", label: "Reason" },
+  //   { name: "timeUsage", type: "text", label: "Time Usage" },
+  //   { name: "user_id", type: "number", label: "User ID" },
+  //   { name: "start_time", type: "date", label: "Start Time" },
+  //   { name: "end_time", type: "date", label: "End Time" },
+  //   {
+  //     name: "status_request",
+  //     type: "select",
+  //     label: "Status",
+  //     options: ["Pending", "Approved", "Rejected"],
+  //   },
+  // ];
+
+  const fetchAllRequests = async () => {
+    try {
+      const requestData = await adminApi.getAllRequest();
+      const requests = (requestData.requests || []).map(
+        (request: RequestParams) => ({
+          ...request,
+          id: request.request_id, // Ensure DataGrid has unique `id`
+        })
+      );
+      setData(requests);
+      setFilteredData(requests);
+    } catch (error) {
+      console.error("Error fetching requests:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAllRequests();
+  }, []);
 
   const handleAdd = async (newRequest: RequestParams) => {
     try {
       const response = await requestApi.create(newRequest);
-      const newRequestData = {
-        id: (data.length + 1).toString(),
+      const addedRequest = {
+        id: response.request.id!,
         ...newRequest,
       };
-
-      // Add the new request to the data and filteredData
-      setData((prev) => {
-        const updatedData = [...prev, newRequestData];
-        setFilteredData(updatedData); // Update filteredData as well for immediate update in the table
-        return updatedData;
-      });
-
-      // Optionally reset the search text and pagination if needed
-      setSearchText("");
-      setCurrentPage(1);
+      setData((prev) => [...prev, addedRequest]);
+      setFilteredData((prev) => [...prev, addedRequest]);
+      setDialogOpen(false);
     } catch (error) {
       console.error("Error creating request:", error);
     }
   };
 
-  const fetchAllRequest = async () => {
+  const handleEdit = async (updatedRequest: RequestParams) => {
     try {
-      const requestData = await adminApi.getAllRequest();
-      const requests = requestData.requests || [];
-      setData(requests);
-      setFilteredData(requests);
+      await requestApi.edit(updatedRequest.request_id!, updatedRequest);
+      setData((prev) =>
+        prev.map((item) =>
+          item.request_id === updatedRequest.request_id ? updatedRequest : item
+        )
+      );
+      setFilteredData((prev) =>
+        prev.map((item) =>
+          item.request_id === updatedRequest.request_id ? updatedRequest : item
+        )
+      );
+      setDialogOpen(false);
     } catch (error) {
-      console.error("Error fetching request:", error);
+      console.error("Error updating request:", error);
     }
   };
 
-  const handleSearch = (text: string) => {
-    setSearchText(text);
-    const lowerText = text.toLowerCase();
-    const filtered = data.filter(
-      (item) =>
-        item.resource_type?.toLowerCase().includes(lowerText) ||
-        item.quantity?.toString().includes(lowerText) ||
-        item.reason?.toLowerCase().includes(lowerText) ||
-        item.user_id
-    );
-    console.log(filtered);
-
-    setFilteredData(filtered);
-    setCurrentPage(1);
+  const handleDelete = async (id: string) => {
+    if (window.confirm("Are you sure you want to delete this request?")) {
+      try {
+        await requestApi.delete(id);
+        setData((prev) => prev.filter((item) => item.request_id !== id));
+        setFilteredData((prev) =>
+          prev.filter((item) => item.request_id !== id)
+        );
+      } catch (error) {
+        console.error("Error deleting request:", error);
+      }
+    }
   };
 
   const paginatedData = filteredData.slice(
@@ -78,95 +119,72 @@ export const Request = () => {
     }
   };
 
-  const columns: Array<ColumnDefinitionType<RequestParams>> = [
-    { key: "request_id", header: "Request ID" },
-    { key: "user_id", header: "User ID" },
-    { key: "resource_type", header: "Resource Type" },
-    { key: "quantity", header: "Quantity" },
-    { key: "timeUsage", header: "Time Usage" },
-    { key: "reason", header: "Reason" },
-    { key: "end_time", header: "Reason" },
-    { key: "start_time", header: "Reason" },
-    { key: "status_request", header: "Reason" },
-    { key: "created_at", header: "Reason" },
+  const columns: GridColDef[] = [
+    { field: "request_id", headerName: "Request ID", width: 150 },
+    { field: "user_id", headerName: "User ID", width: 150 },
+    { field: "resource_type", headerName: "Loại tài nguyên", width: 150 },
+    { field: "quantity", headerName: "Số lượng", width: 150 },
+    { field: "reason", headerName: "Lý do", width: 150 },
+    { field: "start_time", headerName: "Gờ bắt đầu", width: 150 },
+    { field: "end_time", headerName: "Giờ kết thúc", width: 150 },
+    { field: "status_request", headerName: "Trạng thái", width: 150 },
     {
-      key: "actions",
-      header: "Actions",
-      render: (row) => (
-        <div>
+      field: "actions",
+      headerName: "",
+      width: 200,
+      renderCell: (params) => (
+        <div style={{ display: "flex", gap: "8px" }}>
           <button
-            style={{
-              backgroundColor: "#007bff",
-              color: "#fff",
-              border: "none",
-              borderRadius: "4px",
-              padding: "5px 10px",
-              cursor: "pointer",
-            }}
+            className="action-btn edit-btn"
             onClick={() => {
-              setEditingRequestId(row.id); // Set the ID of the request being edited
-              setDialogOpen(true); // Open the dialog to edit
+              setEditData(params.row);
+              setDialogOpen(true);
             }}
           >
-            Edit
+            Chỉnh sửa
+          </button>
+          <button
+            className="action-btn delete-btn"
+            onClick={() => handleDelete(params.row.request_id)}
+          >
+            Xóa
           </button>
         </div>
       ),
     },
   ];
-
-  useEffect(() => {
-    fetchAllRequest();
-  }, []);
-
+  const paginationModel = { page: 0, pageSize: 5 };
   return (
-    <div className="request-container">
-      <h1 className="request-header">Requests</h1>
-
-      <div className="request-toolbar">
-        <input
-          type="text"
-          value={searchText}
-          onChange={(e) => handleSearch(e.target.value)}
-          placeholder="Search by type, quantity, reason, or user ID"
-          className="request-search"
+    <div className="request-container" style={{ width: "95%" }}>
+      {/* <Typography variant="h2">Requests</Typography> */}
+      {/* <h1 className="request-header">Requests</h1> */}
+      <Button
+        variant="contained"
+        onClick={() => {
+          setEditData(undefined); // Clear edit data
+          setDialogOpen(true); // Open dialog for new request
+        }}
+        sx={{ marginBottom: 10 }}
+      >
+        Thêm yêu cầu
+      </Button>
+      <Paper sx={{ height: 400, width: "100%" }}>
+        <DataGrid
+          rows={paginatedData}
+          columns={columns}
+          getRowId={(row) => row.id}
+          pageSizeOptions={[5, 10]}
+          checkboxSelection
+          sx={{ border: 0 }}
+          initialState={{ pagination: { paginationModel } }}
         />
-        <button
-          className="request-add-button"
-          onClick={() => setDialogOpen(true)}
-        >
-          Add Request
-        </button>
-      </div>
-
-      <CustomeTable data={paginatedData} columns={columns} />
-
+      </Paper>
       <CustomeDialog
         open={dialogOpen}
         onClose={() => setDialogOpen(false)}
-        onSubmit={handleAdd}
-        editingRequestId={editingRequestId}
+        onSubmit={editData ? handleEdit : handleAdd}
+        data={editData}
       />
-
-      <div className="pagination-container">
-        <button
-          className="pagination-button"
-          disabled={currentPage === 1}
-          onClick={() => handlePageChange(currentPage - 1)}
-        >
-          Previous
-        </button>
-        <span className="pagination-info">
-          Page {currentPage} of {totalPages}
-        </span>
-        <button
-          className="pagination-button"
-          disabled={currentPage === totalPages}
-          onClick={() => handlePageChange(currentPage + 1)}
-        >
-          Next
-        </button>
-      </div>
     </div>
   );
 };
