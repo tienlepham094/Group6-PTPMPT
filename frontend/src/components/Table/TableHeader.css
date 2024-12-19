@@ -1,0 +1,10 @@
+.custom-table th {
+  background-color: #f4f4f9; /* Subtle header background */
+  color: #444; /* Slightly darker text color */
+  font-weight: bold; /* Make headers bold */
+  text-align: left; /* Align text to the left */
+  text-transform: uppercase; /* Header text in uppercase */
+  font-size: 14px; /* Slightly smaller font */
+  padding: 12px; /* Padding inside header cells */
+  border-bottom: 2px solid #ddd; /* Border for header separation */
+}

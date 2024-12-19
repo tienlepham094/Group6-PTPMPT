@@ -8,9 +8,9 @@ enum STATE {
 }
 enum RESOURCETYPE {
   GPU = "GPU",
-  GCU = "GCU",
+  CPU = "CPU",
   RAM = "RAM",
-  DISK = "DISK",
+  DISK = "Disk",
 }
 enum STATUSREQUEST {
   PENDING = "PENDING",
@@ -26,15 +26,25 @@ enum REQUESTSTATUS {
   COMPLETED = "COMPLETED",
 }
 enum RESOURCESTATUS {
-  AVAILABLE = "AVAILABLE",
-  ALLOCATED = "ALLOCATED",
-  MAINTENANCE = "MAINTENANCE",
+  AVAILABLE = "available",
+  ALLOCATED = "allocated",
+  MAINTENANCE = "maintenance",
 }
+export const RESOURCESTATUS_TRANSLATION = {
+  [RESOURCESTATUS.ALLOCATED]: "Đang được sử dụng",
+  [RESOURCESTATUS.AVAILABLE]: "Có sẵn",
+  [RESOURCESTATUS.MAINTENANCE]: "Bảo trì",
+};
 enum APPROVALSTATUS {
-  APPROVED = "APPROVED",
-  REJECTED = "REJECTED",
-  QUEUED = "QUEUED",
+  APPROVED = "approve",
+  REJECTED = "reject",
+  QUEUED = "queue",
 }
+export const APPROVALSTATUS_TRANSLATION = {
+  [APPROVALSTATUS.APPROVED]: "Chấp thuận",
+  [APPROVALSTATUS.QUEUED]: "Cho chờ",
+  [APPROVALSTATUS.REJECTED]: "Từ chối",
+};
 
 export {
   ROLE,

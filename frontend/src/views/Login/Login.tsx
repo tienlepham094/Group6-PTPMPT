@@ -11,7 +11,7 @@ import InstagramIcon from "../../assets/images/Instagram_icon.png";
 import { LoginParams } from "../../context/types";
 
 import { useState } from "react";
-
+import { toast } from "react-toastify";
 
 const validation = Yup.object().shape({
   username: Yup.string().required("Username is required"),
@@ -26,8 +26,13 @@ const Login = () => {
     formState: { errors },
   } = useForm<LoginParams>({ resolver: yupResolver(validation) });
 
-  const handleLogin = (form: LoginParams) => {
-    login(form);
+  const handleLogin = async (form: LoginParams) => {
+    try {
+      await login(form);
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    } catch (error) {
+      toast.error("Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin!");
+    }
   };
 
   const [showPassword, setShowPassword] = useState(false);
@@ -48,7 +53,7 @@ const Login = () => {
           />
           {errors.username ? <p>{errors.username.message}</p> : ""}
         </div>
-        
+
         <div className="form-controller">
           <div className="password-field-container">
             <TextField

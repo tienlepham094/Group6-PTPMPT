@@ -8,5 +8,7 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Integer> {
-    List<Request> findByUser_UserId(int userId);
+    List<Request> findByUser_UserId(Integer userId);
+//    List<Request> findByUserId(int userId);
+
 }

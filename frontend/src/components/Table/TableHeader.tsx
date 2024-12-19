@@ -1,5 +1,5 @@
 import { ColumnDefinitionType } from "./ColumnDefinitionType";
-
+import "./TableHeader.css";
 type TableHeaderProps<T> = {
   columns: Array<ColumnDefinitionType<T>>;
 };

@@ -86,3 +86,31 @@ curl --location --request PUT 'http://localhost:8080/app/admin/resource/update' 
     "quantity": -1,
     "statusResources": "available"
 }'
+
+Theo dõi chỉ số cpu, ram ở server (hiện tại đang là máy tính cá nhân)
+curl --location --request GET 'http://localhost:8080/monitor/metrics'
+{
+    "memoryMetrics": {
+        "availableMemoryGB": 6,
+        "usedMemoryGB": 1,
+        "totalMemoryGB": 7,
+        "memoryUsagePercent": 18.8087733692406
+    },
+    "diskMetrics": {
+        "freeDiskSpaceGB": 423,
+        "usedDiskSpaceGB": 270,
+        "totalDiskSpaceGB": 693,
+        "diskUsagePercent": 38.99586247309446
+    },
+    "cpuMetrics": {
+        "logicalProcessors": 5,
+        "cpuFrequencyMHz": 0,
+        "physicalCores": 5,
+        "cpuUsagePercent": 0.0
+    },
+    "networkTraffic": {
+        "totalBytesReceivedMB": 0,
+        "interfaceCount": 1,
+        "totalBytesSentMB": 0
+    }
+}

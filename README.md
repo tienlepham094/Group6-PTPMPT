@@ -81,7 +81,6 @@ Fill the information with template file .env.example
 docker compose up -d
 docker exec -it container_id /bin/bash
 ```
-- When updating backend code
 ```
 cd backend && maven package
 docker-compose up -d --build

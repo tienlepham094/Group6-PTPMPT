@@ -10,42 +10,56 @@ import {
   DialogActions,
   Button,
 } from "@mui/material";
+import { useAuth } from "../../context/useAuth";
 type CustomeDialogParams = {
   open: boolean;
   onClose: () => void;
   onSubmit: (data: RequestParams) => void;
+  data?: RequestParams | undefined;
 };
 export const CustomeDialog = ({
   onClose,
   onSubmit,
   open,
+  data,
 }: CustomeDialogParams) => {
-  const [formData, setFormData] = useState<RequestParams>({
-    resourceType: RESOURCETYPE.GPU,
-    quantity: 1,
-    reason: "",
-    timeUsage: "",
-    userId: 0,
+  const { user } = useAuth();
+  const [formData, setFormData] = useState<RequestParams | undefined>({
+    resourceType: data?.resourceType || RESOURCETYPE.GPU || data?.resource_type, // Default to GPU
+    quantity: data?.quantity || 0,
+    reason: data?.reason || "",
+    timeUsage: data?.timeUsage || 0,
+    userId: user?.id || 0,
+    created_at: data?.created_at || "",
+    end_time: data?.end_time || "",
+    requestId: data?.requestId || "",
+    start_time: data?.start_time || "",
+    statusRequest: data?.statusRequest || "",
+    updatedAt: data?.updatedAt || "",
   });
 
   const handleChange = (key: keyof RequestParams, value: unknown) => {
-    setFormData((prev) => ({ ...prev, [key]: value }));
+    setFormData((prev) => ({
+      ...prev!,
+      [key]: value, // Ensure the value is always defined
+    }));
   };
 
   const handleSubmit = () => {
-    onSubmit(formData);
+    onSubmit(formData!);
+    setFormData(undefined);
     onClose();
   };
   return (
     <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
-      <DialogTitle>Enter Request Details</DialogTitle>
+      <DialogTitle>Điền yêu cầu</DialogTitle>
       <DialogContent>
         <TextField
           select
           fullWidth
           margin="normal"
-          label="Resource Type"
-          value={formData.resourceType}
+          label="Loại tài nguyên"
+          value={formData?.resourceType || data?.resourceType}
           onChange={(e) =>
             handleChange("resourceType", e.target.value as RESOURCETYPE)
           }
@@ -59,40 +73,44 @@ export const CustomeDialog = ({
         <TextField
           fullWidth
           margin="normal"
-          label="Quantity"
+          label="Số lượng"
           type="number"
-          value={formData.quantity}
+          value={formData?.quantity || data?.quantity}
           onChange={(e) => handleChange("quantity", parseInt(e.target.value))}
         />
         <TextField
           fullWidth
           margin="normal"
-          label="Reason"
-          value={formData.reason}
+          label="Lí do"
+          value={formData?.reason || data?.reason}
           onChange={(e) => handleChange("reason", e.target.value)}
         />
         <TextField
           fullWidth
           margin="normal"
-          label="Time Usage"
-          value={formData.timeUsage}
-          onChange={(e) => handleChange("timeUsage", e.target.value)}
+          label="Thời gian sử dụng"
+          value={formData?.timeUsage || data?.timeUsage}
+          onChange={(e) => handleChange("timeUsage", parseInt(e.target.value))}
         />
-        <TextField
-          fullWidth
-          margin="normal"
-          label="User ID"
-          type="number"
-          value={formData.userId}
-          onChange={(e) => handleChange("userId", parseInt(e.target.value))}
-        />
+        {user?.role === "admin" ? (
+          <TextField
+            fullWidth
+            margin="normal"
+            label="Id người dùng"
+            type="number"
+            value={formData?.userId || data?.userId}
+            onChange={(e) => handleChange("userId", parseInt(e.target.value))}
+          />
+        ) : (
+          ""
+        )}
       </DialogContent>
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
-          Cancel
+        <Button onClick={onClose} color="secondary" variant="contained">
+          Hủy
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">
-          Submit
+          Lưu
         </Button>
       </DialogActions>
     </Dialog>

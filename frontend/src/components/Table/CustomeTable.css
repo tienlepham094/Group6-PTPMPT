@@ -1,28 +1,14 @@
 .table-container {
-  background-color: #F5F5F1;  /* Màu trắng ngà nhẹ */
-  border-radius: 8px;
-  padding: 16px;
-  margin: 16px 0;
+  background-color: #ffffff; /* White background for the table */
+  border-radius: 12px; /* Smooth rounded corners */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  width: 90%;
+  height: 90%;
 }
 
 .custom-table {
-  width: 100%;
-  border-collapse: collapse;
-  background-color: #FAFAF7;  /* Màu nền cho table */
+  border-collapse: collapse; /* Combine table borders */
+  font-family: "Arial", sans-serif; /* Clean font style */
+  color: #333; /* Default text color */
+  background-color: #fafafa; /* Table background */
 }
-
-.custom-table th {
-  background-color: #F5F5F1;  /* Màu nền cho header */
-  padding: 12px;
-  text-align: left;
-  border-bottom: 1px solid #E8E8E3;
-}
-
-.custom-table td {
-  padding: 12px;
-  border-bottom: 1px solid #E8E8E3;
-}
-
-.custom-table tr:hover {
-  background-color: #F8F8F5;  /* Màu khi hover */
-} 

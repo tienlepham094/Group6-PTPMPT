@@ -6,27 +6,32 @@ import InfoManageAccountsOutlinedIconIcon from "@mui/icons-material/Info";
 
 const navigation = () => [
   {
-    title: "Dashboard",
+    title: "Trang chủ",
     path: "dashboard",
     icon: <DashboardManageAccountsOutlinedIconIcon />,
   },
   {
-    title: "Account",
+    title: "Tài khoản",
     path: "account",
     icon: <ManageAccountsManageAccountsOutlinedIconIcon />,
   },
   {
-    title: "Resource",
+    title: "Tài nguyên",
     path: "resource",
     icon: <DeveloperBoardManageAccountsOutlinedIconIcon />,
   },
   {
-    title: "Request",
+    title: "Yêu cầu",
     path: "request",
     icon: <ContentPasteManageAccountsOutlinedIconIcon />,
   },
+  // {
+  //   title: "Chấp thuận",
+  //   path: "approval",
+  //   icon: <ContentPasteManageAccountsOutlinedIconIcon />,
+  // },
   {
-    title: "About",
+    title: "Giới thiệu",
     path: "about",
     icon: <InfoManageAccountsOutlinedIconIcon />,
   },
