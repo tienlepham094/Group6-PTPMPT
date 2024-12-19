@@ -7,7 +7,6 @@ import ltu.group06.work.resoucesmanager.repository.TelegramUserRepository;
 import ltu.group06.work.resoucesmanager.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -39,9 +38,9 @@ public class UserService {
 //        return userRepository.findByUsername(username);
 //    }
 //
-//    public Optional<User> findByEmail(String email) {
-//        return userRepository.findByEmail(email);
-//    }
+    public List<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 
 
     public User registerUser(String username, String email, String password) {
