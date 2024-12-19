@@ -1,10 +1,8 @@
 package ltu.group06.work.resoucesmanager.controller.admincontroller;
 
-import ltu.group06.work.resoucesmanager.entity.Allocation;
-import ltu.group06.work.resoucesmanager.entity.Approval;
-import ltu.group06.work.resoucesmanager.entity.Request;
-import ltu.group06.work.resoucesmanager.entity.Resource;
+import ltu.group06.work.resoucesmanager.entity.*;
 import ltu.group06.work.resoucesmanager.service.*;
+import ltu.group06.work.resoucesmanager.telegrambot.TelegramBotService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,6 +35,10 @@ public class ApprovalRequestController {
 
     @Autowired
     private LogService logService;
+    @Autowired
+    private TelegramUserService telegramUserService;
+    @Autowired
+    private TelegramBotService telegramBotService;
     @PostMapping("/request/approve")
     public ResponseEntity<Map<String, Object>> approveRequest(@RequestBody Map<String, String> requestBody) {
         int requestId = Integer.parseInt(requestBody.get("requestId"));
@@ -68,6 +70,9 @@ public class ApprovalRequestController {
         Approval approval = new Approval();
         approval.setRequest(request);
         approval.setComments(comments);
+
+        String message;
+        Optional<TelegramUser> telegramUserOptional = Optional.ofNullable(telegramUserService.getTelegramUserByUserId(request.getUser().getUserId()));
 
         if ("approve".equalsIgnoreCase(action)) {
             if (!isEnoughResource) {
@@ -122,6 +127,9 @@ public class ApprovalRequestController {
 
                 logService.createLog(null, request.getRequestId(), "APPROVE_REQUEST", logDescription);
                 response.put("message", "Request approved successfully and resources allocated.");
+                message = "Yêu cầu sử dụng tài nguyên với ID: " + requestId + " đã được chấp thuận.";
+            } else {
+                message = "";
             }
 
         } else if ("reject".equalsIgnoreCase(action)) {
@@ -138,6 +146,7 @@ public class ApprovalRequestController {
             );
 
             response.put("message", "Request rejected successfully.");
+            message = "Yêu cầu sử dụng tài nguyên với ID: " + requestId + "  đã bị từ chối.";
 
         } else if ("queue".equalsIgnoreCase(action)) {
             request.setStatusRequest(Request.RequestStatus.queued);
@@ -153,14 +162,19 @@ public class ApprovalRequestController {
             );
 
             response.put("message", "Request queued successfully.");
+            message = "Yêu cầu sử dụng tài nguyên với ID: " + requestId + " cấp phát. Đã cho vào hàng đợi!";
 
         } else {
+            message = "Invalid action. Use 'approve', 'reject', or 'queue'";
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("error", "Invalid action. Use 'approve', 'reject', or 'queue'")
             );
         }
 
         requestService.updateRequest(request);
+        telegramUserOptional.ifPresent(telegramUser -> {
+            telegramBotService.sendMessageToUser(telegramUser.getTelegramId(), message);
+        });
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
     @GetMapping("/approvals")
