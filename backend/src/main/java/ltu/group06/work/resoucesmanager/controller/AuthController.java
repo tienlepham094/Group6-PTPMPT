@@ -1,6 +1,7 @@
 package ltu.group06.work.resoucesmanager.controller;
 
 import ltu.group06.work.resoucesmanager.dto.LoginRequestDto;
+import ltu.group06.work.resoucesmanager.dto.LoginResponseDto;
 import ltu.group06.work.resoucesmanager.dto.PasswordChangeDto;
 import ltu.group06.work.resoucesmanager.dto.RegisterRequestDto;
 import ltu.group06.work.resoucesmanager.entity.User;
@@ -41,18 +42,54 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+//    @PostMapping("/register")
+//    public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDto request) {
+//        try {
+//            if (userService.findByUsername(request.getUsername()).isPresent()) {
+//                return ResponseEntity.status(HttpStatus.CONFLICT)
+//                        .body("Username already exists.");
+//            }
+//            if (userService.findByEmail(request.getEmail()).isPresent()) {
+//                return ResponseEntity.status(HttpStatus.CONFLICT)
+//                        .body("Email already exists.");
+//            }
+//            // Lưu acc nguoi dùng vào db sau khi đăng ký
+//            User user = userService.registerUser(request.getUsername(), request.getEmail(), request.getPassword());
+//
+//            logService.createLog(
+//                    user.getUserId(),
+//                    null,
+//                    "REGISTER",
+//                    "User registered with username: " + user.getUsername()
+//            );
+//
+//            return ResponseEntity.ok("Registration successful! Please activate your account via Telegram bot.");
+//
+//        } catch (DataIntegrityViolationException e) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT)
+//                    .body("Database error: Duplicate entry detected.");
+//        } catch (Exception e) {
+//            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+//                    .body("An unexpected error occurred. Please try again later.");
+//        }
+//    }
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequestDto request) {
         try {
-            if (userService.findByUsername(request.getUsername()).isPresent()) {
+            // Check if username or email already exists
+            Optional<User> existingUserByUsername = userRepository.findByUsername(request.getUsername()).stream().findFirst();
+            Optional<User> existingUserByEmail = userRepository.findByEmail(request.getEmail()).stream().findFirst();
+
+            if (existingUserByUsername.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Username already exists.");
             }
-            if (userService.findByEmail(request.getEmail()).isPresent()) {
+            if (existingUserByEmail.isPresent()) {
                 return ResponseEntity.status(HttpStatus.CONFLICT)
                         .body("Email already exists.");
             }
-            // Lưu acc nguoi dùng vào db sau khi đăng ký
+
+            // Save user in database
             User user = userService.registerUser(request.getUsername(), request.getEmail(), request.getPassword());
 
             logService.createLog(
@@ -63,7 +100,6 @@ public class AuthController {
             );
 
             return ResponseEntity.ok("Registration successful! Please activate your account via Telegram bot.");
-
         } catch (DataIntegrityViolationException e) {
             return ResponseEntity.status(HttpStatus.CONFLICT)
                     .body("Database error: Duplicate entry detected.");
@@ -73,23 +109,69 @@ public class AuthController {
         }
     }
 
+//    @PostMapping("/login")
+//    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto,
+//                                        HttpServletRequest request) {
+//
+//        String username = loginRequestDto.getUsername();
+//        String password = loginRequestDto.getPassword();
+//
+//        if (username == null || username.trim().isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vui lòng nhập tên đăng nhập.");
+//        }
+//        if (password == null || password.trim().isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vui lòng nhập mật khẩu.");
+//        }
+//
+//        Optional<User> userOptional = userService.findByUsername(username);
+//        if (userOptional.isEmpty()) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tên đăng nhập không đúng.");
+//        }
+//
+//        User user = userOptional.get();
+//
+//        if (!userService.checkPassword(password, user.getPasswordHash())) {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mật khẩu không chính xác.");
+//        }
+//
+//        // Nếu đăng nhập thành công, lưu role vào session
+//        HttpSession session = request.getSession();
+//        session.setAttribute("user", user);
+//        session.setAttribute("role", user.getRole());
+//        // Hết hạn session sau 15 phút
+//        session.setMaxInactiveInterval(15 * 60);
+//
+//        logService.createLog(
+//                user.getUserId(),
+//                null,
+//                "LOGIN",
+//                "User logged in with username: " + user.getUsername()
+//        );
+//
+//        String targetUrl = getTargetUrl(user.getRole());
+//        LoginResponseDto responseDto = new LoginResponseDto(
+//                user.getUserId(),
+//                user.getUsername(),
+//                user.getEmail(),
+//                getTargetUrl(user.getRole())
+//        );
+//        return ResponseEntity.ok(responseDto);
+//    }
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequestDto loginRequestDto,
-                                        HttpServletRequest request) {
-
-        String username = loginRequestDto.getUsername();
+    public ResponseEntity<?> login(@RequestBody LoginRequestDto loginRequestDto, HttpServletRequest request) {
+        String usernameOrEmail = loginRequestDto.getUsername();
         String password = loginRequestDto.getPassword();
 
-        if (username == null || username.trim().isEmpty()) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vui lòng nhập tên đăng nhập.");
+        if (usernameOrEmail == null || usernameOrEmail.trim().isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vui lòng nhập tên đăng nhập hoặc email.");
         }
         if (password == null || password.trim().isEmpty()) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Vui lòng nhập mật khẩu.");
         }
 
-        Optional<User> userOptional = userService.findByUsername(username);
+        Optional<User> userOptional = userRepository.findByUsernameOrEmail(usernameOrEmail);
         if (userOptional.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tên đăng nhập không đúng.");
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Tên đăng nhập hoặc email không đúng.");
         }
 
         User user = userOptional.get();
@@ -98,11 +180,10 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Mật khẩu không chính xác.");
         }
 
-        // Nếu đăng nhập thành công, lưu role vào session
+        // Login successful, store role in session
         HttpSession session = request.getSession();
         session.setAttribute("user", user);
         session.setAttribute("role", user.getRole());
-        // Hết hạn session sau 15 phút
         session.setMaxInactiveInterval(15 * 60);
 
         logService.createLog(
@@ -112,9 +193,16 @@ public class AuthController {
                 "User logged in with username: " + user.getUsername()
         );
 
-        String targetUrl = getTargetUrl(user.getRole());
-        return ResponseEntity.ok(targetUrl);
+        LoginResponseDto responseDto = new LoginResponseDto(
+                user.getUserId(),
+                user.getUsername(),
+                user.getEmail(),
+                getTargetUrl(user.getRole()),
+                user.getRole()
+        );
+        return ResponseEntity.ok(responseDto);
     }
+
 
     // Check url
     private String getTargetUrl(String role) {
@@ -137,34 +225,49 @@ public class AuthController {
         return ResponseEntity.ok("Đăng xuất thành công.");
     }
 
-    @PostMapping("/change-password")
-    public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeDto passwordUpdateDTO) {
-        String result = userService.updatePassword(passwordUpdateDTO.getUsernameOrEmail(), passwordUpdateDTO.getCurrentPassword(), passwordUpdateDTO.getNewPassword());
+//    @PostMapping("/change-password")
+//    public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeDto passwordUpdateDTO) {
+//        String result = userService.updatePassword(passwordUpdateDTO.getUsernameOrEmail(), passwordUpdateDTO.getCurrentPassword(), passwordUpdateDTO.getNewPassword());
+//
+//        if ("success".equals(result)) {
+//            return ResponseEntity.ok("Password updated successfully.");
+//        } else {
+//            return ResponseEntity.badRequest().body(result);
+//        }
+//    }
+//    @PostMapping("/change-password")
+//    public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeDto passwordUpdateDTO) {
+//        String result = userService.updatePassword(
+//                passwordUpdateDTO.getUsernameOrEmail(),
+//                passwordUpdateDTO.getCurrentPassword(),
+//                passwordUpdateDTO.getNewPassword()
+//        );
+//
+//        if ("success".equals(result)) {
+//            return ResponseEntity.ok("Password updated successfully.");
+//        } else {
+//            return ResponseEntity.badRequest().body(result);
+//        }
+//    }
 
-        if ("success".equals(result)) {
-            return ResponseEntity.ok("Password updated successfully.");
-        } else {
-            return ResponseEntity.badRequest().body(result);
-        }
-    }
-    @GetMapping("/user-id")
-    public ResponseEntity<String> getCurrentUserId() {
-        // Retrieve the currently authenticated user
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-
-        if (principal instanceof UserDetails) {
-            String username = ((UserDetails) principal).getUsername();
-
-            // Query user by username
-            Optional<User> userOptional = userService.findByUsername(username);
-            if (userOptional.isPresent()) {
-                int userId = userOptional.get().getUserId();
-                return ResponseEntity.ok("User ID: " + userId);
-            } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
-            }
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated.");
-        }
-    }
+//    @GetMapping("/user-id")
+//    public ResponseEntity<String> getCurrentUserId() {
+//        // Retrieve the currently authenticated user
+//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//
+//        if (principal instanceof UserDetails) {
+//            String username = ((UserDetails) principal).getUsername();
+//
+//            // Query user by username
+//            Optional<User> userOptional = userService.findByUsername(username);
+//            if (userOptional.isPresent()) {
+//                int userId = userOptional.get().getUserId();
+//                return ResponseEntity.ok("User ID: " + userId);
+//            } else {
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found.");
+//            }
+//        } else {
+//            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User is not authenticated.");
+//        }
+//    }
 }

@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
 import { RegisterParams, ResourceParams } from "../../context/types";
 import resourceApi from "../../api/resource";
 import { ResourceDialog } from "./ResouceDialog";
+import { useAuth } from "../../context/useAuth";
 
 export const Resource = () => {
+  const { setMessage, setOpenAlert, setSeverity } = useAuth();
   const [data, setData] = useState<RegisterParams[]>([]);
   const [filteredData, setFilteredData] = useState<RegisterParams[]>([]);
   const [editData, setEditData] = useState<RegisterParams | undefined>(
@@ -18,7 +20,7 @@ export const Resource = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  const fetchAllResources = async () => {
+  const fetchAllResources = useCallback(async () => {
     try {
       const resourceData = await resourceApi.getAll();
       console.log(resourceData);
@@ -33,46 +35,76 @@ export const Resource = () => {
     } catch (error) {
       console.error("Error fetching resources:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllResources();
-  }, []);
+  }, [fetchAllResources]);
 
-  const handleAdd = async (newResource: ResourceParams) => {
-    try {
-      const response = await resourceApi.create(newResource);
-      setDialogOpen(false);
-      setEditData(undefined);
-    } catch (error) {
-      console.error("Error creating resource:", error);
-    }
-  };
-
-  const handleEdit = async (updatedResource: ResourceParams) => {
-    try {
-      const response = await resourceApi.edit(updatedResource);
-      setDialogOpen(false);
-      setEditData(undefined);
-    } catch (error) {
-      console.error("Error updating resource:", error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this resource?")) {
+  const handleAdd = useCallback(
+    async (newResource: ResourceParams) => {
       try {
-        await resourceApi.delete(id);
-        // setData((prev) => prev.filter((item) => item.resource_id !== id));
-        // setFilteredData((prev) =>
-        //   prev.filter((item) => item.resource_id !== id)
-        // );
+        const response = await resourceApi.create(newResource);
+        setDialogOpen(false);
         setEditData(undefined);
+        fetchAllResources();
+        setMessage("Thêm thành công!");
+        setSeverity("success");
+        setOpenAlert(true);
       } catch (error) {
-        console.error("Error deleting resource:", error);
+        setMessage("Thêm thất bại!");
+        setSeverity("warning");
+        setOpenAlert(true);
+        console.error("Error creating resource:", error);
       }
-    }
-  };
+    },
+    [fetchAllResources, setMessage, setOpenAlert, setSeverity]
+  );
+
+  const handleEdit = useCallback(
+    async (updatedResource: ResourceParams) => {
+      try {
+        const response = await resourceApi.edit(updatedResource);
+        setDialogOpen(false);
+        setEditData(undefined);
+        fetchAllResources();
+        setMessage("Sửa thành công!");
+        setSeverity("success");
+        setOpenAlert(true);
+      } catch (error) {
+        setMessage("Sửa thất bại!");
+        setSeverity("warning");
+        setOpenAlert(true);
+        console.error("Error updating resource:", error);
+      }
+    },
+    [fetchAllResources, setMessage, setOpenAlert, setSeverity]
+  );
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (window.confirm("Are you sure you want to delete this resource?")) {
+        try {
+          await resourceApi.delete(id);
+          // setData((prev) => prev.filter((item) => item.resource_id !== id));
+          // setFilteredData((prev) =>
+          //   prev.filter((item) => item.resource_id !== id)
+          // );
+          fetchAllResources();
+          setEditData(undefined);
+          setMessage("Xóa thành công!");
+          setSeverity("success");
+          setOpenAlert(true);
+        } catch (error) {
+          setMessage("Xóa thất bại!");
+          setSeverity("warning");
+          setOpenAlert(true);
+          console.error("Error deleting resource:", error);
+        }
+      }
+    },
+    [fetchAllResources, setMessage, setOpenAlert, setSeverity]
+  );
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,

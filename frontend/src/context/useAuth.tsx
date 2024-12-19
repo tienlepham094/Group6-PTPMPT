@@ -67,6 +67,9 @@ export const UserProvider = ({ children }: Props) => {
       navigate("/dashboard");
     } catch (error) {
       console.log(error);
+      setMessage("Đăng nhập thất bại!");
+      setSeverity("error");
+      setOpenAlert(true);
     }
     // authApi
     //   .login(params)

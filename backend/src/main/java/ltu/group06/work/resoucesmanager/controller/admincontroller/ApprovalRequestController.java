@@ -14,6 +14,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -161,5 +162,13 @@ public class ApprovalRequestController {
 
         requestService.updateRequest(request);
         return ResponseEntity.status(HttpStatus.OK).body(response);
+    }
+    @GetMapping("/approvals")
+    public ResponseEntity<List<Approval>> getAllApproval() {
+        List<Approval> approvals = approvalService.getAllApprovals();
+        if (approvals.isEmpty()) {
+            return ResponseEntity.noContent().build();  // Returns 204 if there are no approvals
+        }
+        return ResponseEntity.ok(approvals);  // Returns 200 with the list of approvals
     }
 }

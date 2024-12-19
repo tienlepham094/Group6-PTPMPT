@@ -24,8 +24,10 @@
 }
 .alert-container {
   position: fixed;
-  top: 10px;
-  right: 10px;
+  /* top: 10px; */
+  bottom: 10px;
+  /* right: 10px; */
+  left: 10px;
   z-index: 1000; /* Ensure it appears above other elements */
   max-width: 300px; /* Optional: Limit the width */
 }

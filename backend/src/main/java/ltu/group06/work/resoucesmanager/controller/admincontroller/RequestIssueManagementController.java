@@ -66,15 +66,32 @@ public class RequestIssueManagementController {
      * @param requestDetails
      * @return
      */
+//    @PutMapping("/edit/requests/{requestId}")
+//    public ResponseEntity<?> updateRequest(@RequestParam Integer adminId, @PathVariable Integer requestId, @RequestBody Request requestDetails) {
+//        if (!isAdmin(adminId)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admin can perform this action.");
+//        }
+//        return requestService.updateRequest(requestId, requestDetails)
+//                .map(ResponseEntity::ok)
+//                .orElse(ResponseEntity.notFound().build());
+//    }
     @PutMapping("/edit/requests/{requestId}")
-    public ResponseEntity<?> updateRequest(@RequestParam Integer adminId, @PathVariable Integer requestId, @RequestBody Request requestDetails) {
+    public ResponseEntity<?> updateRequest(
+            @RequestParam Integer adminId,
+            @PathVariable Integer requestId,
+            @RequestBody Request requestDetails) {
+
+        if (adminId == null || requestId == null) {
+            return ResponseEntity.badRequest().body("Invalid parameters: adminId or requestId missing.");
+        }
+
         if (!isAdmin(adminId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admin can perform this action.");
         }
-        return requestService.updateRequest(requestId, requestDetails)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+
+        return ResponseEntity.ok("ssss");
     }
+
 
     /**
      * Xoa request issue

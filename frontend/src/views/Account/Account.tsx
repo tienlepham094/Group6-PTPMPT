@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
 import { Button } from "@mui/material";
@@ -6,8 +6,10 @@ import { RegisterParams } from "../../context/types";
 import { EditAccount } from "./EditAccount";
 import axios from "axios";
 import adminApi from "../../api/admin";
+import { useAuth } from "../../context/useAuth";
 
 export const Account = () => {
+  const { setMessage, setOpenAlert, setSeverity } = useAuth();
   const [data, setData] = useState<RegisterParams[]>([]);
   const [filteredData, setFilteredData] = useState<RegisterParams[]>([]);
   const [editData, setEditData] = useState<RegisterParams | undefined>(
@@ -17,7 +19,7 @@ export const Account = () => {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
-  const fetchAllAccounts = async () => {
+  const fetchAllAccounts = useCallback(async () => {
     try {
       const accountData = await adminApi.getAllAccount();
       const accounts = (accountData || []).map((account: RegisterParams) => ({
@@ -29,49 +31,76 @@ export const Account = () => {
     } catch (error) {
       console.error("Error fetching accounts:", error);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchAllAccounts();
-  }, []);
+  }, [fetchAllAccounts]);
 
-  const handleAdd = async (newAccount: RegisterParams) => {
-    try {
-      const response = await accountApi.create(newAccount);
-      const addedAccount = {
-        id: response.account.id!,
-        ...newAccount,
-      };
-      setData((prev) => [...prev, addedAccount]);
-      setFilteredData((prev) => [...prev, addedAccount]);
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Error creating account:", error);
-    }
-  };
-
-  const handleEdit = async (updatedAccount: RegisterParams) => {
-    try {
-      await accountApi.edit(updatedAccount.account_id!, updatedAccount);
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Error updating account:", error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this account?")) {
+  const handleAdd = useCallback(
+    async (newAccount: RegisterParams) => {
       try {
-        await accountApi.delete(id);
-        setData((prev) => prev.filter((item) => item.account_id !== id));
-        setFilteredData((prev) =>
-          prev.filter((item) => item.account_id !== id)
-        );
+        const response = await accountApi.create(newAccount);
+        const addedAccount = {
+          id: response.account.id!,
+          ...newAccount,
+        };
+        setData((prev) => [...prev, addedAccount]);
+        setFilteredData((prev) => [...prev, addedAccount]);
+        setDialogOpen(false);
+        fetchAllAccounts();
+        setMessage("Thêm thành công!");
+        setSeverity("success");
+        setOpenAlert(true);
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
-        console.error("Error deleting account:", error);
+        setMessage("Thêm thất bại");
+        setSeverity("error");
+        setOpenAlert(true);
       }
-    }
-  };
+    },
+    [fetchAllAccounts, setMessage, setOpenAlert, setSeverity]
+  );
+
+  const handleEdit = useCallback(
+    async (updatedAccount: RegisterParams) => {
+      try {
+        await accountApi.edit(updatedAccount.account_id!, updatedAccount);
+        setDialogOpen(false);
+        fetchAllAccounts();
+        setMessage("Sửa thất bại");
+        setSeverity("success");
+        setOpenAlert(true);
+      } catch (error) {
+        console.error("Error updating account:", error);
+        setMessage("Sửa thất bại");
+        setSeverity("error");
+        setOpenAlert(true);
+      }
+    },
+    [fetchAllAccounts, setMessage, setOpenAlert, setSeverity]
+  );
+
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (window.confirm("Are you sure you want to delete this account?")) {
+        try {
+          await accountApi.delete(id);
+          // setData((prev) => prev.filter((item) => item.account_id !== id));
+          fetchAllAccounts();
+          setMessage("Xóa thành công");
+          setSeverity("success");
+          setOpenAlert(true);
+        } catch (error) {
+          console.error("Error deleting account:", error);
+          setMessage("Xóa thất bại");
+          setSeverity("error");
+          setOpenAlert(true);
+        }
+      }
+    },
+    [fetchAllAccounts, setMessage, setOpenAlert, setSeverity]
+  );
 
   const paginatedData = filteredData.slice(
     (currentPage - 1) * itemsPerPage,

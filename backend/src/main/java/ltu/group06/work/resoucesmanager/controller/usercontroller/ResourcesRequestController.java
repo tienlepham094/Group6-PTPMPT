@@ -175,6 +175,7 @@ public class ResourcesRequestController {
             requestMap.put("end_time", request.getEnd_time() != null ? request.getEnd_time().toString() : "The time has not yet been set");
             requestMap.put("statusRequest", request.getStatusRequest().name());
             requestMap.put("reason", request.getReason());
+            requestMap.put("timeUsage", request.getTimeUsage());
             requestMap.put("createdAt", request.getCreatedAt().toString());
             requestMap.put("updatedAt", request.getUpdatedAt().toString());
             return requestMap;

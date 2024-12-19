@@ -58,7 +58,7 @@ public class Request {
 
     public enum RequestStatus {
         pending, approved, rejected, cancelled, queued, completed
-    }
+    } 
 
     // tự động điền thời gian khi tạo mới
     @PrePersist

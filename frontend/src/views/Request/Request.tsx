@@ -10,7 +10,7 @@ import userApi from "../../api/user";
 import { ApproveDialog } from "../Approval/ApproveDialog";
 
 export const Request = () => {
-  const { user } = useAuth();
+  const { user, setMessage, setOpenAlert, setSeverity } = useAuth();
   const [data, setData] = useState<RequestParams[]>([]);
   const [editData, setEditData] = useState<RequestParams | undefined>(
     undefined
@@ -50,31 +50,51 @@ export const Request = () => {
     fetchAllRequests();
   }, [fetchAllRequests]);
 
-  const handleAdd = async (newRequest: RequestParams) => {
-    try {
-      await requestApi.create(newRequest);
-      fetchAllRequests(); // Refresh data after adding
-    } catch (error) {
-      console.error("Error creating request:", error);
-    }
-  };
+  const handleAdd = useCallback(
+    async (newRequest: RequestParams) => {
+      try {
+        await requestApi.create(newRequest);
+        fetchAllRequests(); // Refresh data after adding
+        setMessage("Thêm thành công");
+        setSeverity("success");
+        setOpenAlert(true);
+      } catch (error) {
+        console.error("Error creating request:", error);
+        setMessage("Thêm thất bại");
+        setSeverity("error");
+        setOpenAlert(true);
+      }
+    },
+    [fetchAllRequests, setMessage, setOpenAlert, setSeverity]
+  );
 
   const handleEdit = useCallback(
     async (updatedRequest: RequestParams) => {
+      if (!updatedRequest.requestId || !user?.id) {
+        console.error("Missing required parameters: requestId or userId");
+        return;
+      }
+
       try {
         await adminApi.editRequest(
-          updatedRequest.requestId!,
-          user?.id,
+          updatedRequest.request_Id,
+          user.id,
           updatedRequest
         );
-
         fetchAllRequests(); // Refresh data after editing
+        setMessage("Sửa thành công!");
+        setSeverity("success");
+        setOpenAlert(true);
       } catch (error) {
         console.error("Error updating request:", error);
+        setMessage("Sửa thất bại");
+        setSeverity("error");
+        setOpenAlert(true);
       }
     },
-    [fetchAllRequests, user?.id]
+    [fetchAllRequests, setMessage, setOpenAlert, setSeverity, user.id]
   );
+
   const handleApprove = useCallback(
     async (
       requestId: number,
@@ -87,25 +107,40 @@ export const Request = () => {
         await adminApi.approve(requestId, action, comments);
         fetchAllRequests(); // Refresh data after editing
         setApproveOpen(false);
+        setMessage("Chấp thuận thành công");
+        setSeverity("success");
+        setOpenAlert(true);
       } catch (error) {
         console.error("Error updating request:", error);
+        setMessage("Châps thuận thất bại");
+        setSeverity("error");
+        setOpenAlert(true);
       }
     },
-    [fetchAllRequests]
+    [fetchAllRequests, setMessage, setOpenAlert, setSeverity]
   );
 
-  const handleDelete = async (id: number) => {
-    if (window.confirm("Are you sure you want to delete this request?")) {
-      try {
-        console.log(id);
+  const handleDelete = useCallback(
+    async (id: number) => {
+      if (window.confirm("Are you sure you want to delete this request?")) {
+        try {
+          console.log(id);
 
-        await adminApi.deleteRequest(id, user?.id);
-        fetchAllRequests(); // Refresh data after deleting
-      } catch (error) {
-        console.error("Error deleting request:", error);
+          await adminApi.deleteRequest(id, user?.id);
+          fetchAllRequests(); // Refresh data after deleting
+          setMessage("Xóa thành công!");
+          setSeverity("success");
+          setOpenAlert(true);
+        } catch (error) {
+          console.error("Error deleting request:", error);
+          setMessage("Xóa thất bại");
+          setSeverity("error");
+          setOpenAlert(true);
+        }
       }
-    }
-  };
+    },
+    [fetchAllRequests, setMessage, setOpenAlert, setSeverity, user?.id]
+  );
 
   const columns: GridColDef[] = [
     { field: "request_id", headerName: "Request ID", width: 150 },
