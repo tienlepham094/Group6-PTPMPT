@@ -65,7 +65,7 @@ public class RequestIssueManagementController {
             requestMap.put("end_time", request.getEnd_time() != null ? request.getEnd_time().toString() : "The time has not yet been set");
             requestMap.put("status_request", request.getStatusRequest().name());
             requestMap.put("reason", request.getReason());
-            requestMap.put("timeUsage", request.getTimeUsage());
+            requestMap.put("time_usage", request.getTimeUsage());
             requestMap.put("created_at", request.getCreatedAt().toString());
             requestMap.put("updated_at", request.getUpdatedAt().toString());
             return requestMap;

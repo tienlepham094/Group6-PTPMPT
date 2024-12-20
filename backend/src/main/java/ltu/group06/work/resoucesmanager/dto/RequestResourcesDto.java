@@ -10,11 +10,11 @@ import ltu.group06.work.resoucesmanager.entity.Resource.ResourceType;
 @AllArgsConstructor
 
 public class RequestResourcesDto {
-    private ResourceType resourceType;
+    private ResourceType resource_type;
     private int quantity;
     private String reason;
-    private int timeUsage;
-    private String endTime;
-    private int userId;
+    private int time_usage;
+    private String end_time;
+    private int user_id;
 
 }

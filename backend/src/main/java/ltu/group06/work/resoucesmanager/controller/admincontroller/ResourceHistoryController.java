@@ -44,7 +44,7 @@ public class ResourceHistoryController {
 
         for (Resource resource : resources) {
             Map<String, Object> resourceStatus = new HashMap<>();
-            resourceStatus.put("resourceType", resource.getResourceType());
+            resourceStatus.put("resource_type", resource.getResourceType());
             resourceStatus.put("totalQuantity", resource.getQuantity());
             resourceStatus.put("status", resource.getStatusResources());
 
