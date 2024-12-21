@@ -11,6 +11,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -59,7 +61,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
                 sendMessage(chatId, "Vui lòng nhập email của bạn để kích hoạt.");
                 awaitingEmailMap.put(chatId, true);
             } else if (awaitingEmailMap.getOrDefault(chatId, false)) {
-//                handleEmailInput(chatId, messageText);
+                handleEmailInput(chatId, messageText);
             } else if (awaitingOtpMap.containsKey(chatId)) {
                 handleOtpInput(chatId, messageText);
             } else {
@@ -68,27 +70,29 @@ public class TelegramBotService extends TelegramLongPollingBot {
         }
     }
 
-//    private void handleEmailInput(Long chatId, String email) {
-//        Optional<User> userOpt = userService.findByEmail(email);
-//
-//        if (userOpt.isPresent()) {
-//            User user = userOpt.get();
-//
-//            // Kiểm tra nếu Telegram ID đã được liên kết
-//            if (telegramUserService.isTelegramLinked(chatId, user)) { // Dùng phương thức kiểm tra
-//                sendMessage(chatId, "Tài khoản của bạn đã được liên kết với bot Telegram.");
-//                awaitingEmailMap.remove(chatId);
-//                return;
-//            }
-//
-//            OTP otp = otpService.sendOTP(user); // Gửi OTP mới và lưu vào DB
-//            sendMessage(chatId, "OTP đã được gửi đến email của bạn. Vui lòng nhập OTP trong vòng 15 phút.");
-//            awaitingOtpMap.put(chatId, otp);
-//            awaitingEmailMap.remove(chatId);
-//        } else {
-//            sendMessage(chatId, "Email không tồn tại trong hệ thống. Vui lòng thử lại.");
-//        }
-//    }
+    private void handleEmailInput(Long chatId, String email) {
+        List<User> users = userService.findByEmail(email);
+
+        if (!users.isEmpty()) {
+            // Assume you only want to handle the first user for simplicity
+            User user = users.get(0);
+
+            // Kiểm tra nếu Telegram ID đã được liên kết
+            if (telegramUserService.isTelegramLinked(chatId, user)) {
+                sendMessage(chatId, "Tài khoản của bạn đã được liên kết với bot Telegram.");
+                awaitingEmailMap.remove(chatId);
+                return;
+            }
+
+            OTP otp = otpService.sendOTP(user); // Gửi OTP mới và lưu vào DB
+            sendMessage(chatId, "OTP đã được gửi đến email của bạn. Vui lòng nhập OTP trong vòng 15 phút.");
+            awaitingOtpMap.put(chatId, otp);
+            awaitingEmailMap.remove(chatId);
+        } else {
+            sendMessage(chatId, "Email không tồn tại trong hệ thống. Vui lòng thử lại.");
+        }
+    }
+
 
     private void handleOtpInput(Long chatId, String messageText) {
         OTP otp = awaitingOtpMap.get(chatId);

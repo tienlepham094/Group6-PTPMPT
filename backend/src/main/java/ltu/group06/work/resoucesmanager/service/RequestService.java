@@ -56,5 +56,8 @@ public class RequestService {
     public Request save(Request request) {
         return requestRepository.save(request);
     }
+    public Optional<Request> getRequestById(Integer requestId) {
+        return requestRepository.findById(requestId);
+    }
 
 }

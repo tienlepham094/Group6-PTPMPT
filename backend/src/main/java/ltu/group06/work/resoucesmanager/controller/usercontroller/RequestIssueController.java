@@ -8,25 +8,53 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.sql.Timestamp;
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/app")
-@PreAuthorize("hasRole('USER')")
+@PreAuthorize("hasRole('user')")
 public class RequestIssueController {
     @Autowired
     private RequestService requestService;
-    // Update a request (only if status is pending)
-    @PutMapping("/requests/{requestId}")
-    public ResponseEntity<?> updateRequest(@PathVariable Integer requestId, @RequestBody Request requestDetails) {
-        Optional<Request> existingRequest = requestService.getRequestById(requestId);
-        if (existingRequest.isPresent() && "pending".equals(existingRequest.get().getStatusRequest().name())) {
-            requestDetails.setRequestId(requestId);
-            Request updatedRequest = requestService.save(requestDetails);
-            return ResponseEntity.ok(updatedRequest);
-        } else if (existingRequest.isPresent()) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only pending requests can be modified.");
+
+    /**
+     * API update request của user voi dieu kien request phai la pending
+     *
+     * @param requestId (param requestId)
+     * @param requestDetails (body)
+     *                       {
+     *     "resourceType": "GPU",
+     *     "quantity": 2,
+     *     "reason": "Need more GPUs for computation",
+     *     "timeUsage": 4
+     * }
+     * @return
+     */
+    @PutMapping("user/update/request")
+    public ResponseEntity<?> updateRequest(@RequestParam Integer requestId, @RequestBody Request requestDetails) {
+        Optional<Request> existingRequestOpt = requestService.getRequestById(requestId);
+
+        if (!existingRequestOpt.isPresent()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Request not found", "requestId", requestId));
         }
-        return ResponseEntity.notFound().build();
+
+        Request existingRequest = existingRequestOpt.get();
+
+        if (!"pending".equals(existingRequest.getStatusRequest().name())) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Only pending requests can be modified.", "requestId", requestId));
+        }
+
+        existingRequest.setResourceType(requestDetails.getResourceType());
+        existingRequest.setQuantity(requestDetails.getQuantity());
+        existingRequest.setReason(requestDetails.getReason());
+        existingRequest.setTimeUsage(requestDetails.getTimeUsage());
+
+        existingRequest.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+
+        Request updatedRequest = requestService.save(existingRequest);
+
+        return ResponseEntity.ok(Map.of("message", "Request updated successfully", "requestId", updatedRequest.getRequestId(), "status", updatedRequest.getStatusRequest()));
     }
 }
