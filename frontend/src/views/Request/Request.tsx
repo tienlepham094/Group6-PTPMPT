@@ -1,264 +1,303 @@
-import { Button, Paper } from "@mui/material";
+import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { useState, useEffect, useCallback } from "react";
-import adminApi from "../../api/admin";
-import requestApi from "../../api/request";
-import { CustomeDialog } from "../../components/Dialog/CustomeDialog";
-import { RequestParams } from "../../context/types";
+import Paper from "@mui/material/Paper";
+import {
+  Box,
+  Button,
+  TextField,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  MenuItem,
+  DialogContentText,
+  SelectChangeEvent,
+  FormControl,
+} from "@mui/material";
 import { useAuth } from "../../context/useAuth";
-import userApi from "../../api/user";
-import { ApproveDialog } from "../Approval/ApproveDialog";
+import { RESOURCETYPE } from "../../api/enum";
+import resourceApi from "../../api/resource";
+import groupApi from "../../api/group";
+import { Requests } from "../../types";
+import requestApi from "../../api/request";
 
 export const Request = () => {
   const { user, setMessage, setOpenAlert, setSeverity } = useAuth();
-  const [data, setData] = useState<RequestParams[]>([]);
-  const [editData, setEditData] = useState<RequestParams | undefined>(
-    undefined
-  );
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [approveOpen, setApproveOpen] = useState(false);
+  const [request, setRequest] = useState<Requests[] | null>([]);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Add delete dialog state
+  const [resourceToDelete, setResourceToDelete] = useState<Requests | null>(
+    null
+  ); // State for resource to delete
+  const [newResource, setNewResource] = useState<Requests>({
+    id: 0,
+    resource: {
+      id: 0,
+    },
+    endTime: new Date(),
+    startTime: new Date(),
+    quantity: 0,
+    user: user,
+  });
 
-  const fetchAllRequests = useCallback(async () => {
+  const fetchAllRequest = useCallback(async () => {
     try {
-      if (user?.role === "admin") {
-        const requestData = await adminApi.getAllRequest();
-        const requests = (requestData.requests || []).map(
-          (request: RequestParams) => ({
-            ...request,
-            id: request.request_id, // Ensure DataGrid has unique `id`
-          })
-        );
-        setData(requests);
-      } else if (user?.role === "user") {
-        console.log("first");
-
-        const requestData = await userApi.getAllRequest(user.id!);
-        const requests = (requestData.requests || []).map(
-          (request: RequestParams) => ({
-            ...request,
-            id: request.requestId, // Ensure DataGrid has unique `id`
-          })
-        );
-        setData(requests);
-      }
+      const request = await requestApi.getAllRequests();
+      setRequest(request);
+      const groups = await groupApi.getAllGroup();
     } catch (error) {
-      console.error("Error fetching requests:", error);
+      console.error("Error fetching request:", error);
     }
-  }, [user?.id, user?.role]);
+  }, []);
 
   useEffect(() => {
-    fetchAllRequests();
-  }, [fetchAllRequests]);
+    fetchAllRequest();
+  }, [fetchAllRequest]);
 
-  const handleAdd = useCallback(
-    async (newRequest: RequestParams) => {
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setNewResource((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const response = await resourceApi.createResource(newResource);
+      setRequest((prev) => [...(prev || []), response]);
+      setOpenDialog(false);
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    }
+  };
+
+  const handleEdit = (resource: Request) => {
+    setNewResource(resource);
+    setOpenDialog(true);
+  };
+
+  const handleDelete = async () => {
+    if (resourceToDelete) {
       try {
-        await requestApi.create(newRequest);
-        fetchAllRequests(); // Refresh data after adding
-        setMessage("Thêm thành công");
-        setSeverity("success");
-        setOpenAlert(true);
+        await resourceApi.deleteResource(resourceToDelete.id);
+        setRequest((prev) => prev?.filter((r) => r.id !== resourceToDelete.id));
+        setOpenDeleteDialog(false);
       } catch (error) {
-        console.error("Error creating request:", error);
-        setMessage("Thêm thất bại");
-        setSeverity("error");
-        setOpenAlert(true);
+        console.error("Error deleting resource:", error);
       }
-    },
-    [fetchAllRequests, setMessage, setOpenAlert, setSeverity]
-  );
-
-  const handleEdit = useCallback(
-    async (updatedRequest: RequestParams) => {
-      if (!updatedRequest.requestId || !user?.id) {
-        console.error("Missing required parameters: requestId or userId");
-        return;
-      }
-
-      try {
-        await adminApi.editRequest(
-          updatedRequest.request_Id,
-          user.id,
-          updatedRequest
-        );
-        fetchAllRequests(); // Refresh data after editing
-        setMessage("Sửa thành công!");
-        setSeverity("success");
-        setOpenAlert(true);
-      } catch (error) {
-        console.error("Error updating request:", error);
-        setMessage("Sửa thất bại");
-        setSeverity("error");
-        setOpenAlert(true);
-      }
-    },
-    [fetchAllRequests, setMessage, setOpenAlert, setSeverity, user.id]
-  );
-
-  const handleApprove = useCallback(
-    async (
-      requestId: number,
-      action: "approve" | "reject" | "queue",
-      comments?: string
-    ) => {
-      try {
-        console.log(requestId, action, comments);
-
-        await adminApi.approve(requestId, action, comments);
-        fetchAllRequests(); // Refresh data after editing
-        setApproveOpen(false);
-        setMessage("Chấp thuận thành công");
-        setSeverity("success");
-        setOpenAlert(true);
-      } catch (error) {
-        console.error("Error updating request:", error);
-        setMessage("Châps thuận thất bại");
-        setSeverity("error");
-        setOpenAlert(true);
-      }
-    },
-    [fetchAllRequests, setMessage, setOpenAlert, setSeverity]
-  );
-
-  const handleDelete = useCallback(
-    async (id: number) => {
-      if (window.confirm("Are you sure you want to delete this request?")) {
-        try {
-          console.log(id);
-
-          await adminApi.deleteRequest(id, user?.id);
-          fetchAllRequests(); // Refresh data after deleting
-          setMessage("Xóa thành công!");
-          setSeverity("success");
-          setOpenAlert(true);
-        } catch (error) {
-          console.error("Error deleting request:", error);
-          setMessage("Xóa thất bại");
-          setSeverity("error");
-          setOpenAlert(true);
-        }
-      }
-    },
-    [fetchAllRequests, setMessage, setOpenAlert, setSeverity, user?.id]
-  );
+    }
+  };
 
   const columns: GridColDef[] = [
-    { field: "request_id", headerName: "Request ID", width: 150 },
-    { field: "user_id", headerName: "User ID", width: 150 },
-    { field: "resource_type", headerName: "Loại tài nguyên", width: 150 },
-    { field: "quantity", headerName: "Số lượng", width: 150 },
-    { field: "reason", headerName: "Lý do", width: 150 },
-    { field: "timeUsage", headerName: "Số giờ sử dung", width: 150 },
-    // { field: "start_time", headerName: "Gờ bắt đầu", width: 150 },
-    // { field: "end_time", headerName: "Giờ kết thúc", width: 150 },
-    { field: "status_request", headerName: "Trạng thái", width: 150 },
+    { field: "name", headerName: "Tên tài nguyên", flex: 1 },
+    { field: "description", headerName: "Mô tả", flex: 1 },
+    { field: "type", headerName: "Loại", flex: 1 },
+    { field: "totalQuantity", headerName: "Số lượng hiện có", flex: 1 },
+    { field: "availableQuantity", headerName: "Số lượng khả dụng", flex: 1 },
+    {
+      field: "group",
+      headerName: "Tài nguyên của nhóm",
+      flex: 1,
+      valueGetter: (params) => {
+        if (params !== null && params?.name) {
+          return params?.name;
+        } else {
+          return "ADMIN";
+        }
+      },
+    },
+    {
+      field: "createdBy",
+      headerName: "Tạo bởi",
+      flex: 1,
+      valueGetter: (params) => {
+        if (params !== null && params?.username) {
+          return params?.username;
+        } else {
+          return "N/A";
+        }
+      },
+    },
+    { field: "createdAt", headerName: "Ngày được tạo", flex: 1 },
     {
       field: "actions",
-      headerName: "",
-      width: 300,
-      renderCell: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            className="action-btn edit-btn"
-            onClick={() => {
-              setEditData(params.row);
-              setDialogOpen(true);
-            }}
+      headerName: "Thao tác",
+      width: 250,
+      headerAlign: "center",
+      align: "center",
+      renderCell: (params) => {
+        return (
+          <Box
+            display="flex"
+            justifyContent="space-evenly"
+            gap={0}
+            sx={{ alignSelf: "center" }}
           >
-            Chỉnh sửa
-          </button>
-          <button
-            className="action-btn delete-btn"
-            onClick={() => handleDelete(params.row.request_id)}
-          >
-            Xóa
-          </button>
-          <button
-            className="action-btn edit-btn"
-            onClick={() => {
-              setEditData(params.row);
-              console.log(editData);
-              setApproveOpen(true);
-            }}
-          >
-            Chấp thuận
-          </button>
-        </div>
-      ),
+            <Button
+              variant="outlined"
+              color="primary"
+              onClick={() => handleEdit(params.row)}
+            >
+              Chỉnh sửa
+            </Button>
+            <Button
+              variant="contained"
+              color="error"
+              onClick={() => {
+                setResourceToDelete(params.row); // Set resource to delete
+                setOpenDeleteDialog(true); // Open delete confirmation dialog
+              }}
+            >
+              Xóa
+            </Button>
+          </Box>
+        );
+      },
     },
   ];
-  const columnsUser: GridColDef[] = [
-    { field: "requestId", headerName: "Request ID", width: 150 },
-    { field: "user_id", headerName: "User ID", width: 150 },
-    { field: "resourceType", headerName: "Loại tài nguyên", width: 150 },
-    { field: "quantity", headerName: "Số lượng", width: 150 },
-    { field: "reason", headerName: "Lý do", width: 150 },
-    { field: "timeUsage", headerName: "Số giờ sử dung", width: 150 },
-    // { field: "start_time", headerName: "Gờ bắt đầu", width: 150 },
-    // { field: "end_time", headerName: "Giờ kết thúc", width: 150 },
-    { field: "statusRequest", headerName: "Trạng thái", width: 150 },
-    {
-      field: "actions",
-      headerName: "",
-      width: 200,
-      renderCell: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            className="action-btn edit-btn"
-            onClick={() => {
-              setEditData(params.row);
-              setDialogOpen(true);
-            }}
-          >
-            Chỉnh sửa
-          </button>
-          <button
-            className="action-btn delete-btn"
-            onClick={() => handleDelete(params.row.request_id)}
-          >
-            Xóa
-          </button>
-        </div>
-      ),
-    },
-  ];
-  const paginationModel = { page: 0, pageSize: 5 };
 
   return (
-    <div className="request-container" style={{ width: "95%" }}>
-      <Button
-        variant="contained"
-        onClick={() => {
-          setEditData(undefined); // Clear edit data
-          setDialogOpen(true); // Open dialog for new request
-        }}
-        sx={{ marginBottom: 10 }}
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ marginBottom: 2 }}
       >
-        Thêm yêu cầu
-      </Button>
+        <FormControl fullWidth sx={{ maxWidth: 250 }}>
+          <TextField
+            label="Nhóm quản lý"
+            select
+            // value={selectedGroupId || 0}
+          >
+            <MenuItem>Yêu cầu nhóm</MenuItem>
+            <MenuItem>Yêu cầu cá nhân</MenuItem>
+          </TextField>
+        </FormControl>
+        <Button
+          variant="contained"
+          sx={{ marginLeft: 2 }}
+          onClick={() => setOpenDialog(true)}
+        >
+          Thêm tài nguyên
+        </Button>
+      </Box>
+
+      {/* Add/Edit Resource Dialog */}
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+        <DialogTitle>
+          {newResource.id === 0
+            ? "Thêm tài nguyên mới"
+            : "Chỉnh sửa tài nguyên"}
+        </DialogTitle>
+        {/* <DialogContent>
+          <TextField
+            name="name"
+            label="Tên tài nguyên"
+            value={newResource.name}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="description"
+            label="Mô tả"
+            value={newResource.description}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            name="type"
+            select
+            label="Loại"
+            value={newResource.type}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          >
+            {Object.values(RESOURCETYPE).map((type) => (
+              <MenuItem key={type} value={type}>
+                {type}
+              </MenuItem>
+            ))}
+          </TextField>
+          <TextField
+            name="totalQuantity"
+            label="Số lượng hiện có"
+            value={newResource.totalQuantity}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+            type="number"
+          />
+          <TextField
+            name="availableQuantity"
+            label="Số lượng khả dụng"
+            value={newResource.availableQuantity}
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+            type="number"
+          />
+          <TextField
+            name="group"
+            label="Nhóm cấp phát"
+            value={newResource.group?.id || ""}
+            select
+            onChange={handleFormChange}
+            fullWidth
+            margin="normal"
+          >
+            {groups?.map((group) => (
+              <MenuItem key={group.id} value={{ id: group.id }}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </TextField>
+          <pre>{JSON.stringify(newResource, null, 2)}</pre>
+        </DialogContent> */}
+        <DialogActions>
+          <Button onClick={() => setOpenDialog(false)} color="primary">
+            Hủy
+          </Button>
+          <Button onClick={handleSubmit} color="primary">
+            Lưu
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Xóa tài nguyên</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có chắc chắn muốn xóa tài nguyên này không?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
+            Hủy
+          </Button>
+          <Button onClick={handleDelete} color="error">
+            Xóa
+          </Button>
+        </DialogActions>
+      </Dialog>
+
       <Paper sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={data}
-          columns={user?.role === "admin" ? columns : columnsUser}
+          rows={request || []}
+          columns={columns}
           getRowId={(row) => row.id}
           pageSizeOptions={[5, 10]}
-          checkboxSelection
           sx={{ border: 0 }}
-          initialState={{ pagination: { paginationModel } }}
         />
       </Paper>
-      <CustomeDialog
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onSubmit={editData ? handleEdit : handleAdd}
-        data={editData}
-      />
-      <ApproveDialog
-        onClose={() => setApproveOpen(false)}
-        onSubmit={handleApprove}
-        open={approveOpen}
-        requestId={editData?.id}
-      />
-    </div>
+    </>
   );
 };

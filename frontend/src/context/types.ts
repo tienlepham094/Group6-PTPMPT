@@ -14,7 +14,7 @@ export type RegisterParams = {
   password: string;
 };
 export type UserDataType = {
-  id?: number;
+  id: number;
   username: string;
   password: string;
   role?: "admin" | "user";
@@ -55,11 +55,10 @@ export type ApprovalParams = {
 export type UserContextType = {
   loading: boolean;
   setLoading: (value: boolean) => void;
-  user: UserDataType | null;
+  user: UserDataType;
   setUser: (value: UserDataType | null) => void;
   logout: () => void;
   login: (params: LoginParams, errorCallback?: ErrCallbackType) => void;
-  token: string | null;
   registerUser: (
     params: RegisterParams,
     errorCallback?: ErrCallbackType

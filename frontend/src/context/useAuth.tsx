@@ -16,7 +16,6 @@ const defaultProvider: UserContextType = {
   setLoading: () => Boolean,
   login: () => Promise.resolve(),
   logout: () => Promise.resolve(),
-  token: null,
   registerUser: () => Promise.resolve(),
   isLoggedIn: function (): boolean {
     throw new Error("Function not implemented.");
@@ -32,7 +31,7 @@ type Props = { children: React.ReactNode };
 const UserContext = createContext(defaultProvider);
 export const UserProvider = ({ children }: Props) => {
   const navigate = useNavigate();
-  const [token, setToken] = useState<string | null>(null);
+  // const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<UserDataType | null>(defaultProvider.user);
   const [isReady, setIsReady] = useState(false);
   const [loading, setLoading] = useState<boolean>(defaultProvider.loading);
@@ -44,19 +43,13 @@ export const UserProvider = ({ children }: Props) => {
 
   useEffect(() => {
     const user = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-    if (user && token) {
+    if (user) {
       setUser(JSON.parse(user));
-      setToken(token);
     }
     setIsReady(true);
-    console.log(user);
   }, []);
 
-  const handleLogin = async (
-    params: LoginParams,
-    errorCallback?: ErrCallbackType
-  ) => {
+  const handleLogin = async (params: LoginParams) => {
     try {
       const res = await authApi.login(params);
       setUser(res.data);
@@ -71,43 +64,6 @@ export const UserProvider = ({ children }: Props) => {
       setSeverity("error");
       setOpenAlert(true);
     }
-    // authApi
-    //   .login(params)
-    //   .then(async () => {
-    //     // Generate a dummy token
-    //     const token = generateDummyToken(params.username);
-
-    //     // Save token and user to localStorage
-    //     // if (params.rememberMe) {
-    //     localStorage.setItem("token", token);
-    //     // }
-    //     const userData = {
-    //       id: params.id,
-    //       username: params.username,
-    //       password: params.password, // Note: Avoid storing plain passwords in production!
-    //       // role: params.role,
-    //     };
-    //     console.log(userData);
-
-    //     setUser(userData);
-    //     setToken(token);
-
-    //     localStorage.setItem("user", JSON.stringify(userData));
-
-    //     setMessage("Đăng nhập thành công!");
-    //     setSeverity("success");
-    //     setOpenAlert(true);
-    //     console.log("first");
-
-    //     navigate("/dashboard");
-    //   })
-    //   .catch((err) => {
-    //     if (errorCallback) {
-    //       errorCallback(err);
-    //       setMessage("Đăng nhập thất bại!");
-    //       setOpenAlert(true);
-    //     }
-    //   });
   };
 
   const handleRegister = (
@@ -138,7 +94,6 @@ export const UserProvider = ({ children }: Props) => {
     isLoggedIn: isLoggedIn,
     registerUser: handleRegister,
     user,
-    token,
     loading,
     setUser,
     setLoading,
@@ -150,16 +105,6 @@ export const UserProvider = ({ children }: Props) => {
     setMessage,
     severity,
     setSeverity,
-  };
-  const generateDummyToken = (username: string): string => {
-    const payload = {
-      username: username,
-      issuedAt: new Date().toISOString(),
-      expiry: new Date(Date.now() + 3600 * 1000).toISOString(), // 1-hour expiry
-    };
-
-    // Convert payload to a Base64-encoded string
-    return btoa(JSON.stringify(payload));
   };
 
   return (

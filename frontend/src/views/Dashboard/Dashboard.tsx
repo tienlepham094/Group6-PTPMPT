@@ -74,11 +74,11 @@ const Dashboard = () => {
           <p>Usage: {cpuMetrics.cpuUsagePercent.toFixed(2)}%</p>
           <p>Idle: {(100 - cpuMetrics.cpuUsagePercent).toFixed(2)}%</p>
         </div>
-        <div className="card">
+        {/* <div className="card">
           <h4>Network</h4>
           <p>Received: {networkTraffic.totalBytesReceivedMB} MB</p>
           <p>Sent: {networkTraffic.totalBytesSentMB} MB</p>
-        </div>
+        </div> */}
       </div>
 
       {/* Diagrams Section */}
@@ -116,7 +116,7 @@ const Dashboard = () => {
           width={300}
         />
 
-        <h3>Network Traffic</h3>
+        {/* <h3>Network Traffic</h3>
         <PieChart
           series={[
             {
@@ -125,7 +125,7 @@ const Dashboard = () => {
           ]}
           height={300}
           width={300}
-        />
+        /> */}
       </div>
     </div>
   );

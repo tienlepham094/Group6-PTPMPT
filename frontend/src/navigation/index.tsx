@@ -9,21 +9,25 @@ const navigation = () => [
     title: "Trang chủ",
     path: "dashboard",
     icon: <DashboardManageAccountsOutlinedIconIcon />,
+    role: ["admin", "manager", "user"],
   },
   {
     title: "Tài khoản",
     path: "account",
     icon: <ManageAccountsManageAccountsOutlinedIconIcon />,
+    role: ["admin", "manager"],
   },
   {
     title: "Tài nguyên",
     path: "resource",
     icon: <DeveloperBoardManageAccountsOutlinedIconIcon />,
+    role: ["admin", "manager", "user"],
   },
   {
     title: "Yêu cầu",
     path: "request",
     icon: <ContentPasteManageAccountsOutlinedIconIcon />,
+    role: ["admin", "manager", "user"],
   },
   // {
   //   title: "Chấp thuận",
@@ -34,6 +38,7 @@ const navigation = () => [
     title: "Giới thiệu",
     path: "about",
     icon: <InfoManageAccountsOutlinedIconIcon />,
+    role: ["admin", "manager", "user"],
   },
 ];
 
