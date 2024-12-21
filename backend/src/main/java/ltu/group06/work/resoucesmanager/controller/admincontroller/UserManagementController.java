@@ -27,6 +27,7 @@ public class UserManagementController {
                         user.getUserId(),
                         user.getUsername(),
                         user.getEmail(),
+                        user.getPasswordHash(),
                         user.getRole()))
                 .collect(Collectors.toList());
 
@@ -45,7 +46,9 @@ public class UserManagementController {
                 user.getUserId(),
                 user.getUsername(),
                 user.getEmail(),
+                user.getPasswordHash(),
                 user.getRole());
+
         return ResponseEntity.ok(userDto);
     }
 
@@ -61,6 +64,7 @@ public class UserManagementController {
                 updatedUser.getUserId(),
                 updatedUser.getUsername(),
                 updatedUser.getEmail(),
+                updatedUser.getPasswordHash(),
                 updatedUser.getRole());
         return ResponseEntity.ok(userDto);
     }
@@ -89,6 +93,7 @@ public class UserManagementController {
                         user.getUserId(),
                         user.getUsername(),
                         user.getEmail(),
+                        user.getPasswordHash(),
                         user.getRole()))
                 .collect(Collectors.toList());
 

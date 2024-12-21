@@ -3,7 +3,7 @@ package ltu.group06.work.resoucesmanager.controller2;
 import ltu.group06.work.resoucesmanager.dto.ResourceAllocationRequest;
 import ltu.group06.work.resoucesmanager.dto.ResourceReleaseRequest;
 import ltu.group06.work.resoucesmanager.entity.Resource2;
-import ltu.group06.work.resoucesmanager.service2.ResourceService;
+import ltu.group06.work.resoucesmanager.service2.ResourceService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/resources")
-public class ResourceController {
+@RequestMapping("/auth/api/resources")
+public class ResourceController2 {
 
     @Autowired
-    private ResourceService resourceService;
+    private ResourceService2 resourceService;
 
     @PostMapping
     public ResponseEntity<Resource2> createResource(@RequestBody Resource2 resource) {
@@ -28,6 +28,12 @@ public class ResourceController {
     @GetMapping
     public ResponseEntity<List<Resource2>> getAllResources() {
         List<Resource2> resources = resourceService.getAllResources();
+        return ResponseEntity.ok(resources);
+    }
+
+    @GetMapping("/group/{id}")
+    public ResponseEntity<List<Resource2>> getResourceByGroupId(@PathVariable Long id) {
+        List<Resource2> resources = resourceService.getResourceByGroupId(id);
         return ResponseEntity.ok(resources);
     }
 

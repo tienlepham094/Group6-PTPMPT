@@ -3,7 +3,7 @@ package ltu.group06.work.resoucesmanager.service2;
 import ltu.group06.work.resoucesmanager.dto.ResourceAllocationRequest;
 import ltu.group06.work.resoucesmanager.dto.ResourceReleaseRequest;
 import ltu.group06.work.resoucesmanager.entity.Resource2;
-import ltu.group06.work.resoucesmanager.repository2.ResourceRepository;
+import ltu.group06.work.resoucesmanager.repository2.ResourceRepository2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,10 +11,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ResourceService {
+public class ResourceService2 {
 
     @Autowired
-    private ResourceRepository resourceRepository;
+    private ResourceRepository2 resourceRepository;
 
     public Resource2 createResource(Resource2 resource) {
         return resourceRepository.save(resource);
@@ -23,6 +23,14 @@ public class ResourceService {
     public Optional<Resource2> getResourceById(Long id) {
         return resourceRepository.findById(id);
     }
+
+    public List<Resource2> getResourceByGroupId(Long id) {
+        return resourceRepository.findByGroupId(id);
+    }
+
+//    public Optional<Resource2> getResourceByType(Resource2.ResourceType type) {
+//        return resourceRepository.;
+//    }
 
     public List<Resource2> getAllResources() {
         return resourceRepository.findAll();

@@ -2,7 +2,7 @@ package ltu.group06.work.resoucesmanager.controller2;
 
 import jakarta.servlet.http.HttpSession;
 import ltu.group06.work.resoucesmanager.entity.User2;
-import ltu.group06.work.resoucesmanager.service2.UserService;
+import ltu.group06.work.resoucesmanager.service2.UserService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,10 +12,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/users")
-public class UserController {
+public class UserController2 {
 
     @Autowired
-    private UserService userService;
+    private UserService2 userService;
 
     @PostMapping
     public ResponseEntity<User2> createUser(@RequestBody User2 user) {

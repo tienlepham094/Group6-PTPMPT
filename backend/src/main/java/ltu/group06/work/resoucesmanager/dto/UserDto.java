@@ -5,12 +5,14 @@ public class UserDto {
     private String username;
     private String email;
     private String role;
+    private String password;
 
-    public UserDto(int id, String username, String email, String role) {
+    public UserDto(int id, String username, String email, String role, String password) {
         this.id = id;
         this.username = username;
         this.email = email;
         this.role = role;
+        this.password = password;
     }
 
     // Getters and Setters
@@ -44,5 +46,11 @@ public class UserDto {
 
     public void setRole(String role) {
         this.role = role;
+    }
+    public String getPassword() {
+        return password;
+    }
+    public void setPassword(String password) {
+        this.password = password;
     }
 }

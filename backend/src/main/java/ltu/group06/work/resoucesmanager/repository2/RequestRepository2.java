@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface RequestRepository extends JpaRepository<Request2, Long> {
-    List<Request2> findByUserId(Long userId);
+public interface RequestRepository2 extends JpaRepository<Request2, Long> {
+    List<Request2> findByUser_Id(Long userId);
     List<Request2> findByStatus(Request2.Status status);
 }

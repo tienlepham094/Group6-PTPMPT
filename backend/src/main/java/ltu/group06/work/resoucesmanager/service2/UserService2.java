@@ -1,17 +1,17 @@
 package ltu.group06.work.resoucesmanager.service2;
 
 import ltu.group06.work.resoucesmanager.entity.User2;
-import ltu.group06.work.resoucesmanager.repository2.UserRepository;
+import ltu.group06.work.resoucesmanager.repository2.UserRepository2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
 @Service
-public class UserService {
+public class UserService2 {
 
     @Autowired
-    private UserRepository userRepository;
+    private UserRepository2 userRepository;
 
     public User2 createUser(User2 user) {
         return userRepository.save(user);

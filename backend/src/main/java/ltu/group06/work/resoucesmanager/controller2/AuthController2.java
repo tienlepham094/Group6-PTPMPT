@@ -3,22 +3,20 @@ package ltu.group06.work.resoucesmanager.controller2;
 import jakarta.servlet.http.HttpSession;
 import ltu.group06.work.resoucesmanager.dto.LoginRequest;
 import ltu.group06.work.resoucesmanager.entity.User2;
-import ltu.group06.work.resoucesmanager.service2.UserService;
+import ltu.group06.work.resoucesmanager.service2.UserService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/auth")
-public class AuthController {
+@CrossOrigin(origins = "*") // Cho phép tất cả các nguồn gửi request
+public class AuthController2 {
 
     @Autowired
-    private UserService userService;
+    private UserService2 userService;
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User2 user) {
@@ -34,7 +32,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
+    public ResponseEntity<Object> login(@RequestBody LoginRequest loginRequest, HttpSession session) {
         User2 user = userService.findByUsername(loginRequest.getUsername());
 
         if (user == null || !new BCryptPasswordEncoder().matches(loginRequest.getPassword(), user.getPassword())) {
@@ -44,6 +42,6 @@ public class AuthController {
         // Lưu trạng thái vào session.
         session.setAttribute("loggedInUser", user);
 
-        return ResponseEntity.ok("Login successful!");
+        return ResponseEntity.ok(user);
     }
 }
