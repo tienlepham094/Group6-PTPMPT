@@ -136,4 +136,12 @@ public class UserService {
         user.setActive(true);
         userRepository.save(user);
     }
+
+    public boolean isAdmin(Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        Optional<User> user = userRepository.findById(userId);
+        return user.map(u -> "ADMIN".equalsIgnoreCase(u.getRole())).orElse(false);
+    }
 }

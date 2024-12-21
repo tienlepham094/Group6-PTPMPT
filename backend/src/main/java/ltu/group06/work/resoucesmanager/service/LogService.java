@@ -29,4 +29,7 @@ public class LogService {
 
         logRepository.save(log);
     }
+    public List<Log> findLogsByActionAndUserId(String action, Integer userId) {
+        return logRepository.findByActionAndUserId(action, userId);
+    }
 }

@@ -1,6 +1,8 @@
 package ltu.group06.work.resoucesmanager.service;
 
+import ltu.group06.work.resoucesmanager.entity.Request;
 import ltu.group06.work.resoucesmanager.entity.Resource;
+import ltu.group06.work.resoucesmanager.repository.RequestRepository;
 import ltu.group06.work.resoucesmanager.repository.ResourceRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,8 @@ public class ResourceService {
 
     @Autowired
     private ResourceRepository resourceRepository;
+    @Autowired
+    private RequestRepository requestRepository;
 
     public Optional<Resource> findAvailableResource(Resource.ResourceType resourceType) {
         return resourceRepository.findByResourceTypeAndStatusResources(resourceType, Resource.ResourceStatus.available);
@@ -31,5 +35,8 @@ public class ResourceService {
 
     public void updateResource(Resource resource) {
         resourceRepository.save(resource);
+    }
+    public Optional<Request> getRequestById(Integer requestId) {
+        return requestRepository.findById(requestId);
     }
 }
