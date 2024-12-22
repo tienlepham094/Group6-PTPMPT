@@ -11,39 +11,47 @@ import {
   DialogTitle,
   MenuItem,
   DialogContentText,
-  SelectChangeEvent,
   FormControl,
 } from "@mui/material";
 import { useAuth } from "../../context/useAuth";
-import { RESOURCETYPE } from "../../api/enum";
-import resourceApi from "../../api/resource";
 import groupApi from "../../api/group";
-import { Requests } from "../../types";
+import { Requests, Resources } from "../../types";
 import requestApi from "../../api/request";
+import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import resourceApi from "../../api/resource";
+import { RESOURCETYPE } from "../../api/enum";
+import dayjs, { Dayjs } from "dayjs";
 
 export const Request = () => {
   const { user, setMessage, setOpenAlert, setSeverity } = useAuth();
   const [request, setRequest] = useState<Requests[] | null>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Add delete dialog state
-  const [resourceToDelete, setResourceToDelete] = useState<Requests | null>(
-    null
-  ); // State for resource to delete
-  const [newResource, setNewResource] = useState<Requests>({
+  const [openAddGroupDialog, setOpenAddGroupDialog] = useState(false); // Add delete dialog state
+  const [openAddMemberDialog, setOpenAddMemberDialog] = useState(false); // Add delete
+  const [requestToDelete, setRequestToDelete] = useState<Requests | null>(null); // State for request to delete
+  const [newRequest, setNewRequest] = useState<Requests>({
     id: 0,
-    resource: {
-      id: 0,
-    },
-    endTime: new Date(),
-    startTime: new Date(),
+    endTime: dayjs(),
+    startTime: dayjs(),
     quantity: 0,
     user: user,
+    resource: {
+      id: 0,
+      type: RESOURCETYPE.CPU,
+    },
+    createdAt: dayjs(),
   });
+  const [resources, setResources] = useState<Resources[]>([]);
 
   const fetchAllRequest = useCallback(async () => {
     try {
       const request = await requestApi.getAllRequests();
       setRequest(request);
+      const resource = await resourceApi.getAllResources();
+      setResources(resource);
       const groups = await groupApi.getAllGroup();
     } catch (error) {
       console.error("Error fetching request:", error);
@@ -56,61 +64,52 @@ export const Request = () => {
 
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setNewResource((prev) => ({
+    setNewRequest((prev) => ({
       ...prev,
       [name]: value,
     }));
   };
-
+  const handleDateChange =
+    (field: "startTime" | "endTime") => (value: Dayjs | null) => {
+      if (value) {
+        setNewRequest((prev) => ({
+          ...prev,
+          [field]: value,
+        }));
+      }
+    };
   const handleSubmit = async () => {
     try {
-      const response = await resourceApi.createResource(newResource);
+      const response = await requestApi.createRequest(newRequest);
       setRequest((prev) => [...(prev || []), response]);
       setOpenDialog(false);
     } catch (error) {
-      console.error("Error adding resource:", error);
+      console.error("Error adding request:", error);
     }
   };
 
-  const handleEdit = (resource: Request) => {
-    setNewResource(resource);
+  const handleEdit = (request: Request) => {
+    setNewRequest(request);
     setOpenDialog(true);
   };
 
   const handleDelete = async () => {
-    if (resourceToDelete) {
+    if (requestToDelete) {
       try {
-        await resourceApi.deleteResource(resourceToDelete.id);
-        setRequest((prev) => prev?.filter((r) => r.id !== resourceToDelete.id));
+        await requestApi.deleteRequest(requestToDelete.id);
+        setRequest((prev) => prev?.filter((r) => r.id !== requestToDelete.id));
         setOpenDeleteDialog(false);
       } catch (error) {
-        console.error("Error deleting resource:", error);
+        console.error("Error deleting request:", error);
       }
     }
   };
 
   const columns: GridColDef[] = [
-    { field: "name", headerName: "Tên tài nguyên", flex: 1 },
-    { field: "description", headerName: "Mô tả", flex: 1 },
-    { field: "type", headerName: "Loại", flex: 1 },
-    { field: "totalQuantity", headerName: "Số lượng hiện có", flex: 1 },
-    { field: "availableQuantity", headerName: "Số lượng khả dụng", flex: 1 },
     {
-      field: "group",
-      headerName: "Tài nguyên của nhóm",
-      flex: 1,
-      valueGetter: (params) => {
-        if (params !== null && params?.name) {
-          return params?.name;
-        } else {
-          return "ADMIN";
-        }
-      },
-    },
-    {
-      field: "createdBy",
-      headerName: "Tạo bởi",
-      flex: 1,
+      field: "user",
+      headerName: "Người yêu cầu",
+      width: 150,
       valueGetter: (params) => {
         if (params !== null && params?.username) {
           return params?.username;
@@ -119,7 +118,38 @@ export const Request = () => {
         }
       },
     },
-    { field: "createdAt", headerName: "Ngày được tạo", flex: 1 },
+    {
+      field: "resource",
+      headerName: "Tài nguyên yêu cầu",
+      width: 150,
+      valueGetter: (params) => {
+        console.log(params);
+
+        if (params !== null && params?.name) {
+          return params?.name;
+        } else {
+          return "N/A";
+        }
+      },
+    },
+    { field: "resourceType", headerName: "Loại tài nguyên", width: 150 },
+    { field: "quantity", headerName: "Số lượng", width: 150 },
+    { field: "startTime", headerName: "Thời gian bắt đầu", width: 150 },
+    { field: "endTime", headerName: "Thời gian kết thúc", width: 150 },
+    { field: "status", headerName: "Trạng thái", width: 150 },
+    {
+      field: "approvedBy",
+      headerName: "Được duyệt bởi",
+      width: 150,
+      valueGetter: (params) => {
+        if (params !== null && params?.name) {
+          return params?.name;
+        } else {
+          return "Chưa được duyệt";
+        }
+      },
+    },
+    { field: "createdAt", headerName: "Thời gian tạo", width: 150 },
     {
       field: "actions",
       headerName: "Thao tác",
@@ -145,7 +175,7 @@ export const Request = () => {
               variant="contained"
               color="error"
               onClick={() => {
-                setResourceToDelete(params.row); // Set resource to delete
+                setRequestToDelete(params.row); // Set request to delete
                 setOpenDeleteDialog(true); // Open delete confirmation dialog
               }}
             >
@@ -184,80 +214,74 @@ export const Request = () => {
         </Button>
       </Box>
 
-      {/* Add/Edit Resource Dialog */}
+      {/* Add/Edit Request Dialog */}
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
         <DialogTitle>
-          {newResource.id === 0
-            ? "Thêm tài nguyên mới"
-            : "Chỉnh sửa tài nguyên"}
+          {newRequest.id === 0 ? "Thêm tài nguyên mới" : "Chỉnh sửa tài nguyên"}
         </DialogTitle>
-        {/* <DialogContent>
+        <DialogContent>
           <TextField
-            name="name"
+            name="resourceId"
             label="Tên tài nguyên"
-            value={newResource.name}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            name="description"
-            label="Mô tả"
-            value={newResource.description}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <TextField
-            name="type"
+            value={newRequest.resource?.id || ""} // Hiển thị id của tài nguyên
+            onChange={(e) => {
+              const selectedResource = resources.find(
+                (resource) => resource.id === Number(e.target.value)
+              );
+              setNewRequest((prev) => ({
+                ...prev,
+                resource: {
+                  id: selectedResource?.id || 0,
+                  type: selectedResource?.type || RESOURCETYPE.CPU,
+                },
+              }));
+            }}
             select
-            label="Loại"
-            value={newResource.type}
-            onChange={handleFormChange}
             fullWidth
             margin="normal"
           >
-            {Object.values(RESOURCETYPE).map((type) => (
-              <MenuItem key={type} value={type}>
-                {type}
+            {resources.map((resource) => (
+              <MenuItem key={resource.id} value={resource.id}>
+                {resource.name}
               </MenuItem>
             ))}
           </TextField>
+
           <TextField
-            name="totalQuantity"
-            label="Số lượng hiện có"
-            value={newResource.totalQuantity}
-            onChange={handleFormChange}
+            name="resourceType"
+            label="Loại tài nguyên"
+            value={newRequest.resource?.type}
             fullWidth
+            disabled
             margin="normal"
-            type="number"
           />
           <TextField
-            name="availableQuantity"
-            label="Số lượng khả dụng"
-            value={newResource.availableQuantity}
+            name="quantity"
+            label="Số lượng"
+            value={newRequest.quantity}
             onChange={handleFormChange}
             fullWidth
             margin="normal"
-            type="number"
           />
-          <TextField
-            name="group"
-            label="Nhóm cấp phát"
-            value={newResource.group?.id || ""}
-            select
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          >
-            {groups?.map((group) => (
-              <MenuItem key={group.id} value={{ id: group.id }}>
-                {group.name}
-              </MenuItem>
-            ))}
-          </TextField>
-          <pre>{JSON.stringify(newResource, null, 2)}</pre>
-        </DialogContent> */}
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              label="Thời gian bắt đầu"
+              value={newRequest.startTime}
+              onChange={handleDateChange("startTime")}
+              renderInput={(params) => <TextField {...params} fullWidth />}
+            />
+          </LocalizationProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <DateTimePicker
+              label="Thời gian kết thúc"
+              value={newRequest.endTime}
+              onChange={handleDateChange("endTime")}
+              renderInput={(params) => <TextField {...params} fullWidth />}
+            />
+          </LocalizationProvider>
+
+          <pre>{JSON.stringify(newRequest, null, 2)}</pre>
+        </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)} color="primary">
             Hủy
@@ -295,7 +319,7 @@ export const Request = () => {
           columns={columns}
           getRowId={(row) => row.id}
           pageSizeOptions={[5, 10]}
-          sx={{ border: 0 }}
+          sx={{ border: 0, overflow: "auto" }}
         />
       </Paper>
     </>

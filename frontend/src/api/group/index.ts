@@ -1,7 +1,8 @@
+import { Groups } from "../../types";
 import axiosClient from "../axiosClient ";
 
 const groupApi = {
-  createGroup: async (data: { name: string; managerId: number }) => {
+  createGroup: async (data: Groups) => {
     const response = await axiosClient.post("/auth/api/groups", data);
     return response.data;
   },

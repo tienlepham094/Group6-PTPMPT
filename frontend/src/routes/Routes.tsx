@@ -12,6 +12,7 @@ import { Resource } from "../views/Resource/Resource";
 import { Account } from "../views/Account/Account";
 import { UserProvider } from "../context/useAuth"; // Import UserProvider
 import { Approval } from "../views/Approval/Approval";
+import { Group } from "../views/Group/Group";
 
 export const router = createBrowserRouter([
   {
@@ -68,6 +69,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Request />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "group",
+        element: (
+          <ProtectedRoute>
+            <Group />
           </ProtectedRoute>
         ),
       },

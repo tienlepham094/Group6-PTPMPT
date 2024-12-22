@@ -1,4 +1,5 @@
-import { RESOURCETYPE, STATE, STATUSREQUEST } from "../api/enum";
+import { Dayjs } from "dayjs";
+import { RESOURCETYPE, STATUSREQUEST } from "../api/enum";
 
 type Resources = {
   id: number;
@@ -7,7 +8,7 @@ type Resources = {
   totalQuantity?: number;
   availableQuantity?: number;
   createdBy?: User;
-  group?: Group | null;
+  group?: Groups | null;
   type?: RESOURCETYPE;
   createdAt?: Date;
 };
@@ -15,22 +16,25 @@ type Resources = {
 type User = {
   id: number;
   email?: string;
-  name?: string;
+  username?: string;
 };
 
-type Group = {
-  id: number;
+type Groups = {
+  id?: number;
   name: string;
+  manager?: {
+    id?: number;
+  };
 };
 
 type Requests = {
   id: number;
   user: User;
-  resource: Resources;
+  resource?: Resources;
   quantity: number;
-  startTime: Date;
-  endTime: Date;
+  startTime: Dayjs;
+  endTime: Dayjs;
   status?: STATUSREQUEST;
-  createdAt?: Date;
+  createdAt?: Dayjs;
 };
-export type { Group, Resources, User, Requests };
+export type { Groups, Resources, User, Requests };

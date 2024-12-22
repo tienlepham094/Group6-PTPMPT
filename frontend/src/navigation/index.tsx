@@ -3,6 +3,7 @@ import ManageAccountsManageAccountsOutlinedIconIcon from "@mui/icons-material/Ma
 import DeveloperBoardManageAccountsOutlinedIconIcon from "@mui/icons-material/DeveloperBoard";
 import ContentPasteManageAccountsOutlinedIconIcon from "@mui/icons-material/ContentPaste";
 import InfoManageAccountsOutlinedIconIcon from "@mui/icons-material/Info";
+import GroupIcon from "@mui/icons-material/Group";
 
 const navigation = () => [
   {
@@ -12,30 +13,31 @@ const navigation = () => [
     role: ["admin", "manager", "user"],
   },
   {
-    title: "Tài khoản",
+    title: "Quản lý tài khoản",
     path: "account",
     icon: <ManageAccountsManageAccountsOutlinedIconIcon />,
     role: ["admin", "manager"],
   },
   {
-    title: "Tài nguyên",
+    title: "Quản lý nhóm",
+    path: "group",
+    icon: <GroupIcon />,
+  },
+  {
+    title: "Quản lý tài nguyên",
     path: "resource",
     icon: <DeveloperBoardManageAccountsOutlinedIconIcon />,
     role: ["admin", "manager", "user"],
   },
   {
-    title: "Yêu cầu",
+    title: "Quản lý yêu cầu",
     path: "request",
     icon: <ContentPasteManageAccountsOutlinedIconIcon />,
     role: ["admin", "manager", "user"],
   },
-  // {
-  //   title: "Chấp thuận",
-  //   path: "approval",
-  //   icon: <ContentPasteManageAccountsOutlinedIconIcon />,
-  // },
+
   {
-    title: "Giới thiệu",
+    title: "Giới thiệu nhóm và phần mềm",
     path: "about",
     icon: <InfoManageAccountsOutlinedIconIcon />,
     role: ["admin", "manager", "user"],

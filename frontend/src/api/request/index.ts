@@ -1,3 +1,4 @@
+import { Requests } from "../../types";
 import axiosClient from "../axiosClient ";
 
 const requestApi = {
@@ -35,7 +36,7 @@ const requestApi = {
   },
 
   // Create a new request
-  createRequest: async (requestData: any) => {
+  createRequest: async (requestData: Requests) => {
     try {
       const response = await axiosClient.post(
         `/auth/api/requests`,

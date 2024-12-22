@@ -15,9 +15,17 @@ const usergroupApi = {
     );
     return response.data;
   },
+  getUsersNotInGroupId: async (groupId: number) => {
+    const response = await axiosClient.get(
+      `/auth/api/user-groups/notInGroup/${groupId}`
+    );
+    return response.data;
+  },
 
-  removeUserFromGroup: async (id: number) => {
-    const response = await axiosClient.delete(`/auth/api/user-groups/${id}`);
+  removeUserFromGroup: async (groupId: number, userId: number) => {
+    const response = await axiosClient.delete(
+      `/auth/api/user-groups/group/${groupId}/user/${userId}`
+    );
     return response.data;
   },
 };

@@ -28,6 +28,7 @@ import MailIcon from "@mui/icons-material/Mail";
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import MenuIcon from "@mui/icons-material/Menu";
 import MuiDrawer from "@mui/material/Drawer";
+import LogoutIcon from "@mui/icons-material/Logout";
 
 const drawerWidth = 300;
 
@@ -111,7 +112,8 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const UserLayout = () => {
-  const { isLoggedIn, openAlert, severity, message, setOpenAlert } = useAuth();
+  const { isLoggedIn, openAlert, severity, message, setOpenAlert, logout } =
+    useAuth();
   const location = useLocation();
 
   const currentPage = navigation().find(
@@ -178,7 +180,7 @@ const UserLayout = () => {
                   <MenuIcon />
                 </IconButton>
                 <Typography variant="h6" noWrap component="div">
-                  Mini variant drawer
+                  {pageName}
                 </Typography>
               </Toolbar>
             </AppBar>
@@ -300,6 +302,61 @@ const UserLayout = () => {
                     </ListItemButton>
                   </ListItem>
                 ))}
+              </List>
+              <Divider />
+              <List>
+                <ListItem
+                  key={"logout"}
+                  disablePadding
+                  sx={{ display: "block" }}
+                >
+                  <ListItemButton
+                    sx={[
+                      {
+                        minHeight: 48,
+                        px: 2.5,
+                      },
+                      open
+                        ? {
+                            justifyContent: "initial",
+                          }
+                        : {
+                            justifyContent: "center",
+                          },
+                    ]}
+                    onClick={logout}
+                  >
+                    <ListItemIcon
+                      sx={[
+                        {
+                          minWidth: 0,
+                          justifyContent: "center",
+                        },
+                        open
+                          ? {
+                              mr: 3,
+                            }
+                          : {
+                              mr: "auto",
+                            },
+                      ]}
+                    >
+                      <LogoutIcon />
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={"Đăng xuất"}
+                      sx={[
+                        open
+                          ? {
+                              opacity: 1,
+                            }
+                          : {
+                              opacity: 0,
+                            },
+                      ]}
+                    />
+                  </ListItemButton>
+                </ListItem>
               </List>
             </Drawer>
           </Box>

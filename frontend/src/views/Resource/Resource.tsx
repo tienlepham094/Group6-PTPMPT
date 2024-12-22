@@ -178,13 +178,24 @@ export const Resource = () => {
             <MenuItem>Tài nguyên cá nhân</MenuItem>
           </TextField>
         </FormControl>
-        <Button
-          variant="contained"
-          sx={{ marginLeft: 2 }}
-          onClick={() => setOpenDialog(true)}
-        >
-          Thêm tài nguyên
-        </Button>
+        <div>
+          <Button
+            variant="outlined"
+            sx={{ marginLeft: 2 }}
+            color="primary"
+            onClick={() => setOpenDialog(true)}
+          >
+            Thêm số lượng tài nguyên
+          </Button>
+          <Button
+            variant="contained"
+            color="secondary"
+            sx={{ marginLeft: 2 }}
+            onClick={() => setOpenDialog(true)}
+          >
+            Thêm tài nguyên mới
+          </Button>
+        </div>
       </Box>
 
       {/* Add/Edit Resource Dialog */}
@@ -247,14 +258,14 @@ export const Resource = () => {
           <TextField
             name="group"
             label="Nhóm cấp phát"
-            value={newResource.group?.id || ""}
+            value={newResource.group?.id}
             select
             onChange={handleFormChange}
             fullWidth
             margin="normal"
           >
             {groups?.map((group) => (
-              <MenuItem key={group.id} value={{ id: group.id }}>
+              <MenuItem key={group.name} value={{ id: group.id }}>
                 {group.name}
               </MenuItem>
             ))}
