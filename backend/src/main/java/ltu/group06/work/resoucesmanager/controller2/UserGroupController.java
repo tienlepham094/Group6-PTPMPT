@@ -1,5 +1,6 @@
 package ltu.group06.work.resoucesmanager.controller2;
 
+import ltu.group06.work.resoucesmanager.entity.User2;
 import ltu.group06.work.resoucesmanager.entity.UserGroup;
 import ltu.group06.work.resoucesmanager.service2.UserGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,17 @@ public class UserGroupController {
         return ResponseEntity.ok(users);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeUserFromGroup(@PathVariable Long id) {
-        userGroupService.removeUserFromGroup(id);
+    @GetMapping("/notInGroup/{groupId}")
+    public ResponseEntity<List<User2>> getUsersNotInGroupId(@PathVariable Long groupId) {
+        List<User2> users = userGroupService.getUsersNotInGroupId(groupId);
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/group/{groupId}/user/{userId}")
+    public ResponseEntity<Void> removeUserFromGroup(@PathVariable Long groupId, @PathVariable Long userId) {
+        userGroupService.removeUserFromGroup(groupId, userId);
         return ResponseEntity.noContent().build();
     }
+
+
 }

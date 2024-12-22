@@ -5,6 +5,7 @@ import ltu.group06.work.resoucesmanager.repository2.UserRepository2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -22,6 +23,9 @@ public class UserService2 {
 
     public Optional<User2> getUserById(Long id) {
         return userRepository.findById(id);
+    }
+    public List<User2> getAllUser() {
+        return userRepository.findAll();
     }
 
     public Optional<User2> getUserByUsername(String username) {

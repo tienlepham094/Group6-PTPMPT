@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
+import java.util.Optional; 
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/auth/api/users")
 public class UserController2 {
 
     @Autowired
@@ -27,6 +28,12 @@ public class UserController2 {
     public ResponseEntity<User2> getUserById(@PathVariable Long id) {
         Optional<User2> user = userService.getUserById(id);
         return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/get")
+    public ResponseEntity<List<User2>> getAllUser() {
+        List<User2> users = userService.getAllUser();
+        return ResponseEntity.ok(users);
     }
 
     @GetMapping("/exists-email")
