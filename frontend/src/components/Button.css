@@ -9,3 +9,245 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+
+
+/* --- */
+.nav-profile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.nav-user-xyz {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.menu-bar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.random-class-01 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.flexy-widget {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.nav-noise-ab {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.container-element {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.navbar-doodle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.wacky-style {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.navbar-main-style {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.bizarre-classname {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.navbar-final {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.nav-profile {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.nav-user-xyz {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.menu-bar {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.random-class-01 {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.flexy-widget {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.nav-noise-ab {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.container-element {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.navbar-doodle {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.wacky-style {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.navbar-main-style {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.bizarre-classname {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
+
+.navbar-final {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-end;
+  column-gap: 30px;
+  align-items: center;
+}
