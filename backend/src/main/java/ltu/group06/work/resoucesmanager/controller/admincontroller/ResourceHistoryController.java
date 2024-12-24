@@ -101,18 +101,18 @@ public class ResourceHistoryController {
      * @param userId
      * @return
      */
-    @GetMapping("/resource/usage/history")
-    public ResponseEntity<?> getResourceUsageHistory(@RequestParam int userId) {
-
-        if (!isAdmin(userId)) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admin can perform this action.");
-        }
-
-        List<Log> resourceUsageLogs = logService.getAllLogs();
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("resourceUsageLogs", resourceUsageLogs);
-
-        return ResponseEntity.ok(response);
-    }
+//    @GetMapping("/resource/usage/history")
+//    public ResponseEntity<?> getResourceUsageHistory(@RequestParam int userId) {
+//
+//        if (!isAdmin(userId)) {
+//            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Access denied. Only admin can perform this action.");
+//        }
+//
+//        List<Log> resourceUsageLogs = logService.getAllLogs();
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("resourceUsageLogs", resourceUsageLogs);
+//
+//        return ResponseEntity.ok(response);
+//    }
 }
