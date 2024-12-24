@@ -43,7 +43,7 @@ export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
     } catch (error) {
       console.log(error);
     }
-  }, [id, setOpen]);
+  }, [id]);
   const handleSubmit = async () => {
     try {
       if (type === "add") {
@@ -61,10 +61,10 @@ export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
   };
   useEffect(() => {
     fetchManager();
-    if (id) {
+    if (type !== "add") {
       fetchGroup();
     }
-  }, [fetchGroup, fetchManager, id]);
+  }, [fetchGroup, fetchManager, type]);
   const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setGroup((prev) => ({

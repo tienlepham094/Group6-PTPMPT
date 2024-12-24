@@ -1,58 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import {
-  Box,
-  Button,
-  TextField,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  MenuItem,
-  DialogContentText,
-  FormControl,
-} from "@mui/material";
-import { useAuth } from "../../context/useAuth";
-import groupApi from "../../api/group";
-import { Requests, Resources } from "../../types";
+import { Box, Button, TextField, MenuItem, FormControl } from "@mui/material";
+import { Requests } from "../../types";
 import requestApi from "../../api/request";
-import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
-import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
-import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import resourceApi from "../../api/resource";
-import { RESOURCETYPE } from "../../api/enum";
-import dayjs, { Dayjs } from "dayjs";
+import { RequestDialog } from "./RequestDialog";
 
 export const Request = () => {
-  const { user, setMessage, setOpenAlert, setSeverity } = useAuth();
   const [request, setRequest] = useState<Requests[] | null>([]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Add delete dialog state
-  const [openAddGroupDialog, setOpenAddGroupDialog] = useState(false); // Add delete dialog state
-  const [openAddMemberDialog, setOpenAddMemberDialog] = useState(false); // Add delete
-  const [requestToDelete, setRequestToDelete] = useState<Requests | null>(null); // State for request to delete
-  const [newRequest, setNewRequest] = useState<Requests>({
-    id: 0,
-    endTime: dayjs(),
-    startTime: dayjs(),
-    quantity: 0,
-    user: user,
-    resource: {
-      id: 0,
-      type: RESOURCETYPE.CPU,
-    },
-    createdAt: dayjs(),
-  });
-  const [resources, setResources] = useState<Resources[]>([]);
+  const [type, setType] = useState<"add" | "edit" | "delete">("add");
+  const [requestId, setRequestId] = useState<number>(); // State for request to delete
 
   const fetchAllRequest = useCallback(async () => {
     try {
       const request = await requestApi.getAllRequests();
       setRequest(request);
-      const resource = await resourceApi.getAllResources();
-      setResources(resource);
-      const groups = await groupApi.getAllGroup();
     } catch (error) {
       console.error("Error fetching request:", error);
     }
@@ -61,49 +24,6 @@ export const Request = () => {
   useEffect(() => {
     fetchAllRequest();
   }, [fetchAllRequest]);
-
-  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    setNewRequest((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-  const handleDateChange =
-    (field: "startTime" | "endTime") => (value: Dayjs | null) => {
-      if (value) {
-        setNewRequest((prev) => ({
-          ...prev,
-          [field]: value,
-        }));
-      }
-    };
-  const handleSubmit = async () => {
-    try {
-      const response = await requestApi.createRequest(newRequest);
-      setRequest((prev) => [...(prev || []), response]);
-      setOpenDialog(false);
-    } catch (error) {
-      console.error("Error adding request:", error);
-    }
-  };
-
-  const handleEdit = (request: Request) => {
-    setNewRequest(request);
-    setOpenDialog(true);
-  };
-
-  const handleDelete = async () => {
-    if (requestToDelete) {
-      try {
-        await requestApi.deleteRequest(requestToDelete.id);
-        setRequest((prev) => prev?.filter((r) => r.id !== requestToDelete.id));
-        setOpenDeleteDialog(false);
-      } catch (error) {
-        console.error("Error deleting request:", error);
-      }
-    }
-  };
 
   const columns: GridColDef[] = [
     {
@@ -123,8 +43,6 @@ export const Request = () => {
       headerName: "Tài nguyên yêu cầu",
       width: 150,
       valueGetter: (params) => {
-        console.log(params);
-
         if (params !== null && params?.name) {
           return params?.name;
         } else {
@@ -167,7 +85,11 @@ export const Request = () => {
             <Button
               variant="outlined"
               color="primary"
-              onClick={() => handleEdit(params.row)}
+              onClick={() => {
+                setType("edit");
+                setRequestId(params.row.id);
+                setOpenDialog(true);
+              }}
             >
               Chỉnh sửa
             </Button>
@@ -175,8 +97,9 @@ export const Request = () => {
               variant="contained"
               color="error"
               onClick={() => {
-                setRequestToDelete(params.row); // Set request to delete
-                setOpenDeleteDialog(true); // Open delete confirmation dialog
+                setType("delete");
+                setRequestId(params.row.id);
+                setOpenDialog(true);
               }}
             >
               Xóa
@@ -208,110 +131,26 @@ export const Request = () => {
         <Button
           variant="contained"
           sx={{ marginLeft: 2 }}
-          onClick={() => setOpenDialog(true)}
+          onClick={() => {
+            setType("add");
+            setOpenDialog(true);
+          }}
         >
-          Thêm tài nguyên
+          Thêm yêu cầu
         </Button>
       </Box>
 
-      {/* Add/Edit Request Dialog */}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>
-          {newRequest.id === 0 ? "Thêm tài nguyên mới" : "Chỉnh sửa tài nguyên"}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            name="resourceId"
-            label="Tên tài nguyên"
-            value={newRequest.resource?.id || ""} // Hiển thị id của tài nguyên
-            onChange={(e) => {
-              const selectedResource = resources.find(
-                (resource) => resource.id === Number(e.target.value)
-              );
-              setNewRequest((prev) => ({
-                ...prev,
-                resource: {
-                  id: selectedResource?.id || 0,
-                  type: selectedResource?.type || RESOURCETYPE.CPU,
-                },
-              }));
-            }}
-            select
-            fullWidth
-            margin="normal"
-          >
-            {resources.map((resource) => (
-              <MenuItem key={resource.id} value={resource.id}>
-                {resource.name}
-              </MenuItem>
-            ))}
-          </TextField>
-
-          <TextField
-            name="resourceType"
-            label="Loại tài nguyên"
-            value={newRequest.resource?.type}
-            fullWidth
-            disabled
-            margin="normal"
-          />
-          <TextField
-            name="quantity"
-            label="Số lượng"
-            value={newRequest.quantity}
-            onChange={handleFormChange}
-            fullWidth
-            margin="normal"
-          />
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Thời gian bắt đầu"
-              value={newRequest.startTime}
-              onChange={handleDateChange("startTime")}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-          </LocalizationProvider>
-          <LocalizationProvider dateAdapter={AdapterDayjs}>
-            <DateTimePicker
-              label="Thời gian kết thúc"
-              value={newRequest.endTime}
-              onChange={handleDateChange("endTime")}
-              renderInput={(params) => <TextField {...params} fullWidth />}
-            />
-          </LocalizationProvider>
-
-          <pre>{JSON.stringify(newRequest, null, 2)}</pre>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)} color="primary">
-            Hủy
-          </Button>
-          <Button onClick={handleSubmit} color="primary">
-            Lưu
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle>Xóa tài nguyên</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc chắn muốn xóa tài nguyên này không?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
-            Hủy
-          </Button>
-          <Button onClick={handleDelete} color="error">
-            Xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
+      <RequestDialog
+        open={openDialog}
+        setOpen={setOpenDialog}
+        onClose={() => {
+          console.log("first");
+          fetchAllRequest();
+          setOpenDialog(false);
+        }}
+        type={type}
+        id={requestId}
+      />
 
       <Paper sx={{ height: 400, width: "100%" }}>
         <DataGrid

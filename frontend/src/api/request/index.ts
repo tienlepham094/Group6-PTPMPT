@@ -36,12 +36,21 @@ const requestApi = {
   },
 
   // Create a new request
-  createRequest: async (requestData: Requests) => {
+  createRequest: async (requestData?: Requests) => {
     try {
       const response = await axiosClient.post(
         `/auth/api/requests`,
         requestData
       );
+      return response.data;
+    } catch (error) {
+      console.error("Error creating request:", error);
+      throw error;
+    }
+  },
+  deleteRequest: async (id: number) => {
+    try {
+      const response = await axiosClient.delete(`/auth/api/requests/${id}`);
       return response.data;
     } catch (error) {
       console.error("Error creating request:", error);

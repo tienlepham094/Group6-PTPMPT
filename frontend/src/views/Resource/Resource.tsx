@@ -282,27 +282,6 @@ export const Resource = () => {
         </DialogActions>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
-      <Dialog
-        open={openDeleteDialog}
-        onClose={() => setOpenDeleteDialog(false)}
-      >
-        <DialogTitle>Xóa tài nguyên</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Bạn có chắc chắn muốn xóa tài nguyên này không?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDeleteDialog(false)} color="primary">
-            Hủy
-          </Button>
-          <Button onClick={handleDelete} color="error">
-            Xóa
-          </Button>
-        </DialogActions>
-      </Dialog>
-
       <Paper sx={{ height: 400, width: "100%" }}>
         <DataGrid
           rows={resources || []}
