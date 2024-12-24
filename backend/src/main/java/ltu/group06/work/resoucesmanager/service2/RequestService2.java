@@ -41,4 +41,8 @@ public class RequestService2 {
             requestRepository.save(request);
         }
     }
+    public void deleteRequest(Long id) {
+        requestRepository.deleteById(id);
+    }
+
 }

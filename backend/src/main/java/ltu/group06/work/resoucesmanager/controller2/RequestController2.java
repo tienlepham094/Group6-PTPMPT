@@ -53,6 +53,12 @@ public class RequestController2 {
         return ResponseEntity.ok(requests);
     }
 
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {
+        requestService.deleteRequest(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @PatchMapping("/{id}/status")
     public ResponseEntity<Void> updateRequestStatus(@PathVariable Long id, @RequestParam Request2.Status status) {
         requestService.updateRequestStatus(id, status);
