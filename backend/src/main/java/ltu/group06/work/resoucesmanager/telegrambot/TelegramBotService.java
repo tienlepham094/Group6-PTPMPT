@@ -71,11 +71,11 @@ public class TelegramBotService extends TelegramLongPollingBot {
     }
 
     private void handleEmailInput(Long chatId, String email) {
-        List<User> users = userService.findByEmail(email);
+        Optional<User> users = userService.findByEmail(email);
 
         if (!users.isEmpty()) {
             // Assume you only want to handle the first user for simplicity
-            User user = users.get(0);
+            User user = users.get();
 
             // Kiểm tra nếu Telegram ID đã được liên kết
             if (telegramUserService.isTelegramLinked(chatId, user)) {

@@ -33,7 +33,7 @@ public class User {
     @Column(nullable = false)
     private boolean isActive = false;
 
-    @OneToMany(mappedBy = " ", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OTP> otps;
 
     @Enumerated(EnumType.STRING)

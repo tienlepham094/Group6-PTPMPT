@@ -76,7 +76,7 @@ public class ResourcesRequestController {
         );
 
         // Gửi thông báo Telegram
-        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(Math.toIntExact(user.getId()));
+        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId((long) Math.toIntExact(user.getId()));
         if (telegramUser != null) {
             telegramBotService.sendMessageToUser(
                     telegramUser.getTelegramId(),
@@ -135,7 +135,7 @@ public class ResourcesRequestController {
         );
 
         // Send Telegram notification if applicable
-        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(Math.toIntExact(userId));
+        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId((long) Math.toIntExact(userId));
         if (telegramUser != null) {
             telegramBotService.sendMessageToUser(
                     telegramUser.getTelegramId(),

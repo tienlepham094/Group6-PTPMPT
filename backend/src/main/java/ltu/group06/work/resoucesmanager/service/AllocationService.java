@@ -38,7 +38,7 @@ public class AllocationService {
         return allocationRepository.findByRequestId(requestId);
     }
 
-    public static void deleteAllocation(Long id) {
+    public void deleteAllocation(Long id) {
         allocationRepository.deleteById(id);
     }
     public List<Allocation> getExpiredAllocations() {

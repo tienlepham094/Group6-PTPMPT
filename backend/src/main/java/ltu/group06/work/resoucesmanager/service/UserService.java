@@ -38,9 +38,9 @@ public class UserService {
 //        return userRepository.findByUsername(username);
 //    }
 //
-//    public List<User> findByEmail(String email) {
-//        return userRepository.findByEmail(email);
-//    }
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
 //
 //
 //    public User registerUser(String username, String email, String password) {

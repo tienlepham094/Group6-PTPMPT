@@ -20,9 +20,9 @@ public class ResourceService {
     @Autowired
     private RequestRepository requestRepository;
 
-//    public Optional<Resource> findAvailableResource(Resource.ResourceType resourceType) {
+////    public Optional<Resource> findAvailableResource(Resource.ResourceType resourceType) {
 //        return resourceRepository.findByResourceTypeAndStatusResources(resourceType, Resource.ResourceStatus.available);
-//    }
+////    }
 //    public Optional<Resource> findAllocatedResource(Resource.ResourceType resourceType) {
 //        return resourceRepository.findByResourceTypeAndStatusResources(resourceType, Resource.ResourceStatus.allocated);
 //    }

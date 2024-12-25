@@ -42,16 +42,13 @@ public class RequestService {
     }
 
 
-    public List<Request> getAllRequestsByUserId(Integer userId) {
-        return requestRepository.findByUser_UserId(userId);
-    }
 
     public void deleteRequest(Integer requestId) {
-        requestRepository.deleteById(requestId);
+        requestRepository.deleteById(Long.valueOf(requestId));
     }
 
-    public List<Request> getAllIssueRequestByUserId(int userId) {
-        return requestRepository.findByUser_UserId(userId);
+    public List<Request> getAllIssueRequestByUserId(long userId) {
+        return requestRepository.findByUser_Id(userId);
     }
 
     public Request save(Request request) {

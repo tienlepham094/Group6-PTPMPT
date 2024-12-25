@@ -9,7 +9,7 @@ import java.util.Optional;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findByUser_UserId(Integer userId);
+//    List<Request> findByUser_UserId(Integer userId);
 
     Optional<Request> findById(Integer requestId);
 
