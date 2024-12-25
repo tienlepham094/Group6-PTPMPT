@@ -37,7 +37,7 @@ const navigation = () => [
   },
 
   {
-    title: "Giới thiệu nhóm và phần mềm",
+    title: "Hỗ trợ",
     path: "about",
     icon: <InfoManageAccountsOutlinedIconIcon />,
     role: ["admin", "manager", "user"],
