@@ -1,6 +1,7 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.usercontroller;
 
-import ltu.group06.work.resoucesmanager.dto.AllocationRequest;
+import ltu.group06.work.resoucesmanager.dto.AllocationRequestDto;
+import ltu.group06.work.resoucesmanager.entity.Resource;
 import ltu.group06.work.resoucesmanager.entity.UserResources;
 import ltu.group06.work.resoucesmanager.service.UserResourcesService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,27 +16,27 @@ public class UserResourcesController {
 
     // API để cấp phát tài nguyên
     @PostMapping("/allocate")
-    public UserResources allocateResource(@RequestBody AllocationRequest allocationRequest) {
+    public UserResources allocateResource(@RequestBody AllocationRequestDto allocationRequestDto) {
         return userResourcesService.allocateResource(
-                allocationRequest.getUserId(),
-                allocationRequest.getResourceType(),
-                allocationRequest.getQuantity()
+                allocationRequestDto.getUserId(),
+                allocationRequestDto.getResourceType(),
+                allocationRequestDto.getQuantity()
         );
     }
 
     // API để lấy tài nguyên của người dùng
     @GetMapping("/get")
-    public UserResources getUserResources(@RequestParam Long userId, @RequestParam Resource2.ResourceType resourceType) {
+    public UserResources getUserResources(@RequestParam Long userId, @RequestParam Resource.ResourceType resourceType) {
         return userResourcesService.getUserResources(userId, resourceType);
     }
 
     // API để giải phóng tài nguyên
     @PostMapping("/release")
-    public UserResources releaseResource(@RequestBody AllocationRequest allocationRequest) {
+    public UserResources releaseResource(@RequestBody AllocationRequestDto allocationRequestDto) {
         return userResourcesService.releaseResource(
-                allocationRequest.getUserId(),
-                allocationRequest.getResourceType(),
-                allocationRequest.getQuantity()
+                allocationRequestDto.getUserId(),
+                allocationRequestDto.getResourceType(),
+                allocationRequestDto.getQuantity()
         );
     }
 }

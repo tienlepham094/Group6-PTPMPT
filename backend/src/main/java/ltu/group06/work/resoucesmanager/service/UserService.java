@@ -71,47 +71,17 @@ public class UserService {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-//    public User updateUser(int id, User userDetails) {
-//        User user = getUserById(id);
-//        if (user != null) {
-//            user.setUsername(userDetails.getUsername());
-//            user.setEmail(userDetails.getEmail());
-//            return userRepository.save(user);
-//        }
-//        return null;
-//    }
-
-//    public boolean deleteUser(int id) {
-//        if (userRepository.existsById(id)) {
-//            userRepository.deleteById(id);
-//            return true;
-//        }
-//        return false;
-//    }
-
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-//    public Optional<User> searchUsersByName(String name) {
-//        return userRepository.findByUsername(name);
-//    }
-//    public List<User> searchUsers(String email, String username) {
-//        if (email != null && username != null) {
-//            return userRepository.findByEmailAndUsername(email, username);
-//        } else if (email != null) {
-//            return userRepository.findByEmail(email);
-//        } else if (username != null) {
-//            return userRepository.findByUsername(username);
-//        }
-//        return List.of();
-//    }
+
     public User getUserById(int id) {
-        return userRepository.findById(id).orElse(null);
+        return userRepository.findById((long) id).orElse(null);
     }
 
     public User updateUser(int id, User userDetails) {
-        return userRepository.findById(id).map(user -> {
+        return userRepository.findById((long) id).map(user -> {
             user.setUsername(userDetails.getUsername());
             user.setEmail(userDetails.getEmail());
             user.setRole(userDetails.getRole());
@@ -137,16 +107,11 @@ public class UserService {
         userRepository.save(user);
     }
 
-//    public boolean isAdmin(Integer userId) {
-//        if (userId == null) {
-//            return false;
-//        }
-//        Optional<User> user = userRepository.findById(userId);
-//        return user.map(u -> "ADMIN".equalsIgnoreCase(u.getRole())).orElse(false);
-//    }
+
     public User createUser(User user) {
         return userRepository.save(user);
     }
+
     public User findByUsername(String username) {
         return userRepository.findUserByUsername(username);
     }
@@ -154,6 +119,7 @@ public class UserService {
     public Optional<User> getUserById(Long id) {
         return userRepository.findById(id);
     }
+
     public List<User> getAllUser() {
         return userRepository.findAll();
     }
@@ -165,10 +131,78 @@ public class UserService {
     public boolean checkIfEmailExists(String email) {
         return userRepository.findByEmail(email).isPresent();
     }
+
     public boolean checkIfUsernameExists(String username) {
         return userRepository.findByUsername(username).isPresent();
     }
-    public void deleteUser(Integer id) {
+
+    public void deleteUser(Long id) {
         userRepository.deleteById(id);
     }
+
+    public String updatePassword(String usernameOrEmail, String currentPassword, String newPassword) {
+        Optional<User> userOptional = userRepository.findByUsername(usernameOrEmail);
+
+        if (!userOptional.isPresent()) {
+            userOptional = userRepository.findByEmail(usernameOrEmail);
+        }
+
+        if (!userOptional.isPresent()) {
+            return "User not found.";
+        }
+
+        User user = userOptional.get();
+
+        // Verify the current password.
+        if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
+            return "Current password is incorrect.";
+        }
+
+        // Update the password.
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        return "success";
+    }
+
+        public boolean isAdmin(Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        Optional<User> user = userRepository.findById(Long.valueOf(userId));
+        return user.map(u -> "ADMIN".equalsIgnoreCase(String.valueOf(u.getRole()))).orElse(false);
+    }
+
+    //    public Optional<User> searchUsersByName(String name) {
+//        return userRepository.findByUsername(name);
+//    }
+//    public List<User> searchUsers(String email, String username) {
+//        if (email != null && username != null) {
+//            return userRepository.findByEmailAndUsername(email, username);
+//        } else if (email != null) {
+//            return userRepository.findByEmail(email);
+//        } else if (username != null) {
+//            return userRepository.findByUsername(username);
+//        }
+//        return List.of();
+//    }
+
+    //    public User updateUser(int id, User userDetails) {
+//        User user = getUserById(id);
+//        if (user != null) {
+//            user.setUsername(userDetails.getUsername());
+//            user.setEmail(userDetails.getEmail());
+//            return userRepository.save(user);
+//        }
+//        return null;
+//    }
+
+//    public boolean deleteUser(int id) {
+//        if (userRepository.existsById(id)) {
+//            userRepository.deleteById(id);
+//            return true;
+//        }
+//        return false;
+//    }
+
 }

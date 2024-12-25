@@ -1,6 +1,7 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.admincontroller;
 
-import ltu.group06.work.resoucesmanager.service2.AllocationService2;
+import ltu.group06.work.resoucesmanager.entity.Allocation;
+import ltu.group06.work.resoucesmanager.service.AllocationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,23 +14,23 @@ import java.util.Optional;
 public class AllocationController {
 
     @Autowired
-    private AllocationService2 allocationService;
+    private AllocationService allocationService;
 
     @PostMapping
-    public ResponseEntity<Allocation2> createAllocation(@RequestBody Allocation2 allocation) {
-        Allocation2 createdAllocation = allocationService.createAllocation(allocation);
+    public ResponseEntity<Allocation> createAllocation(@RequestBody Allocation allocation) {
+        Allocation createdAllocation = allocationService.createAllocation(allocation);
         return ResponseEntity.ok(createdAllocation);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Allocation2> getAllocationById(@PathVariable Long id) {
-        Optional<Allocation2> allocation = allocationService.getAllocationById(id);
+    public ResponseEntity<Allocation> getAllocationById(@PathVariable Long id) {
+        Optional<Allocation> allocation = allocationService.getAllocationById(id);
         return allocation.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/resource/{resourceId}")
-    public ResponseEntity<List<Allocation2>> getAllocationsByResourceId(@PathVariable Long resourceId) {
-        List<Allocation2> allocations = allocationService.getAllocationsByResourceId(resourceId);
+    public ResponseEntity<List<Allocation>> getAllocationsByResourceId(@PathVariable Long resourceId) {
+        List<Allocation> allocations = allocationService.getAllocationsByResourceId(resourceId);
         return ResponseEntity.ok(allocations);
     }
 

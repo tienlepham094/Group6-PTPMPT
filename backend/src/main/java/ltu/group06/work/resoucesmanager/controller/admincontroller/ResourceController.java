@@ -1,8 +1,9 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.admincontroller;
 
 import ltu.group06.work.resoucesmanager.dto.ResourceAllocationRequest;
 import ltu.group06.work.resoucesmanager.dto.ResourceReleaseRequest;
-import ltu.group06.work.resoucesmanager.service2.ResourceService2;
+import ltu.group06.work.resoucesmanager.entity.Resource;
+import ltu.group06.work.resoucesmanager.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,10 +14,10 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/api/resources")
-public class ResourceController2 {
+public class ResourceController {
 
     @Autowired
-    private ResourceService2 resourceService;
+    private ResourceService resourceService;
 
     @PostMapping
     public ResponseEntity<Resource> createResource(@RequestBody Resource resource) {

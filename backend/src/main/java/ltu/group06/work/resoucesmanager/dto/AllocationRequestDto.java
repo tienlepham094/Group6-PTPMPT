@@ -1,8 +1,9 @@
 package ltu.group06.work.resoucesmanager.dto;
+import ltu.group06.work.resoucesmanager.entity.Resource;
 
-public class AllocationRequest {
+public class AllocationRequestDto {
     private Long userId;
-    private Resource2.ResourceType resourceType;
+    private Resource.ResourceType resourceType;
     private int quantity;
 
     // Getters and Setters
@@ -14,11 +15,11 @@ public class AllocationRequest {
         this.userId = userId;
     }
 
-    public Resource2.ResourceType getResourceType() {
+    public Resource.ResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(Resource2.ResourceType resourceType) {
+    public void setResourceType(Resource.ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

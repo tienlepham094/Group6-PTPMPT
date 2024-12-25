@@ -58,29 +58,25 @@ public class ResourcesRequestController {
 
         Request request = new Request();
         request.setUser(user);
-        request.setResourceType(requestResourcesDto.getResource_type());
         request.setQuantity(requestResourcesDto.getQuantity());
-        request.setReason(requestResourcesDto.getReason());
-        request.setStatusRequest(Request.RequestStatus.pending);
-        request.setTimeUsage(requestResourcesDto.getTime_usage());
+        request.setStatus(request.getStatus());
 
         // Thiết lập `startTime` với thời gian hiện tại
         LocalDateTime startTime = LocalDateTime.now();
         System.out.println("New request created at: " + startTime);
         request.setCreatedAt(startTime);
-        request.setUpdatedAt(startTime);
 
         Request savedRequest = requestService.createRequest(request);
 
         logService.createLog(
-                user.getUserId(),
-                savedRequest.getRequestId(),
+                Math.toIntExact(user.getId()),
+                null,
                 "CREATE_REQUEST",
                 "User created a request with resource type: " + savedRequest.getResourceType()
         );
 
         // Gửi thông báo Telegram
-        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(user.getUserId());
+        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(Math.toIntExact(user.getId()));
         if (telegramUser != null) {
             telegramBotService.sendMessageToUser(
                     telegramUser.getTelegramId(),
@@ -92,15 +88,15 @@ public class ResourcesRequestController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Request created successfully");
-        response.put("request_id", savedRequest.getRequestId());
-        response.put("status_request", savedRequest.getStatusRequest());
+        response.put("request_id", savedRequest.getId());
+        response.put("status_request", savedRequest.getStatus());
 
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     // Huy 1 issue request neu request dang o trang thai pending
     @PutMapping("user/cancel-request")
-    public ResponseEntity<Map<String, Object>> cancelRequest(@RequestHeader("userId") Integer userId, @RequestParam("requestId") int requestId) {
+    public ResponseEntity<Map<String, Object>> cancelRequest(@RequestHeader("userId") Long userId, @RequestParam("requestId") int requestId) {
         if (userId == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("error", "User ID header is required"));
         }
@@ -113,33 +109,33 @@ public class ResourcesRequestController {
 
         Request request = optionalRequest.get();
 
-        if (request.getUser().getUserId() != (userId)) {
+        if (request.getUser().getId() != (userId)) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                     Map.of("error", "You can only cancel your own requests")
             );
         }
 
         // Check if the request is in pending state
-        if (request.getStatusRequest() != Request.RequestStatus.pending) {
+        if (request.getStatus() != Request.Status.PENDING) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     Map.of("error", "Only pending requests can be cancelled")
             );
         }
 
         // Update the status of the request to cancelled
-        request.setStatusRequest(Request.RequestStatus.cancelled);
+        request.setStatus(Request.Status.CANCELLED);
         requestService.updateRequest(request);
 
         // Log the cancellation
         logService.createLog(
-                userId,
-                request.getRequestId(),
+                Math.toIntExact(userId),
+                Math.toIntExact(request.getId()),
                 "CANCEL_REQUEST",
-                "User cancelled request with ID: " + request.getRequestId()
+                "User cancelled request with ID: " + request.getId()
         );
 
         // Send Telegram notification if applicable
-        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(userId);
+        TelegramUser telegramUser = telegramUserService.getTelegramUserByUserId(Math.toIntExact(userId));
         if (telegramUser != null) {
             telegramBotService.sendMessageToUser(
                     telegramUser.getTelegramId(),
@@ -149,8 +145,8 @@ public class ResourcesRequestController {
 
         Map<String, Object> response = new HashMap<>();
         response.put("message", "Request has been cancelled");
-        response.put("request_id", request.getRequestId());
-        response.put("status_request", request.getStatusRequest());
+        response.put("request_id", request.getId());
+        response.put("status_request", request.getStatus());
 
         return ResponseEntity.status(HttpStatus.OK).body(response);
     }
@@ -182,17 +178,14 @@ public class ResourcesRequestController {
         // Convert the List<Request> into the desired JSON structure
         List<Map<String, Object>> requestsList = userRequests.stream().map(request -> {
             Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("request_id", request.getRequestId());
-            requestMap.put("user_id", request.getUser().getUserId());
+            requestMap.put("request_id", request.getId());
+            requestMap.put("user_id", request.getUser().getId());
             requestMap.put("resource_type", request.getResourceType().name());
             requestMap.put("quantity", request.getQuantity());
             requestMap.put("start_time", request.getStartTime() != null ? request.getStartTime().toString() : "The time has not yet been set");
-            requestMap.put("end_time", request.getEnd_time() != null ? request.getEnd_time().toString() : "The time has not yet been set");
-            requestMap.put("status_request", request.getStatusRequest().name());
-            requestMap.put("reason", request.getReason());
-            requestMap.put("time_usage", request.getTimeUsage());
+            requestMap.put("end_time", request.getEndTime() != null ? request.getEndTime().toString() : "The time has not yet been set");
+            requestMap.put("status_request", request.getStatus().name());
             requestMap.put("created_at", request.getCreatedAt().toString());
-            requestMap.put("updated_at", request.getUpdatedAt().toString());
             return requestMap;
         }).collect(Collectors.toList());
 
