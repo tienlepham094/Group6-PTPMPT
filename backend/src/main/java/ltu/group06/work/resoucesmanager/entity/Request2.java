@@ -1,10 +1,7 @@
 package ltu.group06.work.resoucesmanager.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -20,10 +17,12 @@ public class Request2 {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Getter
     @ManyToOne()  // Lazy loading để giảm tải dữ liệu khi không cần thiết
     @JoinColumn(name = "user_id", nullable = false)
     private User2 user;
 
+    @Getter
     @ManyToOne()  // Lazy loading có thể đổi thành EAGER nếu bạn muốn tải dữ liệu cùng lúc
     @JoinColumn(name = "resource_id", nullable = false)
     private Resource2 resource;
@@ -66,4 +65,5 @@ public class Request2 {
     public Resource2.ResourceType getResourceType() {
         return resource != null ? resource.getType() : null;
     }
+
 }

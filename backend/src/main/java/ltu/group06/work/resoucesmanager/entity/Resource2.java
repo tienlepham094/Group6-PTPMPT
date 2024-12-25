@@ -48,6 +48,11 @@ public class Resource2 {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ResourceType type; // Add this field for type
+
+    public Resource2(Long resourceId) {
+        this.id = resourceId;
+    }
+
     // Enum for ResourceType
     public enum ResourceType {
         GPU, CPU, MEMORY, STORAGE, NETWORK

@@ -2,6 +2,7 @@ package ltu.group06.work.resoucesmanager.controller2;
 
 import ltu.group06.work.resoucesmanager.dto.ResourceAllocationRequest;
 import ltu.group06.work.resoucesmanager.entity.Allocation2;
+import ltu.group06.work.resoucesmanager.entity.Log;
 import ltu.group06.work.resoucesmanager.entity.Request2;
 import ltu.group06.work.resoucesmanager.service2.AllocationService2;
 import ltu.group06.work.resoucesmanager.service2.RequestService2;
@@ -53,6 +54,13 @@ public class RequestController2 {
         return ResponseEntity.ok(requests);
     }
 
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<Request2>> getRequestsByStatus(@PathVariable Request2.Status status) {
+        List<Request2> requests = requestService.getRequestsByStatus(status);
+        return ResponseEntity.ok(requests);
+    }
+
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteRequest(@PathVariable Long id) {
         requestService.deleteRequest(id);
@@ -69,12 +77,13 @@ public class RequestController2 {
                 Request2 request = requestOpt.get();
 
                 allocationService.createAllocation(new Allocation2(
-                        request.getUserId(),
+                        request,  // Pass the Request2 object here
                         request.getResourceId(),
                         request.getQuantity(),
                         request.getStartTime(),
                         request.getEndTime()
                 ));
+
 
                 // Cập nhật tài nguyên cho UserResources
                 userResourcesService.allocateResource(request.getUserId(), request.getResourceType(), request.getQuantity());

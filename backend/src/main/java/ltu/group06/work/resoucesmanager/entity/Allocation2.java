@@ -40,9 +40,15 @@ public class Allocation2 {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
-    public Allocation2(Long userId, Long resourceId, int quantity, LocalDateTime startTime, LocalDateTime endTime) {
-
+    public Allocation2(Request2 request, Long resourceId, int quantity, LocalDateTime startTime, LocalDateTime endTime) {
+        this.request = request;  // Set the request
+        this.resource = new Resource2(resourceId);  // Assuming you want to initialize Resource2 using resourceId
+        this.allocatedQuantity = quantity;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.createdAt = LocalDateTime.now();
     }
+
     public Long getUserId() {
         return request != null && request.getUser() != null ? request.getUser().getId() : null;
     }
