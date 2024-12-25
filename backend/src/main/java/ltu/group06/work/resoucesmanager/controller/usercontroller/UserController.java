@@ -1,4 +1,4 @@
-package ltu.group06.work.resoucesmanager.controller.Usercontroller;
+package ltu.group06.work.resoucesmanager.controller.usercontroller;
 
 import jakarta.servlet.http.HttpSession;
 import ltu.group06.work.resoucesmanager.entity.User;
