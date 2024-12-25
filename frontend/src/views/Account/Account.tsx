@@ -1,137 +1,184 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import { Button } from "@mui/material";
+import {
+  Box,
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  FormControl,
+  MenuItem,
+  TextField,
+} from "@mui/material";
 import { RegisterParams } from "../../context/types";
 import { EditAccount } from "./EditAccount";
-import axios from "axios";
-import adminApi from "../../api/admin";
+import { useAuth } from "../../context/useAuth";
+import groupApi from "../../api/group";
+import usergroupApi from "../../api/usergroup";
+import { AddMember } from "./AddMember";
 
+interface Group {
+  id: number;
+  name: string;
+}
+interface User {
+  id: number;
+  email: string;
+  name: string;
+}
 export const Account = () => {
-  const [data, setData] = useState<RegisterParams[]>([]);
-  const [filteredData, setFilteredData] = useState<RegisterParams[]>([]);
-  const [editData, setEditData] = useState<RegisterParams | undefined>(
-    undefined
-  );
-  // const [searchText, setSearchText] = useState("");
-  const [dialogOpen, setDialogOpen] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 5;
-  const fetchAllAccounts = async () => {
+  const { setMessage, setOpenAlert, setSeverity, user } = useAuth();
+  const [groups, setGroups] = useState<Group[] | null>();
+  const [selectedGroupId, setSelectedGroupId] = useState<number>();
+  const [users, setUsers] = useState<User[] | null>();
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Add delete dialog state
+  const [userToDelete, setUserToDelete] = useState<User | null>(null); // State for resource to delete
+
+  const [idToDelete, setIdToDelete] = useState<number>(); // State for resource to delete
+
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false);
+  const [type, setType] = useState<"add" | "edit" | "delete">("add");
+  const [userId, setUserId] = useState<number>();
+  const fetchAllAccounts = useCallback(async () => {
     try {
-      const accountData = await adminApi.getAllAccount();
-      const accounts = (accountData || []).map((account: RegisterParams) => ({
-        ...account,
-        id: account.id, // Ensure DataGrid has unique `id`
-      }));
-      setData(accounts);
-      setFilteredData(accounts);
+      console.log("first");
+
+      const groups = await groupApi.getGroupsByManagerId(user.id);
+      setGroups(groups);
+      setSelectedGroupId(groups[0].id);
+      const fetchedUsers = await usergroupApi.getUsersByGroupId(groups[0].id);
+      const userList = fetchedUsers.map((item: { user: User }) => item.user);
+      setUsers(userList);
     } catch (error) {
       console.error("Error fetching accounts:", error);
     }
-  };
-
+  }, [user.id]);
+  const handleSelectGroup = useCallback(async (value: number | "") => {
+    setSelectedGroupId(value);
+    try {
+      const fetchedUsers = await usergroupApi.getUsersByGroupId(
+        value as number
+      );
+      const userList = fetchedUsers.map((item: { user: User }) => item.user);
+      setUsers(userList);
+    } catch (error) {
+      console.log(error);
+    }
+  }, []);
   useEffect(() => {
     fetchAllAccounts();
-  }, []);
+  }, [fetchAllAccounts]);
 
-  const handleAdd = async (newAccount: RegisterParams) => {
-    try {
-      const response = await accountApi.create(newAccount);
-      const addedAccount = {
-        id: response.account.id!,
-        ...newAccount,
-      };
-      setData((prev) => [...prev, addedAccount]);
-      setFilteredData((prev) => [...prev, addedAccount]);
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Error creating account:", error);
-    }
-  };
+  const handleAdd = useCallback(async (newAccount: RegisterParams) => {}, []);
 
-  const handleEdit = async (updatedAccount: RegisterParams) => {
-    try {
-      await accountApi.edit(updatedAccount.account_id!, updatedAccount);
-      setDialogOpen(false);
-    } catch (error) {
-      console.error("Error updating account:", error);
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (window.confirm("Are you sure you want to delete this account?")) {
-      try {
-        await accountApi.delete(id);
-        setData((prev) => prev.filter((item) => item.account_id !== id));
-        setFilteredData((prev) =>
-          prev.filter((item) => item.account_id !== id)
-        );
-      } catch (error) {
-        console.error("Error deleting account:", error);
-      }
-    }
-  };
-
-  const paginatedData = filteredData.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
+  const handleEdit = useCallback(
+    async (updatedAccount: RegisterParams) => {},
+    []
   );
 
-  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
-  const handlePageChange = (newPage: number) => {
-    if (newPage >= 1 && newPage <= totalPages) {
-      setCurrentPage(newPage);
+  const handleRemoveFromGroup = useCallback(async () => {
+    try {
+      await usergroupApi.removeUserFromGroup(userToDelete?.id);
+    } catch (error) {
+      console.log(error);
     }
-  };
+  }, [userToDelete?.id]);
 
   const columns: GridColDef[] = [
-    { field: "email", headerName: "Email", width: 300 },
-    { field: "username", headerName: "Tên đăng nhập", width: 300 },
-    { field: "password", headerName: "Mật khẩu", width: 300 },
+    { field: "email", headerName: "Email", flex: 2 },
+    { field: "username", headerName: "Tên đăng nhập", flex: 1 },
     {
       field: "actions",
-      headerName: "",
-      width: 200,
+      headerName: "Thao tác",
+      flex: 1,
+      headerAlign: "center",
+      align: "center",
       renderCell: (params) => (
-        <div style={{ display: "flex", gap: "8px" }}>
-          <button
-            className="action-btn edit-btn"
+        <Box
+          display="flex"
+          justifyContent="space-evenly"
+          gap={0}
+          sx={{ alignSelf: "center" }}
+        >
+          {/* <Button
+            variant="outlined"
+            color="primary"
             onClick={() => {
-              setEditData(params.row);
+              // setEditData(params.row);
+              setType("edit");
+
               setDialogOpen(true);
             }}
           >
             Chỉnh sửa
-          </button>
-          <button
-            className="action-btn delete-btn"
-            onClick={() => handleDelete(params.row.account_id)}
+          </Button> */}
+          <Button
+            variant="contained"
+            color="error"
+            onClick={() => {
+              setIdToDelete(params.row.id);
+              setType("delete");
+              setDialogOpen(true);
+            }}
           >
-            Xóa
-          </button>
-        </div>
+            Xóa thành viên
+          </Button>
+        </Box>
       ),
     },
   ];
   const paginationModel = { page: 0, pageSize: 5 };
   return (
-    <div className="account-container" style={{ width: "95%" }}>
-      {/* <Typography variant="h2">Accounts</Typography> */}
-      {/* <h1 className="account-header">Accounts</h1> */}
-      <Button
-        variant="contained"
-        onClick={() => {
-          setEditData(undefined); // Clear edit data
-          setDialogOpen(true); // Open dialog for new account
-        }}
-        sx={{ marginBottom: 10 }}
+    <>
+      <Box
+        display="flex"
+        justifyContent="space-between"
+        alignItems="center"
+        sx={{ marginBottom: 2 }}
       >
-        Thêm tài khoản
-      </Button>
+        <FormControl fullWidth sx={{ maxWidth: 250 }}>
+          <TextField
+            label="Nhóm quản lý"
+            select
+            value={selectedGroupId || 0}
+            placeholder="Nhóm"
+            onChange={(event) =>
+              handleSelectGroup(event.target.value as number | "")
+            }
+          >
+            {groups?.map((group) => (
+              <MenuItem key={group.id} value={group.id}>
+                {group.name}
+              </MenuItem>
+            ))}
+          </TextField>
+        </FormControl>
+        <Button
+          variant="outlined"
+          sx={{ marginLeft: 2 }}
+          color="primary"
+          onClick={() => setDialogOpen(true)}
+        >
+          Thêm thành viên
+        </Button>
+      </Box>
+      <AddMember
+        onClose={() => {
+          console.log("first");
+          fetchAllAccounts();
+        }}
+        open={dialogOpen}
+        setOpen={setDialogOpen}
+        type={type}
+        id={idToDelete}
+        groupId={selectedGroupId}
+      />
       <Paper sx={{ height: 400, width: "100%" }}>
         <DataGrid
-          rows={paginatedData}
+          rows={users}
           columns={columns}
           getRowId={(row) => row.id}
           pageSizeOptions={[5, 10]}
@@ -140,12 +187,6 @@ export const Account = () => {
           initialState={{ pagination: { paginationModel } }}
         />
       </Paper>
-      <EditAccount
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-        onSubmit={editData ? handleEdit : handleAdd}
-        data={editData}
-      />
-    </div>
+    </>
   );
 };

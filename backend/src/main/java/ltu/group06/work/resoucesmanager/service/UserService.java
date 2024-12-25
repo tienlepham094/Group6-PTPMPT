@@ -7,7 +7,6 @@ import ltu.group06.work.resoucesmanager.repository.TelegramUserRepository;
 import ltu.group06.work.resoucesmanager.repository.UserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.security.SecureRandom;
 import java.util.List;
@@ -22,9 +21,9 @@ public class UserService {
 
     private final SecureRandom random = new SecureRandom();
 
-    public User getUserById(int userId) {
-        return userRepository.findById(userId).orElse(null);
-    }
+//    public User getUserById(int userId) {
+//        return userRepository.findById(userId).orElse(null);
+//    }
 
     public UserService(UserRepository userRepository, TelegramUserRepository telegramUserRepository) {
         this.userRepository = userRepository;
@@ -35,11 +34,11 @@ public class UserService {
         return userRepository.findByUsernameOrEmail(usernameOrEmail);
     }
 
-    public Optional<User> findByUsername(String username) {
-        return userRepository.findByUsername(username);
-    }
-
-    public Optional<User> findByEmail(String email) {
+//    public Optional<User> findByUsername(String username) {
+//        return userRepository.findByUsername(username);
+//    }
+//
+    public List<User> findByEmail(String email) {
         return userRepository.findByEmail(email);
     }
 
@@ -72,52 +71,52 @@ public class UserService {
         return passwordEncoder.matches(rawPassword, encodedPassword);
     }
 
-    public User updateUser(int id, User userDetails) {
-        User user = getUserById(id);
-        if (user != null) {
-            user.setUsername(userDetails.getUsername());
-            user.setEmail(userDetails.getEmail());
-            return userRepository.save(user);
-        }
-        return null;
-    }
+//    public User updateUser(int id, User userDetails) {
+//        User user = getUserById(id);
+//        if (user != null) {
+//            user.setUsername(userDetails.getUsername());
+//            user.setEmail(userDetails.getEmail());
+//            return userRepository.save(user);
+//        }
+//        return null;
+//    }
 
-    public void deleteUser(int id) {
-        userRepository.deleteById(id);
+    public boolean deleteUser(int id) {
+        if (userRepository.existsById(id)) {
+            userRepository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public Optional<User> searchUsersByName(String name) {
-        return userRepository.findByUsername(name);
+//    public Optional<User> searchUsersByName(String name) {
+//        return userRepository.findByUsername(name);
+//    }
+    public List<User> searchUsers(String email, String username) {
+        if (email != null && username != null) {
+            return userRepository.findByEmailAndUsername(email, username);
+        } else if (email != null) {
+            return userRepository.findByEmail(email);
+        } else if (username != null) {
+            return userRepository.findByUsername(username);
+        }
+        return List.of();
+    }
+    public User getUserById(int id) {
+        return userRepository.findById(id).orElse(null);
     }
 
-    public String updatePassword(String usernameOrEmail, String currentPassword, String newPassword) {
-        if (!StringUtils.hasText(newPassword) || newPassword.length() < 8) {
-            return "New password must be at least 8 characters long.";
-        }
-
-        Optional<User> userOptional = findByUsernameOrEmail(usernameOrEmail);
-        if (!userOptional.isPresent()) {
-            return "User not found.";
-        }
-
-        User user = userOptional.get();
-
-        if (!passwordEncoder.matches(currentPassword, user.getPasswordHash())) {
-            return "Current password is incorrect.";
-        }
-
-        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
-            return "New password cannot be the same as the current password.";
-        }
-
-        user.setPasswordHash(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-        return "success";
-
+    public User updateUser(int id, User userDetails) {
+        return userRepository.findById(id).map(user -> {
+            user.setUsername(userDetails.getUsername());
+            user.setEmail(userDetails.getEmail());
+            user.setRole(userDetails.getRole());
+            return userRepository.save(user);
+        }).orElse(null);
     }
 
     public void linkTelegramAccount(Long telegramId, User user) {
@@ -136,5 +135,13 @@ public class UserService {
         // Đánh dấu tài khoản là active
         user.setActive(true);
         userRepository.save(user);
+    }
+
+    public boolean isAdmin(Integer userId) {
+        if (userId == null) {
+            return false;
+        }
+        Optional<User> user = userRepository.findById(userId);
+        return user.map(u -> "ADMIN".equalsIgnoreCase(u.getRole())).orElse(false);
     }
 }

@@ -11,6 +11,8 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.springframework.web.client.RestTemplate;
+
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -69,13 +71,14 @@ public class TelegramBotService extends TelegramLongPollingBot {
     }
 
     private void handleEmailInput(Long chatId, String email) {
-        Optional<User> userOpt = userService.findByEmail(email);
+        List<User> users = userService.findByEmail(email);
 
-        if (userOpt.isPresent()) {
-            User user = userOpt.get();
+        if (!users.isEmpty()) {
+            // Assume you only want to handle the first user for simplicity
+            User user = users.get(0);
 
             // Kiểm tra nếu Telegram ID đã được liên kết
-            if (telegramUserService.isTelegramLinked(chatId, user)) { // Dùng phương thức kiểm tra
+            if (telegramUserService.isTelegramLinked(chatId, user)) {
                 sendMessage(chatId, "Tài khoản của bạn đã được liên kết với bot Telegram.");
                 awaitingEmailMap.remove(chatId);
                 return;
@@ -89,6 +92,7 @@ public class TelegramBotService extends TelegramLongPollingBot {
             sendMessage(chatId, "Email không tồn tại trong hệ thống. Vui lòng thử lại.");
         }
     }
+
 
     private void handleOtpInput(Long chatId, String messageText) {
         OTP otp = awaitingOtpMap.get(chatId);

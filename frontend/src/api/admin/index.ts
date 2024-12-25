@@ -14,11 +14,15 @@ const adminApi = {
   },
   editRequest: async (
     requestId: number,
-    adminId?: number,
-    data?: RequestParams
+    adminId: number,
+    data: RequestParams
   ) => {
+    if (!requestId || !adminId) {
+      throw new Error("Missing required parameters: requestId or adminId");
+    }
+
     const response = await axiosClient.put(
-      `app/admin//edit/requests/${requestId}?adminId=${adminId}`,
+      `app/admin/edit/requests/${requestId}?adminId=${adminId}`,
       data
     );
 

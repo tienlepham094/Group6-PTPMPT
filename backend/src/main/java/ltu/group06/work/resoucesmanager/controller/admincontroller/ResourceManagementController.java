@@ -89,7 +89,11 @@ public class ResourceManagementController {
         return ResponseEntity.status(HttpStatus.CREATED).body("Resource added/updated successfully.");
     }
 
-    // API cập nhật hoặc xóa tài nguyên
+    /**
+     * API cập nhật số lượng tài nguyên
+     * @param resourceData
+     * @return
+     */
     @PutMapping("/update")
     public ResponseEntity<?> updateOrDeleteResource(@RequestBody Map<String, Object> resourceData) {
         int userId = (int) resourceData.get("userId");

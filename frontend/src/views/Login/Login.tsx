@@ -48,7 +48,7 @@ const Login = () => {
           <TextField
             type="text"
             id="username"
-            placeholder="Enter Email "
+            placeholder="Nhập tên đăng nhập "
             {...register("username")}
           />
           {errors.username ? <p>{errors.username.message}</p> : ""}
@@ -59,7 +59,7 @@ const Login = () => {
             <TextField
               type={showPassword ? "text" : "password"}
               id="password"
-              placeholder="Password"
+              placeholder="Mật khẩu"
               {...register("password")}
             />
             <button

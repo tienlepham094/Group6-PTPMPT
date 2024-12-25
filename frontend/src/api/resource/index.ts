@@ -1,25 +1,47 @@
-import { ResourceParams } from "../../context/types";
+import { Resources } from "../../types";
 import axiosClient from "../axiosClient ";
 
 const resourceApi = {
-  create: async (data: ResourceParams) => {
-    const response = await axiosClient.post(`/app/admin/resource/add`, data);
+  createResource: async (data: Resources) => {
+    const response = await axiosClient.post(`/auth/api/resources`, data);
+    return response.data;
+  },
 
+  getAllResources: async () => {
+    const response = await axiosClient.get(`/auth/api/resources`);
     return response.data;
   },
-  edit: async (data: ResourceParams) => {
-    const response = await axiosClient.put(`/app/admin/resource/update`, data);
+
+  getResourceById: async (id: number) => {
+    const response = await axiosClient.get(`/auth/api/resources/${id}`);
     return response.data;
   },
-  delete: async (id: string) => {
-    const response = await axiosClient.delete(
-      `/app/admin/resource/delete/${id}`
+
+  deleteResource: async (id: number) => {
+    const response = await axiosClient.delete(`/auth/api/resources/${id}`);
+    return response.data;
+  },
+
+  allocateResource: async (data: {
+    userId: number;
+    resourceId: number;
+    quantity: number;
+  }) => {
+    const response = await axiosClient.post(
+      `/auth/api/resources/allocate`,
+      data
     );
     return response.data;
   },
-  getAll: async () => {
-    const response = await axiosClient.get(
-      `/app/admin/get/available-resources`
+
+  releaseResource: async (data: {
+    userId: number;
+    resourceId: number;
+    quantity: number;
+  }) => {
+    const response = await axiosClient.post(
+      `/auth/api/resources/release`,
+      data
     );
     return response.data;
   },
