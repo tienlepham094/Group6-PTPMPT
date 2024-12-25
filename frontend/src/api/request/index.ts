@@ -1,5 +1,6 @@
 import { Requests } from "../../types";
 import axiosClient from "../axiosClient ";
+import { STATUSREQUEST } from "../enum";
 
 const requestApi = {
   getAllRequests: async () => {
@@ -21,7 +22,17 @@ const requestApi = {
       throw error;
     }
   },
-
+  getRequestsByStatus: async (status?: STATUSREQUEST) => {
+    try {
+      const response = await axiosClient.get(
+        `/auth/api/requests/status/${status}`
+      );
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching requests for user ${status}:`, error);
+      throw error;
+    }
+  },
   // Fetch requests by user ID
   getRequestsByUserId: async (userId: number) => {
     try {
@@ -59,7 +70,7 @@ const requestApi = {
   },
 
   // Update request status (Approve or Reject)
-  updateRequestStatus: async (id: number, status: string) => {
+  updateRequestStatus: async (id: number, status?: string) => {
     try {
       const response = await axiosClient.patch(
         `/auth/api/requests/${id}/status`,

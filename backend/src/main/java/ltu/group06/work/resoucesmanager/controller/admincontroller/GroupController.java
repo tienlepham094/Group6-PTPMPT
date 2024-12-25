@@ -47,4 +47,5 @@ public class GroupController {
         groupService.deleteGroup(id);
         return ResponseEntity.noContent().build();
     }
+
 }
