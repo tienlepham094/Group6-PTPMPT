@@ -253,7 +253,7 @@ const UserLayout = () => {
               </List>
               <Divider />
               <List>
-                {["All mail", "Trash", "Spam"].map((text, index) => (
+                {["All mail", "Trash", "spam"].map((text, index) => (
                   <ListItem key={text} disablePadding sx={{ display: "block" }}>
                     <ListItemButton
                       sx={[
@@ -269,6 +269,7 @@ const UserLayout = () => {
                               justifyContent: "center",
                             },
                       ]}
+                      onClick={() => handlePick(text)}
                     >
                       <ListItemIcon
                         sx={[
