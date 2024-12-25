@@ -57,17 +57,14 @@ public class RequestIssueManagementController {
         // Convert requests to a list of maps for JSON response
         List<Map<String, Object>> requestsList = userRequests.stream().map(request -> {
             Map<String, Object> requestMap = new HashMap<>();
-            requestMap.put("request_id", request.getRequestId());
-            requestMap.put("user_id", request.getUser().getUserId());
+            requestMap.put("request_id", request.getId());
+            requestMap.put("user_id", request.getUser().getId());
             requestMap.put("resource_type", request.getResourceType().name());
             requestMap.put("quantity", request.getQuantity());
             requestMap.put("start_time", request.getStartTime() != null ? request.getStartTime().toString() : "The time has not yet been set");
-            requestMap.put("end_time", request.getEnd_time() != null ? request.getEnd_time().toString() : "The time has not yet been set");
-            requestMap.put("status_request", request.getStatusRequest().name());
-            requestMap.put("reason", request.getReason());
-            requestMap.put("time_usage", request.getTimeUsage());
+            requestMap.put("end_time", request.getEndTime() != null ? request.getEndTime().toString() : "The time has not yet been set");
+            requestMap.put("status_request", request.getStatus().name());
             requestMap.put("created_at", request.getCreatedAt().toString());
-            requestMap.put("updated_at", request.getUpdatedAt().toString());
             return requestMap;
         }).collect(Collectors.toList());
 
@@ -148,6 +145,6 @@ public class RequestIssueManagementController {
             return false;  // Coi như không phải admin nếu không có userId
         }
         Optional<User> user = Optional.ofNullable(userService.getUserById(userId));
-        return user.isPresent() && "ADMIN".equalsIgnoreCase(user.get().getRole());
+        return user.isPresent() && "ADMIN".equalsIgnoreCase(String.valueOf(user.get().getRole()));
     }
 }

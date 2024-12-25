@@ -1,4 +1,4 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.admincontroller;
 
 import ltu.group06.work.resoucesmanager.entity.Group;
 import ltu.group06.work.resoucesmanager.service.GroupService;

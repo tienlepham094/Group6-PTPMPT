@@ -1,11 +1,13 @@
 package ltu.group06.work.resoucesmanager.dto;
+import ltu.group06.work.resoucesmanager.entity.Resource;
+
 
 public class ResourceReleaseRequest {
 
     private Long userId;        // ID của người dùng trả lại tài nguyên
     private Long resourceId;    // ID tài nguyên cần trả lại
 
-    private Resource2.ResourceType resourceType;    // ID tài nguyên cần trả lại
+    private Resource.ResourceType resourceType;    // ID tài nguyên cần trả lại
     private int amount;         // Số lượng tài nguyên trả lại
 
     // Constructor mặc định
@@ -13,7 +15,7 @@ public class ResourceReleaseRequest {
     }
 
     // Constructor với các tham số
-    public ResourceReleaseRequest(Long userId, Long resourceId, int amount,Resource2.ResourceType resourceType) {
+    public ResourceReleaseRequest(Long userId, Long resourceId, int amount,Resource.ResourceType resourceType) {
         this.userId = userId;
         this.resourceId = resourceId;
         this.amount = amount;
@@ -55,10 +57,10 @@ public class ResourceReleaseRequest {
     public void setAmount(int amount) {
         this.amount = amount;
     }
-    public Resource2.ResourceType getResourceType() {
+    public Resource.ResourceType getResourceType() {
         return resourceType;
     }
-    public void setResourceType(Resource2.ResourceType resourceType) {
+    public void setResourceType(Resource.ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

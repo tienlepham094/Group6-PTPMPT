@@ -29,9 +29,9 @@ public class ResourceHistoryController {
     private LogService logService;
 
     // Check ADMIN, chỉ có admin mới có quyền xem lịch sử sử dụng tài nguyên
-    private boolean isAdmin(int userId) {
+    public boolean isAdmin(int userId) {
         Optional<User> user = Optional.ofNullable(userService.getUserById(userId));
-        return user.isPresent() && "ADMIN".equalsIgnoreCase(user.get().getRole());
+        return user.isPresent() && "ADMIN".equalsIgnoreCase(String.valueOf(user.get().getRole()));
     }
 
     /**
@@ -46,9 +46,8 @@ public class ResourceHistoryController {
 
         for (Resource resource : resources) {
             Map<String, Object> resourceStatus = new HashMap<>();
-            resourceStatus.put("resource_type", resource.getResourceType());
-            resourceStatus.put("totalQuantity", resource.getQuantity());
-            resourceStatus.put("status", resource.getStatusResources());
+            resourceStatus.put("resource_type", resource.getType());
+            resourceStatus.put("totalQuantity", resource.getTotalQuantity());
 
             resourceStatusList.add(resourceStatus);
         }
@@ -58,8 +57,6 @@ public class ResourceHistoryController {
 
     /**
      * Xem lịch sử sử dụng tài nguyên của các user
-     *
-     * @param userId
      * @return
      */
     @GetMapping("/resource/usage/history")
@@ -77,14 +74,13 @@ public class ResourceHistoryController {
             Optional<Request> requestOpt = resourceService.getRequestById(log.getRequestId());
             requestOpt.ifPresent(request -> {
                 Map<String, Object> record = new HashMap<>();
-                record.put("request_id", request.getRequestId());
+                record.put("request_id", request.getId());
                 record.put("created_at", request.getCreatedAt().toString());
                 record.put("start_time", request.getStartTime() != null ? request.getStartTime().toString() : "Not set");
-                record.put("end_time", request.getEnd_time() != null ? request.getEnd_time().toString() : "Not set");
+                record.put("end_time", request.getEndTime() != null ? request.getEndTime().toString() : "Not set");
                 record.put("quantity", request.getQuantity());
                 record.put("resource_type", request.getResourceType());
-                record.put("reason", request.getReason());
-                record.put("status", request.getStatusRequest());
+                record.put("status", request.getStatus());
                 usageHistory.add(record);
             });
         }
