@@ -52,11 +52,13 @@ export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
         // groupApi.(id!, group).then(() => {
         //   setOpen(false);
         //   });
+      } else if (type == "delete") {
+        await groupApi.deleteGroup(id!);
       }
     } catch (error) {
       console.log(error);
     } finally {
-      setOpen(false);
+      onClose();
     }
   };
   useEffect(() => {

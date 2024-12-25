@@ -5,17 +5,25 @@ import { Box, Button, TextField, MenuItem, FormControl } from "@mui/material";
 import { Requests } from "../../types";
 import requestApi from "../../api/request";
 import { RequestDialog } from "./RequestDialog";
+import { useAuth } from "../../context/useAuth";
+import { STATUSREQUEST } from "../../api/enum";
 
 export const Request = () => {
+  const { user } = useAuth();
   const [request, setRequest] = useState<Requests[] | null>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [type, setType] = useState<"add" | "edit" | "delete">("add");
   const [requestId, setRequestId] = useState<number>(); // State for request to delete
+  const [status, setStatus] = useState<STATUSREQUEST>(); // State for request to delete
 
   const fetchAllRequest = useCallback(async () => {
     try {
-      const request = await requestApi.getAllRequests();
-      setRequest(request);
+      const allRequest = await requestApi.getAllRequests();
+      setRequest(allRequest);
+      // const userRequest = await requestApi.getRequestsByUserId(user.id);
+      // setRequest(userRequest);
+      // const statusRequest = await requestApi.getRequestsByStatus(status);
+      // setRequest(statusRequest);
     } catch (error) {
       console.error("Error fetching request:", error);
     }
