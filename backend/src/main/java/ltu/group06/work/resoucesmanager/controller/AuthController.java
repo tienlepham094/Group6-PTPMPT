@@ -40,6 +40,11 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @GetMapping("/get-token")
+    public ResponseEntity<String> home() {
+        return ResponseEntity.ok("Welcome to the authentication service.");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody User user) {
         if (userService.checkIfUsernameExists(user.getUsername())) {
@@ -56,6 +61,7 @@ public class AuthController {
                 "REGISTER",
                 "User registered with username: " + user.getUsername()
         );
+        System.out.printf("Register success");
 
         return ResponseEntity.ok("Registration successful!");
     }
