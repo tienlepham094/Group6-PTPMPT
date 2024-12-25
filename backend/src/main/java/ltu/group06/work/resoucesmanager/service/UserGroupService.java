@@ -34,4 +34,7 @@ public class UserGroupService {
                 .orElseThrow(() -> new RuntimeException("User not found in the group"));
         userGroupRepository.delete(userGroup);
     }
+    public void removeAllUsersFromGroup(Long groupId) {
+        userGroupRepository.removeAllUsersFromGroup(groupId); // Deletes all UserGroup entries for the given groupId
+    }
 }

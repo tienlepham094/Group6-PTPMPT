@@ -1,8 +1,10 @@
 package ltu.group06.work.resoucesmanager.repository;
 
+import jakarta.transaction.Transactional;
 import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.entity.UserGroup;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -16,5 +18,10 @@ public interface UserGroupRepository extends JpaRepository<UserGroup, Long> {
     Optional<UserGroup> findByGroupIdAndUserId(Long groupId, Long userId);
     @Query("SELECT u FROM User u WHERE u.id NOT IN (SELECT ug.user.id FROM UserGroup ug WHERE ug.group.id = :groupId)")
     List<User> findUsersNotInGroup(@Param("groupId") Long groupId);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM UserGroup ug WHERE ug.group.id = :groupId")
+    void removeAllUsersFromGroup(@Param("groupId") Long groupId);
 
 }
