@@ -1,0 +1,77 @@
+.about-container {
+    background-color: #ffffff;
+    padding: 40px;
+    text-align: center;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  
+  .about-title {
+    font-weight: bold;
+    color: #1c1852; /* Màu xanh đậm */
+    margin-bottom: 30px;
+    text-transform: uppercase;
+  }
+  
+  .team-card {
+    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column; /* Sắp xếp theo chiều dọc */
+    justify-content: space-between; /* Phân phối đều nội dung */
+    align-items: center; /* Căn giữa nội dung */
+    height: 400px; /* Chiều cao box */
+    max-width: 300px; /* Chiều rộng box */
+    margin: 0 auto; /* Căn giữa box */
+  }
+  
+  .team-card:hover {
+    transform: translateY(-10px);
+  }
+  
+  .team-avatar-wrapper {
+    position: relative;
+    width: 200px; /* Kích thước ảnh */
+    height: 200px; /* Kích thước ảnh */
+    margin-bottom: 15px;
+    overflow: hidden;
+    border-radius: 8px; /* Đảm bảo ảnh vuông */
+  }
+  
+  .team-avatar {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cắt ảnh vừa khung */
+    filter: grayscale(100%);
+    transition: filter 0.3s ease-in-out, transform 0.3s ease-in-out;
+  }
+  
+  .team-avatar:hover {
+    filter: grayscale(0%);
+    transform: scale(1.05); /* Tăng nhẹ kích thước khi hover */
+  }
+  
+  .team-name {
+    font-weight: bold;
+    color: #333;
+    text-align: center;
+    margin: 10px 0;
+    font-size: clamp(14px, 2.5vw, 18px); /* Tự động điều chỉnh kích thước chữ */
+    white-space: nowrap; /* Ngăn xuống dòng */
+    overflow: hidden; /* Ẩn phần vượt quá */
+    text-overflow: clip; /* Hiển thị toàn bộ nội dung, không thêm dấu "..." */
+  }
+  
+  .team-role {
+    color: #777;
+    font-size: clamp(12px, 2vw, 16px); /* Tự động điều chỉnh kích thước chữ */
+    text-align: center;
+    margin: 5px 0;
+    white-space: nowrap; /* Ngăn xuống dòng */
+    overflow: hidden;
+    text-overflow: clip;
+  }
+  
