@@ -40,8 +40,8 @@ const Login = () => {
   return (
     <div className="card-container">
       <div className="title">
-        <h3>Login</h3>
-        <h5 style={{ fontSize: "15px" }}>
+        <h2>Login</h2>
+        <h5 style={{ fontSize: "15px", opacity: 0.7 }}>
           Hey, Enter your details to get sign in to your account
         </h5>
       </div>
@@ -79,7 +79,16 @@ const Login = () => {
           <a href="#">Having trouble in sign in ?</a>
         </div>
         <div className="form-controller">
-          <Button type="submit" label="Sign in" className="login-button" />
+          <Button
+            type="submit"
+            label="Sign in"
+            className="login-button"
+            style={{
+              backgroundColor: "#1976d2",
+              color: "white",
+              fontWeight: "bold",
+            }}
+          />
         </div>
       </form>
       <div className="icon-buttons">

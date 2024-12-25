@@ -94,27 +94,48 @@ const Register = () => {
           {errors.confirmPassword && <p>{errors.confirmPassword.message}</p>}
         </div>
         <div className="form-controller">
-          <Button type="submit" label="Sign up" className="login-button" />
+          <Button
+            type="submit"
+            label="Sign up"
+            className="login-button"
+            style={{
+              backgroundColor: "#1976d2",
+              color: "white",
+              fontWeight: 'bold'
+            }}
+          />
         </div>
       </form>
       <div className="icon-buttons">
-        <a href="https://www.apple.com" target="_blank" rel="noopener noreferrer">
-        <button className="icon-button">
-          <img src={AppleIcon} alt="Apple Image" />
-          Apple
-        </button>
+        <a
+          href="https://www.apple.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="icon-button">
+            <img src={AppleIcon} alt="Apple Image" />
+            Apple
+          </button>
         </a>
-        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
-        <button className="icon-button">
-          <img src={FacebookIcon} alt="Facebook Image" />
-          Facebook
-        </button>
+        <a
+          href="https://www.facebook.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="icon-button">
+            <img src={FacebookIcon} alt="Facebook Image" />
+            Facebook
+          </button>
         </a>
-        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
-        <button className="icon-button">
-          <img src={InstagramIcon} alt="Instagram Image" />
-          Instagram
-        </button>
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="icon-button">
+            <img src={InstagramIcon} alt="Instagram Image" />
+            Instagram
+          </button>
         </a>
       </div>
 

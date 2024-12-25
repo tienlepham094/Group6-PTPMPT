@@ -180,14 +180,6 @@ export const Resource = () => {
         </FormControl>
         <div>
           <Button
-            variant="outlined"
-            sx={{ marginLeft: 2 }}
-            color="primary"
-            onClick={() => setOpenDialog(true)}
-          >
-            Thêm số lượng tài nguyên
-          </Button>
-          <Button
             variant="contained"
             color="secondary"
             sx={{ marginLeft: 2 }}
