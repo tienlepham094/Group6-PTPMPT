@@ -1,8 +1,7 @@
 package ltu.group06.work.resoucesmanager.controller2;
 
-import ltu.group06.work.resoucesmanager.entity.User2;
 import ltu.group06.work.resoucesmanager.entity.UserGroup;
-import ltu.group06.work.resoucesmanager.service2.UserGroupService;
+import ltu.group06.work.resoucesmanager.service.UserGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

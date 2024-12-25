@@ -2,7 +2,6 @@ package ltu.group06.work.resoucesmanager.controller2;
 
 import jakarta.servlet.http.HttpSession;
 import ltu.group06.work.resoucesmanager.dto.LoginRequest;
-import ltu.group06.work.resoucesmanager.entity.User2;
 import ltu.group06.work.resoucesmanager.service2.UserService2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

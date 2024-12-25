@@ -1,7 +1,5 @@
 package ltu.group06.work.resoucesmanager.dto;
 
-import ltu.group06.work.resoucesmanager.entity.Resource2;
-
 public class ResourceReleaseRequest {
 
     private Long userId;        // ID của người dùng trả lại tài nguyên

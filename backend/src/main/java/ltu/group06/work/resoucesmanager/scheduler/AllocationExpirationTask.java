@@ -1,10 +1,10 @@
 package ltu.group06.work.resoucesmanager.scheduler;
 
 import ltu.group06.work.resoucesmanager.dto.ResourceReleaseRequest;
-import ltu.group06.work.resoucesmanager.entity.Allocation2;
+import ltu.group06.work.resoucesmanager.entity.Allocation;
 import ltu.group06.work.resoucesmanager.service2.AllocationService2;
 import ltu.group06.work.resoucesmanager.service2.ResourceService2;
-import ltu.group06.work.resoucesmanager.service2.UserResourcesService;
+import ltu.group06.work.resoucesmanager.service.UserResourcesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.util.List;
 public class AllocationExpirationTask {
 
     @Autowired
-    private AllocationService2 allocationService;
+    private AllocationService2 AllocationService;
 
     @Autowired
     private UserResourcesService userResourcesService;
@@ -25,20 +25,20 @@ public class AllocationExpirationTask {
 
     @Scheduled(fixedRate = 60000) // Chạy mỗi phút
     public void checkAndReleaseExpiredAllocations() {
-        List<Allocation2> expiredAllocations = allocationService.getExpiredAllocations();
+        List<Allocation> expiredAllocations = AllocationService.getExpiredAllocations();
 
-        for (Allocation2 allocation : expiredAllocations) {
+        for (Allocation Allocation : expiredAllocations) {
             // Giải phóng tài nguyên ở UserResources
-            userResourcesService.releaseResource(allocation.getUserId(), allocation.getResourceType(), allocation.getQuantity());
+            userResourcesService.releaseResource(Allocation.getUserId(), Allocation.getResourceType(), Allocation.getQuantity());
 
             // Giải phóng tài nguyên ở Resource
             resourceService.releaseResource(new ResourceReleaseRequest(
-                    allocation.getResource().getId(),
-                    allocation.getQuantity()
+                    Allocation.getResource().getId(),
+                    Allocation.getQuantity()
             ));
 
             // Xóa Allocation
-            allocationService.deleteAllocation(allocation.getId());
+            AllocationService.deleteAllocation(Allocation.getId());
         }
     }
 }

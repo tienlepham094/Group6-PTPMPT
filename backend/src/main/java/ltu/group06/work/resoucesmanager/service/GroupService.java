@@ -1,7 +1,7 @@
-package ltu.group06.work.resoucesmanager.service2;
+package ltu.group06.work.resoucesmanager.service;
 
 import ltu.group06.work.resoucesmanager.entity.Group;
-import ltu.group06.work.resoucesmanager.repository2.GroupRepository;
+import ltu.group06.work.resoucesmanager.repository.GroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -18,13 +18,13 @@ public class UserResources {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;  // ID của tài nguyên
     private Long userId;  // ID của người dùng
-    private Resource2.ResourceType resourceType;  // Loại tài nguyên (ví dụ: GPU, CPU)
+    private Resource.ResourceType resourceType;  // Loại tài nguyên (ví dụ: GPU, CPU)
     private int quantity;  // Số lượng tài nguyên của người dùng
 
     // Constructor
     public UserResources() {}
 
-    public UserResources(Long userId, Resource2.ResourceType resourceType, int quantity) {
+    public UserResources(Long userId, Resource.ResourceType resourceType, int quantity) {
         this.userId = userId;
         this.resourceType = resourceType;
         this.quantity = quantity;
@@ -47,11 +47,11 @@ public class UserResources {
         this.userId = userId;
     }
 
-    public Resource2.ResourceType getResourceType() {
+    public Resource.ResourceType getResourceType() {
         return resourceType;
     }
 
-    public void setResourceType(Resource2.ResourceType resourceType) {
+    public void setResourceType(Resource.ResourceType resourceType) {
         this.resourceType = resourceType;
     }
 

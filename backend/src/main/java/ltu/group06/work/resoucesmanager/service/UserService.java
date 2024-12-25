@@ -38,20 +38,20 @@ public class UserService {
 //        return userRepository.findByUsername(username);
 //    }
 //
-    public List<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-
-    public User registerUser(String username, String email, String password) {
-        String encodedPassword = passwordEncoder.encode(password);
-        User user = new User();
-        user.setUsername(username);
-        user.setEmail(email);
-        user.setPasswordHash(encodedPassword);
-        user.setRole("user");
-        return userRepository.save(user);
-    }
+//    public List<User> findByEmail(String email) {
+//        return userRepository.findByEmail(email);
+//    }
+//
+//
+//    public User registerUser(String username, String email, String password) {
+//        String encodedPassword = passwordEncoder.encode(password);
+//        User user = new User();
+//        user.setUsername(username);
+//        user.setEmail(email);
+//        user.setPasswordHash(encodedPassword);
+//        user.setRole("user");
+//        return userRepository.save(user);
+//    }
 
     public String generateOTP() {
         int otpLength = 6;
@@ -81,13 +81,13 @@ public class UserService {
 //        return null;
 //    }
 
-    public boolean deleteUser(int id) {
-        if (userRepository.existsById(id)) {
-            userRepository.deleteById(id);
-            return true;
-        }
-        return false;
-    }
+//    public boolean deleteUser(int id) {
+//        if (userRepository.existsById(id)) {
+//            userRepository.deleteById(id);
+//            return true;
+//        }
+//        return false;
+//    }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -96,16 +96,16 @@ public class UserService {
 //    public Optional<User> searchUsersByName(String name) {
 //        return userRepository.findByUsername(name);
 //    }
-    public List<User> searchUsers(String email, String username) {
-        if (email != null && username != null) {
-            return userRepository.findByEmailAndUsername(email, username);
-        } else if (email != null) {
-            return userRepository.findByEmail(email);
-        } else if (username != null) {
-            return userRepository.findByUsername(username);
-        }
-        return List.of();
-    }
+//    public List<User> searchUsers(String email, String username) {
+//        if (email != null && username != null) {
+//            return userRepository.findByEmailAndUsername(email, username);
+//        } else if (email != null) {
+//            return userRepository.findByEmail(email);
+//        } else if (username != null) {
+//            return userRepository.findByUsername(username);
+//        }
+//        return List.of();
+//    }
     public User getUserById(int id) {
         return userRepository.findById(id).orElse(null);
     }
@@ -133,15 +133,42 @@ public class UserService {
         telegramUserRepository.save(telegramUser);
 
         // Đánh dấu tài khoản là active
-        user.setActive(true);
+//        user.setActive(true);
         userRepository.save(user);
     }
 
-    public boolean isAdmin(Integer userId) {
-        if (userId == null) {
-            return false;
-        }
-        Optional<User> user = userRepository.findById(userId);
-        return user.map(u -> "ADMIN".equalsIgnoreCase(u.getRole())).orElse(false);
+//    public boolean isAdmin(Integer userId) {
+//        if (userId == null) {
+//            return false;
+//        }
+//        Optional<User> user = userRepository.findById(userId);
+//        return user.map(u -> "ADMIN".equalsIgnoreCase(u.getRole())).orElse(false);
+//    }
+    public User createUser(User user) {
+        return userRepository.save(user);
+    }
+    public User findByUsername(String username) {
+        return userRepository.findUserByUsername(username);
+    }
+
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
+    }
+    public List<User> getAllUser() {
+        return userRepository.findAll();
+    }
+
+    public Optional<User> getUserByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public boolean checkIfEmailExists(String email) {
+        return userRepository.findByEmail(email).isPresent();
+    }
+    public boolean checkIfUsernameExists(String username) {
+        return userRepository.findByUsername(username).isPresent();
+    }
+    public void deleteUser(Integer id) {
+        userRepository.deleteById(id);
     }
 }

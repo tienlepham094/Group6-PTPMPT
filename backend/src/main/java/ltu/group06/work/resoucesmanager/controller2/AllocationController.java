@@ -1,8 +1,6 @@
 package ltu.group06.work.resoucesmanager.controller2;
 
-import ltu.group06.work.resoucesmanager.entity.Allocation2;
 import ltu.group06.work.resoucesmanager.service2.AllocationService2;
-import ltu.group06.work.resoucesmanager.service2.UserResourcesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

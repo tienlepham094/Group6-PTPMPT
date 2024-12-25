@@ -21,7 +21,7 @@ public class UserGroup {
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
-    private User2 user;
+    private User user;
 
     @ManyToOne
     @JoinColumn(name = "group_id", nullable = false)

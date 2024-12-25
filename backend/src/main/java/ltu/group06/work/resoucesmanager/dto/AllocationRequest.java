@@ -1,7 +1,5 @@
 package ltu.group06.work.resoucesmanager.dto;
 
-import ltu.group06.work.resoucesmanager.entity.Resource2;
-
 public class AllocationRequest {
     private Long userId;
     private Resource2.ResourceType resourceType;
