@@ -98,18 +98,24 @@ const Register = () => {
         </div>
       </form>
       <div className="icon-buttons">
+        <a href="https://www.apple.com" target="_blank" rel="noopener noreferrer">
         <button className="icon-button">
           <img src={AppleIcon} alt="Apple Image" />
           Apple
         </button>
+        </a>
+        <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer">
         <button className="icon-button">
           <img src={FacebookIcon} alt="Facebook Image" />
           Facebook
         </button>
+        </a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">
         <button className="icon-button">
           <img src={InstagramIcon} alt="Instagram Image" />
           Instagram
         </button>
+        </a>
       </div>
 
       <div>

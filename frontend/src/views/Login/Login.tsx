@@ -40,8 +40,10 @@ const Login = () => {
   return (
     <div className="card-container">
       <div className="title">
-        <h3>Account Login</h3>
-        <h3>Hey, Enter your details to get sign in to your account</h3>
+        <h3>Login</h3>
+        <h5 style={{ fontSize: "15px" }}>
+          Hey, Enter your details to get sign in to your account
+        </h5>
       </div>
       <form onSubmit={handleSubmit(handleLogin)} className="form-container">
         <div className="form-controller">
@@ -81,22 +83,40 @@ const Login = () => {
         </div>
       </form>
       <div className="icon-buttons">
-        <button className="icon-button">
-          <img src={AppleIcon} alt="Apple Image" />
-          Apple
-        </button>
-        <button className="icon-button">
-          <img src={FacebookIcon} alt="Facebook Image" />
-          Facebook
-        </button>
-        <button className="icon-button">
-          <img src={InstagramIcon} alt="Instagram Image" />
-          Instagram
-        </button>
+        <a
+          href="https://www.apple.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="icon-button">
+            <img src={AppleIcon} alt="Apple Image" />
+            Apple
+          </button>
+        </a>
+        <a
+          href="https://www.facebook.com"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="icon-button">
+            <img src={FacebookIcon} alt="Facebook Image" />
+            Facebook
+          </button>
+        </a>
+        <a
+          href="https://www.instagram.com/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className="icon-button">
+            <img src={InstagramIcon} alt="Instagram Image" />
+            Instagram
+          </button>
+        </a>
       </div>
       <div>
         <p>
-          Don’t have an account? <a href="/register">Request Now</a>
+          Don’t have an account? <a href="/register">Register Now</a>
         </p>
       </div>
     </div>
