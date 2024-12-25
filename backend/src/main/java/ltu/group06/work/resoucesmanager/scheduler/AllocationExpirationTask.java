@@ -38,7 +38,7 @@ public class AllocationExpirationTask {
             ));
 
             // Xóa Allocation
-            allocationService.deleteAllocation(Allocation.getId());
+//            allocationService.deleteAllocation(Allocation.getId());
         }
     }
 }

@@ -42,6 +42,7 @@ public class RequestController {
         Optional<Request> request = requestService.getRequestById(id);
         return request.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+
     @GetMapping("/get")
     public ResponseEntity<List<Request>> getAllRequests() {
         List<Request> requests = requestService.getAllRequests();
@@ -70,12 +71,13 @@ public class RequestController {
                 Request request = requestOpt.get();
 
                 allocationService.createAllocation(new Allocation(
-                        request.getUserId(),
+                        request,  // Pass the Request object here
                         request.getResourceId(),
                         request.getQuantity(),
                         request.getStartTime(),
                         request.getEndTime()
                 ));
+
 
                 // Cập nhật tài nguyên cho UserResources
                 userResourcesService.allocateResource(request.getUserId(), request.getResourceType(), request.getQuantity());

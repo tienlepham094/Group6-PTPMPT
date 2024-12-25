@@ -43,6 +43,7 @@ public class GroupController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
+        groupService.deleteUserGroupReferences(id);
         groupService.deleteGroup(id);
         return ResponseEntity.noContent().build();
     }

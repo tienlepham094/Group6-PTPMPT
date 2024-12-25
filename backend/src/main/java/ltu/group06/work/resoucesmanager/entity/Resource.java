@@ -44,10 +44,15 @@ public class Resource {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();
 
+    public Resource(Long resourceId) {
+        this.id = resourceId;
+    }
+
     @Getter
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 30)
     private ResourceType type; // Add this field for type
+
     // Enum for ResourceType
     public enum ResourceType {
         GPU, CPU, MEMORY, STORAGE, NETWORK
