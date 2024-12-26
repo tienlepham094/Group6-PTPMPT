@@ -1,7 +1,7 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.admincontroller;
 
 import ltu.group06.work.resoucesmanager.entity.Group;
-import ltu.group06.work.resoucesmanager.service2.GroupService;
+import ltu.group06.work.resoucesmanager.service.GroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -43,6 +43,7 @@ public class GroupController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteGroup(@PathVariable Long id) {
+        groupService.deleteUserGroupReferences(id);
         groupService.deleteGroup(id);
         return ResponseEntity.noContent().build();
     }

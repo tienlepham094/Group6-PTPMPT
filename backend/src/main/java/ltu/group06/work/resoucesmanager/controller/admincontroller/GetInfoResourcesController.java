@@ -37,10 +37,12 @@ public class GetInfoResourcesController {
 
         List<Map<String, Object>> resourcesList = resources.stream().map(resource -> {
             Map<String, Object> resourceMap = new HashMap<>();
-            resourceMap.put("resource_id", resource.getResourceId());
-            resourceMap.put("resource_type", resource.getResourceType().name());
-            resourceMap.put("quantity", resource.getQuantity());
-            resourceMap.put("status_resources", resource.getStatusResources().name());
+            resourceMap.put("resource_id", resource.getClass());
+            resourceMap.put("resource_type", resource.getType().name());
+            resourceMap.put("resource_name", resource.getName());
+            resourceMap.put("resource_description", resource.getDescription());
+            resourceMap.put("avaiable_resources", resource.getAvailableQuantity());
+            resourceMap.put("total_quantity", resource.getTotalQuantity());
             return resourceMap;
         }).collect(Collectors.toList());
 

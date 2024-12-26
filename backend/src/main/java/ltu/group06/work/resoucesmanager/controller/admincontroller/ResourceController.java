@@ -1,9 +1,9 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.admincontroller;
 
 import ltu.group06.work.resoucesmanager.dto.ResourceAllocationRequest;
 import ltu.group06.work.resoucesmanager.dto.ResourceReleaseRequest;
-import ltu.group06.work.resoucesmanager.entity.Resource2;
-import ltu.group06.work.resoucesmanager.service2.ResourceService2;
+import ltu.group06.work.resoucesmanager.entity.Resource;
+import ltu.group06.work.resoucesmanager.service.ResourceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,32 +14,32 @@ import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth/api/resources")
-public class ResourceController2 {
+public class ResourceController {
 
     @Autowired
-    private ResourceService2 resourceService;
+    private ResourceService resourceService;
 
     @PostMapping
-    public ResponseEntity<Resource2> createResource(@RequestBody Resource2 resource) {
-        Resource2 createdResource = resourceService.createResource(resource);
+    public ResponseEntity<Resource> createResource(@RequestBody Resource resource) {
+        Resource createdResource = resourceService.createResource(resource);
         return ResponseEntity.ok(createdResource);
     }
 
     @GetMapping
-    public ResponseEntity<List<Resource2>> getAllResources() {
-        List<Resource2> resources = resourceService.getAllResources();
+    public ResponseEntity<List<Resource>> getAllResources() {
+        List<Resource> resources = resourceService.getAllResources();
         return ResponseEntity.ok(resources);
     }
 
     @GetMapping("/group/{id}")
-    public ResponseEntity<List<Resource2>> getResourceByGroupId(@PathVariable Long id) {
-        List<Resource2> resources = resourceService.getResourceByGroupId(id);
+    public ResponseEntity<List<Resource>> getResourceByGroupId(@PathVariable Long id) {
+        List<Resource> resources = resourceService.getResourceByGroupId(id);
         return ResponseEntity.ok(resources);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Resource2> getResourceById(@PathVariable Long id) {
-        Optional<Resource2> resource = resourceService.getResourceById(id);
+    public ResponseEntity<Resource> getResourceById(@PathVariable Long id) {
+        Optional<Resource> resource = resourceService.getResourceById(id);
         return resource.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 

@@ -22,14 +22,14 @@ public class RequestIssueController {
     /**
      * API update request của user voi dieu kien request phai la pending
      *
-     * @param requestId (param requestId)
+     * @param requestId      (param requestId)
      * @param requestDetails (body)
      *                       {
-     *     "resourceType": "GPU",
-     *     "quantity": 2,
-     *     "reason": "Need more GPUs for computation",
-     *     "timeUsage": 4
-     * }
+     *                       "resourceType": "GPU",
+     *                       "quantity": 2,
+     *                       "reason": "Need more GPUs for computation",
+     *                       "timeUsage": 4
+     *                       }
      * @return
      */
     @PutMapping("user/update/request")
@@ -42,19 +42,19 @@ public class RequestIssueController {
 
         Request existingRequest = existingRequestOpt.get();
 
-        if (!"pending".equals(existingRequest.getStatusRequest().name())) {
+        if (!"pending".equals(existingRequest.getStatus().name())) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(Map.of("error", "Only pending requests can be modified.", "requestId", requestId));
         }
 
-        existingRequest.setResourceType(requestDetails.getResourceType());
+//        existingRequest.setResourceType(requestDetails.getResourceType());
         existingRequest.setQuantity(requestDetails.getQuantity());
-        existingRequest.setReason(requestDetails.getReason());
-        existingRequest.setTimeUsage(requestDetails.getTimeUsage());
+        existingRequest.setStartTime(requestDetails.getStartTime());
+        existingRequest.setStartTime(requestDetails.getEndTime());
 
-        existingRequest.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
+        existingRequest.setCreatedAt(new Timestamp(System.currentTimeMillis()).toLocalDateTime());
 
         Request updatedRequest = requestService.save(existingRequest);
 
-        return ResponseEntity.ok(Map.of("message", "Request updated successfully", "requestId", updatedRequest.getRequestId(), "status", updatedRequest.getStatusRequest()));
+        return ResponseEntity.ok(Map.of("message", "Request updated successfully", "requestId", updatedRequest.getId(), "status", updatedRequest.getStatus()));
     }
 }

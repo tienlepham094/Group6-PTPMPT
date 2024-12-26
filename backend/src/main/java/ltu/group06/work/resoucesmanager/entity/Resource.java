@@ -1,43 +1,60 @@
 package ltu.group06.work.resoucesmanager.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.sql.Timestamp;
-import java.util.List;
+import lombok.*;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "resources")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Resource {
+
+    @Getter
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int resourceId;
+    private Long id;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ResourceType resourceType;  // GPU, CPU, RAM, Disk
+    @Column(nullable = false, length = 50)
+    private String name;
 
-    @Column(nullable = false)
-    private int quantity;
+    @Column(columnDefinition = "TEXT")
+    private String description;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private ResourceStatus statusResources;  // available, allocated, maintenance
+    @Column(name = "total_quantity", nullable = false)
+    private int totalQuantity;
 
-    @OneToMany(mappedBy = "resource", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Allocation> allocations;
+    // Getters and Setters for availableQuantity
+    @Getter
+    @Setter
+    @Column(name = "available_quantity", nullable = false)
+    private int availableQuantity;
 
-    @Column(nullable = false, updatable = false)
-    private Timestamp createdAt;
+    @ManyToOne
+    @JoinColumn(name = "created_by", nullable = false)
+    private User createdBy;
 
-    @Column(nullable = false)
-    private Timestamp updatedAt;
+    @ManyToOne
+    @JoinColumn(name = "group_id", nullable = true)
+    private Group group;
 
-    public enum ResourceType {
-        GPU, CPU, RAM, Disk
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
+
+    public Resource(Long resourceId) {
+        this.id = resourceId;
     }
 
-    public enum ResourceStatus {
-        available, allocated, maintenance
+    @Getter
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 30)
+    private ResourceType type; // Add this field for type
+
+    // Enum for ResourceType
+    public enum ResourceType {
+        GPU, CPU, MEMORY, STORAGE, NETWORK
     }
 }

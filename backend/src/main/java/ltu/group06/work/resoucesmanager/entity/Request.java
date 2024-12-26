@@ -1,75 +1,69 @@
 package ltu.group06.work.resoucesmanager.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "requests")
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Request {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int requestId;
+    private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
+    @ManyToOne()  // Lazy loading để giảm tải dữ liệu khi không cần thiết
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Resource.ResourceType resourceType;
+    @ManyToOne()  // Lazy loading có thể đổi thành EAGER nếu bạn muốn tải dữ liệu cùng lúc
+    @JoinColumn(name = "resource_id", nullable = false)
+    private Resource resource;
 
     @Column(nullable = false)
     private int quantity;
 
-    @Column(nullable = true)
+    @Column(name = "start_time", nullable = false)
     private LocalDateTime startTime;
 
-    @Column(nullable = true)
-    private LocalDateTime end_time;
+    @Column(name = "end_time", nullable = false)
+    private LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private RequestStatus statusRequest;  // pending, approved, rejected
+    @Column(nullable = false, length = 20)
+    private Status status = Status.PENDING;
 
-    private String reason;
+    @ManyToOne()
+    @JoinColumn(name = "approved_by")
+    private User approvedBy;
 
-    @Column(nullable = true)
-    private Integer timeUsage; // in hours
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt = LocalDateTime.now();
 
-    @OneToOne(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Approval approval;
-
-    @OneToMany(mappedBy = "request", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Allocation> allocations;
-
-    @Column(nullable = true, updatable = false)
-    private LocalDateTime createdAt;
-
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-
-    public enum RequestStatus {
-        pending, approved, rejected, cancelled, queued, completed
-    } 
-
-    // tự động điền thời gian khi tạo mới
-    @PrePersist
-    protected void onCreate() {
-        LocalDateTime currentTime = LocalDateTime.now();
-        this.createdAt = currentTime;
-        this.updatedAt = currentTime;
+    public enum Status {
+        PENDING, APPROVED, REJECTED, CANCELLED
     }
 
-    @PreUpdate
-    protected void onUpdate() {
-        this.updatedAt = LocalDateTime.now();
+    // Getter để lấy ID của user
+    public Long getUserId() {
+        return user != null ? user.getId() : null;
+    }
+
+    // Getter để lấy ID của resource
+    public Long getResourceId() {
+        return resource != null ? resource.getId() : null;
+    }
+
+    // Getter để lấy loại resource (có thể cần điều chỉnh tùy thuộc vào cách định nghĩa Resource2)
+    public Resource.ResourceType getResourceType() {
+        return resource != null ? resource.getType() : null;
     }
 }

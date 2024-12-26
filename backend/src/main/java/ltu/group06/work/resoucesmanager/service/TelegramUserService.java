@@ -29,7 +29,7 @@ public class TelegramUserService {
         return telegramUserRepository.existsByTelegramIdAndUser(telegramId, user);
     }
 
-    public TelegramUser getTelegramUserByUserId(int userId) {
-        return telegramUserRepository.findByUser_UserId(userId).orElse(null);
+    public TelegramUser getTelegramUserByUserId(Long userId) {
+        return telegramUserRepository.findByUser_Id(userId).orElse(null);
     }
 }

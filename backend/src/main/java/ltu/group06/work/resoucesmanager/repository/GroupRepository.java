@@ -1,4 +1,4 @@
-package ltu.group06.work.resoucesmanager.repository2;
+package ltu.group06.work.resoucesmanager.repository;
 
 import ltu.group06.work.resoucesmanager.entity.Group;
 import org.springframework.data.jpa.repository.JpaRepository;

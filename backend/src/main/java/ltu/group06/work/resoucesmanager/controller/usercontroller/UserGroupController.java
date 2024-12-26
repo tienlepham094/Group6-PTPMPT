@@ -1,8 +1,8 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.usercontroller;
 
-import ltu.group06.work.resoucesmanager.entity.User2;
+import ltu.group06.work.resoucesmanager.entity.User;
 import ltu.group06.work.resoucesmanager.entity.UserGroup;
-import ltu.group06.work.resoucesmanager.service2.UserGroupService;
+import ltu.group06.work.resoucesmanager.service.UserGroupService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -29,8 +29,8 @@ public class UserGroupController {
     }
 
     @GetMapping("/notInGroup/{groupId}")
-    public ResponseEntity<List<User2>> getUsersNotInGroupId(@PathVariable Long groupId) {
-        List<User2> users = userGroupService.getUsersNotInGroupId(groupId);
+    public ResponseEntity<List<User>> getUsersNotInGroupId(@PathVariable Long groupId) {
+        List<User> users = userGroupService.getUsersNotInGroupId(groupId);
         return ResponseEntity.ok(users);
     }
 

@@ -1,7 +1,7 @@
 package ltu.group06.work.resoucesmanager.dto;
 
 public class UserDto {
-    private int id;
+    private long id;
     private String username;
     private String email;
     private String role;
@@ -16,7 +16,7 @@ public class UserDto {
     }
 
     // Getters and Setters
-    public int getId() {
+    public long getId() {
         return id;
     }
 

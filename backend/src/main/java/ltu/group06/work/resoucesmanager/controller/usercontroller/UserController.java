@@ -1,38 +1,45 @@
-package ltu.group06.work.resoucesmanager.controller2;
+package ltu.group06.work.resoucesmanager.controller.Usercontroller;
 
 import jakarta.servlet.http.HttpSession;
-import ltu.group06.work.resoucesmanager.entity.User2;
-import ltu.group06.work.resoucesmanager.service2.UserService2;
+import ltu.group06.work.resoucesmanager.entity.User;
+import ltu.group06.work.resoucesmanager.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional; 
+import java.util.Optional;
+
+import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 
 @RestController
 @RequestMapping("/auth/api/users")
-public class UserController2 {
+public class UserController {
 
     @Autowired
-    private UserService2 userService;
+    private UserService userService;
 
     @PostMapping
-    public ResponseEntity<User2> createUser(@RequestBody User2 user) {
-        User2 createdUser = userService.createUser(user);
+    public ResponseEntity<User> createUser(@RequestBody User user) {
+        User createdUser = userService.createUser(user);
         return ResponseEntity.ok(createdUser);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User2> getUserById(@PathVariable Long id) {
-        Optional<User2> user = userService.getUserById(id);
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        Optional<User> user = userService.getUserById(id);
         return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/get")
-    public ResponseEntity<List<User2>> getAllUser() {
-        List<User2> users = userService.getAllUser();
+    public ResponseEntity<List<User>> getAllUser() {
+        List<User> users = userService.getAllUser();
         return ResponseEntity.ok(users);
     }
 
@@ -47,9 +54,10 @@ public class UserController2 {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
+
     @GetMapping("/user/info")
-    public ResponseEntity<User2> getUserInfo(HttpSession session) {
-        User2 user = (User2) session.getAttribute("loggedInUser");
+    public ResponseEntity<User> getUserInfo(HttpSession session) {
+        User user = (User) session.getAttribute("loggedInUser");
         if (user != null) {
             return ResponseEntity.ok(user);
         }

@@ -13,6 +13,7 @@ import { Account } from "../views/Account/Account";
 import { UserProvider } from "../context/useAuth"; // Import UserProvider
 import { Approval } from "../views/Approval/Approval";
 import { Group } from "../views/Group/Group";
+import Spam from "../views/Spam/Spam";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <About />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "spam",
+        element: (
+          <ProtectedRoute>
+            <Spam />
           </ProtectedRoute>
         ),
       },

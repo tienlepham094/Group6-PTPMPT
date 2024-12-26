@@ -25,7 +25,7 @@ public class Group {
 
     @ManyToOne
     @JoinColumn(name = "manager_id", nullable = false)
-    private User2 manager;
+    private User manager;
 
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt = LocalDateTime.now();

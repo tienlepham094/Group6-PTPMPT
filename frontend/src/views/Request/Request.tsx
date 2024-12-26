@@ -130,6 +130,7 @@ export const Request = () => {
         </FormControl>
         <Button
           variant="contained"
+          color="secondary"
           sx={{ marginLeft: 2 }}
           onClick={() => {
             setType("add");
