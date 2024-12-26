@@ -54,8 +54,8 @@ export const Group = () => {
             variant="outlined"
             color="primary"
             onClick={() => {
-              setType("edit");
               setGroupId(params.row.id);
+              setType("edit");
               setOpenAddGroup(true);
             }}
           >
@@ -65,10 +65,9 @@ export const Group = () => {
             variant="contained"
             color="error"
             onClick={() => {
+              setGroupId(params.row.id);
               setType("delete");
               setOpenAddGroup(true);
-              //   setUserToDelete(params.row.id);
-              //   setOpenDeleteDialog(true);
             }}
           >
             Xóa
@@ -102,7 +101,10 @@ export const Group = () => {
         open={openAddGroup}
         setOpen={setOpenAddGroup}
         type={type}
-        onClose={fetchAllGroup}
+        onClose={() => {
+          setOpenAddGroup(false);
+          fetchAllGroup();
+        }}
         id={groupId}
       />
       <Paper sx={{ height: 400, width: "100%" }}>

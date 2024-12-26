@@ -1,7 +1,7 @@
 import axiosClient from "../axiosClient ";
 import { RESOURCETYPE } from "../enum";
 
-const usergroupApi = {
+const userresourceApi = {
   allocateResource: async (data: {
     userId: number;
     resourceType: RESOURCETYPE;
@@ -24,6 +24,13 @@ const usergroupApi = {
     });
     return response.data;
   },
+  getAllUserResources: async (params: { userId: number }) => {
+    const { userId } = params;
+    const response = await axiosClient.get(`/auth/api/user/resources/getAll`, {
+      params: { userId },
+    });
+    return response.data;
+  },
 
   releaseResource: async (data: {
     userId: number;
@@ -38,4 +45,4 @@ const usergroupApi = {
   },
 };
 
-export default usergroupApi;
+export default userresourceApi;

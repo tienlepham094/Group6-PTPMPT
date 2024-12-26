@@ -112,8 +112,15 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 const UserLayout = () => {
-  const { isLoggedIn, openAlert, severity, message, setOpenAlert, logout } =
-    useAuth();
+  const {
+    isLoggedIn,
+    openAlert,
+    severity,
+    message,
+    setOpenAlert,
+    logout,
+    user,
+  } = useAuth();
   const location = useLocation();
 
   const currentPage = navigation().find(
@@ -196,60 +203,62 @@ const UserLayout = () => {
               </DrawerHeader>
               <Divider />
               <List>
-                {navigation().map((navItem) => (
-                  <ListItem
-                    key={navItem.title}
-                    disablePadding
-                    sx={{ display: "block" }}
-                  >
-                    <ListItemButton
-                      sx={[
-                        {
-                          minHeight: 48,
-                          px: 2.5,
-                        },
-                        open
-                          ? {
-                              justifyContent: "initial",
-                            }
-                          : {
-                              justifyContent: "center",
-                            },
-                      ]}
-                      onClick={() => handlePick(navItem.path)}
+                {navigation()
+                  .filter((navItem) => navItem?.role?.includes(user.role))
+                  .map((navItem) => (
+                    <ListItem
+                      key={navItem.title}
+                      disablePadding
+                      sx={{ display: "block" }}
                     >
-                      <ListItemIcon
+                      <ListItemButton
                         sx={[
                           {
-                            minWidth: 0,
-                            justifyContent: "center",
+                            minHeight: 48,
+                            px: 2.5,
                           },
                           open
                             ? {
-                                mr: 3,
+                                justifyContent: "initial",
                               }
                             : {
-                                mr: "auto",
+                                justifyContent: "center",
                               },
                         ]}
+                        onClick={() => handlePick(navItem.path)}
                       >
-                        {navItem.icon}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={navItem.title}
-                        sx={[
-                          open
-                            ? {
-                                opacity: 1,
-                              }
-                            : {
-                                opacity: 0,
-                              },
-                        ]}
-                      />
-                    </ListItemButton>
-                  </ListItem>
-                ))}
+                        <ListItemIcon
+                          sx={[
+                            {
+                              minWidth: 0,
+                              justifyContent: "center",
+                            },
+                            open
+                              ? {
+                                  mr: 3,
+                                }
+                              : {
+                                  mr: "auto",
+                                },
+                          ]}
+                        >
+                          {navItem.icon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={navItem.title}
+                          sx={[
+                            open
+                              ? {
+                                  opacity: 1,
+                                }
+                              : {
+                                  opacity: 0,
+                                },
+                          ]}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
               </List>
               <Divider />
               <List>

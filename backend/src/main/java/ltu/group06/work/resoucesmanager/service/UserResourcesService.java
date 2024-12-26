@@ -6,6 +6,8 @@ import ltu.group06.work.resoucesmanager.repository.UserResourcesRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserResourcesService {
 
@@ -31,7 +33,9 @@ public class UserResourcesService {
     public UserResources getUserResources(Long userId, Resource.ResourceType resourceType) {
         return userResourcesRepository.findByUserIdAndResourceType(userId, resourceType);
     }
-
+    public List<UserResources> getAllUserResources(Long userId) {
+        return userResourcesRepository.findByUserId(userId);
+    }
     // Giải phóng tài nguyên của người dùng
     public UserResources releaseResource(Long userId, Resource.ResourceType resourceType, int quantity) {
         UserResources userResources = userResourcesRepository.findByUserIdAndResourceType(userId, resourceType);

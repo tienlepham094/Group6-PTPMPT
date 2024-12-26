@@ -71,7 +71,10 @@ public class ResourceController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed to release resource.");
         }
     }
-
-
+    @PutMapping("/{id}")
+    public ResponseEntity<Resource2> updateResource(@PathVariable Long id, @RequestBody Resource2 resourceDetails) {
+        Optional<Resource2> updatedResource = resourceService.updateResource(id, resourceDetails);
+        return updatedResource.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
 
 }

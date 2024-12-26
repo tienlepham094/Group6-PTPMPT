@@ -1,5 +1,3 @@
-import { ChangeEvent, useState } from "react";
-import { ResourceParams } from "../../context/types";
 import {
   Dialog,
   DialogTitle,
@@ -8,163 +6,192 @@ import {
   DialogActions,
   Button,
   MenuItem,
-  Select,
-  SelectChangeEvent,
-  Box,
-  InputLabel,
-  FormControl,
 } from "@mui/material";
-import {
-  RESOURCESTATUS,
-  RESOURCESTATUS_TRANSLATION,
-  RESOURCETYPE,
-} from "../../api/enum";
+import { RESOURCETYPE } from "../../api/enum";
 import { useAuth } from "../../context/useAuth";
+import { Groups, Resources } from "../../types";
+import { useCallback, useEffect, useState } from "react";
+import resourceApi from "../../api/resource";
+import groupApi from "../../api/group";
 
-type ResourceDialogParams = {
+type Params = {
   open: boolean;
+  setOpen: (param: boolean) => void;
   onClose: () => void;
-  onSubmit: (data: ResourceParams) => void;
-  data?: ResourceParams | undefined;
+  type: "add" | "edit" | "delete";
+  id?: number;
 };
 
-export const ResourceDialog = ({
-  onClose,
-  onSubmit,
-  open,
-  data,
-}: ResourceDialogParams) => {
+export const ResourceDialog = ({ open, type, id, onClose }: Params) => {
   const { user } = useAuth();
-  const [formData, setFormData] = useState<ResourceParams>({
-    userId: data?.userId || user?.id || 0,
-    quantity: data?.quantity || 0,
-    resourceType: data?.resourceType || RESOURCETYPE.CPU,
-    statusResources: data?.statusResources || RESOURCESTATUS.AVAILABLE,
+  const [resource, setResource] = useState<Resources>({
+    id: 0,
+    name: "",
+    description: "",
+    totalQuantity: 0,
+    availableQuantity: 0,
+    type: RESOURCETYPE.CPU,
+    createdBy: { id: user.id },
+    group: null,
+    createdAt: new Date(),
   });
-
-  const handleInputChange = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const [groups, setGroups] = useState<Groups[]>([]);
+  const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleInputChangeSelect = (e: SelectChangeEvent<string>) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value as unknown,
+    setResource((prev) => ({
+      ...prev,
+      [name]: name === "group" ? { id: parseInt(value) } : value, // Đảm bảo `group` là object
     }));
   };
 
-  const validateForm = (): boolean => {
-    if (formData.quantity < 0) {
-      alert("Quantity must be a positive number.");
-      return false;
+  const fetchResource = useCallback(async () => {
+    try {
+      const resources = await resourceApi.getResourceById(id!);
+      setResource(() => ({
+        ...resources,
+        group: resources.group || { id: 0, name: "" }, // Đảm bảo group không null
+      }));
+    } catch (error) {
+      console.error("Error fetching resources:", error);
     }
-    if (!formData.resourceType || !formData.statusResources) {
-      alert("All fields must be filled.");
-      return false;
-    }
-    return true;
-  };
+  }, [id]);
 
-  const handleSubmit = () => {
-    if (validateForm()) {
-      onSubmit(formData); // Send data to parent component
-      setFormData({
-        userId: data?.userId || user?.id || 0,
-        quantity: 0,
-        resourceType: RESOURCETYPE.CPU,
-        statusResources: RESOURCESTATUS.AVAILABLE,
-      });
+  const fetchGroups = useCallback(async () => {
+    try {
+      const groups = await groupApi.getAllGroup();
+      setGroups(groups);
+    } catch (error) {
+      console.error("Error fetching resources:", error);
+    }
+  }, []);
+  useEffect(() => {
+    fetchGroups();
+    if (type === "edit" && id) {
+      fetchResource();
+    }
+  }, [fetchResource, fetchGroups, type, id]);
+  const handleSubmit = async () => {
+    try {
+      if (type === "add") {
+        await resourceApi.createResource(resource);
+      } else if (type === "edit") {
+        await resourceApi.updateResource(resource);
+      } else {
+        await resourceApi.deleteResource(id!);
+      }
+    } catch (error) {
+      console.error("Error adding resource:", error);
+    } finally {
+      handleClose();
     }
   };
-  const handleClose = () => {
-    setFormData({
-      userId: data?.userId || user?.id || 0,
-      quantity: 0,
-      resourceType: RESOURCETYPE.CPU,
-      statusResources: RESOURCESTATUS.AVAILABLE,
+  const handleClose = useCallback(() => {
+    setResource({
+      id: 0,
+      name: "",
+      description: "",
+      totalQuantity: 0,
+      availableQuantity: 0,
+      type: RESOURCETYPE.CPU,
+      createdBy: { id: user.id },
+      group: null,
+      createdAt: new Date(),
     });
     onClose();
-  };
-
+  }, [onClose, user.id]);
   return (
-    <Dialog open={open} onClose={onClose} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>
-        {data
-          ? "Chỉnh sửa thông tin tài nguyên"
-          : "Nhập thông tin tài nguyên muốn thêm"}
+        {type === "add"
+          ? "Nhập thông tin tài nguyên muốn thêm"
+          : type === "edit"
+            ? "Chỉnh sửa thông tin tài nguyên"
+            : "Xóa thông tin tài nguyên"}
       </DialogTitle>
       <DialogContent>
-        <Box component="form" display="flex" flexDirection="column" gap={3}>
-          {user?.role === "admin" ? (
+        {type === "delete" ? (
+          "Bạn có chắc chắn muốn xóa tài nguyên này không?"
+        ) : (
+          <>
             <TextField
+              name="name"
+              label="Tên tài nguyên"
+              value={resource.name}
+              onChange={handleFormChange}
               fullWidth
-              name="userId"
-              type="number"
-              label="Id người dùng"
-              value={formData?.userId || ""}
-              onChange={(e) => {
-                const numericValue = e.target.value.replace(/[^0-9]/g, "");
-                setFormData((prev) => ({
-                  ...prev,
-                  userId: Number(numericValue),
-                }));
-              }}
-              // disabled
+              margin="normal"
             />
-          ) : (
-            ""
-          )}
-          <FormControl fullWidth>
-            <InputLabel id="resource-type-label">Loại tài nguyên</InputLabel>
-            <Select
+            <TextField
+              name="description"
+              label="Mô tả"
+              value={resource.description}
+              onChange={handleFormChange}
               fullWidth
-              name="resourceType"
-              labelId="resource-type-label"
-              value={formData.resourceType}
-              onChange={handleInputChangeSelect}
-            >
-              {Object.entries(RESOURCETYPE).map(([key, value]) => (
-                <MenuItem key={key} value={value}>
-                  {value}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            fullWidth
-            name="quantity"
-            type="number"
-            label="Số lượng"
-            value={formData.quantity}
-            onChange={(e) => {
-              const numericValue = e.target.value.replace(/[^0-9]/g, "");
-              setFormData((prev) => ({
-                ...prev,
-                quantity: Number(numericValue),
-              }));
-            }}
-          />
-          <FormControl fullWidth>
-            <InputLabel id="status-resources-label">Trạng thái</InputLabel>
-            <Select
-              fullWidth
-              name="statusResources"
-              labelId="status-resources-label"
-              value={formData.statusResources}
-              onChange={handleInputChangeSelect}
-            >
-              {Object.entries(RESOURCESTATUS).map(([key, value]) => (
-                <MenuItem key={key} value={value}>
-                  {RESOURCESTATUS_TRANSLATION[value]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </Box>
+              margin="normal"
+            />
+            {type === "edit" ? (
+              ""
+            ) : (
+              <>
+                <TextField
+                  name="type"
+                  select
+                  label="Loại"
+                  value={resource.type}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                >
+                  {Object.values(RESOURCETYPE).map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  name="totalQuantity"
+                  label="Số lượng hiện có"
+                  value={resource.totalQuantity}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                />
+                <TextField
+                  name="availableQuantity"
+                  label="Số lượng khả dụng"
+                  value={resource.availableQuantity}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                />
+              </>
+            )}
+            {resource.group?.name ? (
+              ""
+            ) : (
+              <>
+                <TextField
+                  name="group"
+                  label="Nhóm cấp phát"
+                  value={resource.group?.id || ""}
+                  select
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                >
+                  {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </>
+            )}
+            <pre>{JSON.stringify(resource, null, 2)}</pre>
+          </>
+        )}
       </DialogContent>
       <DialogActions>
         <Button onClick={handleClose} color="secondary">

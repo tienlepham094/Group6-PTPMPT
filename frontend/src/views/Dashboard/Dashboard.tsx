@@ -1,11 +1,23 @@
 import { useEffect, useState } from "react";
 import { PieChart } from "@mui/x-charts";
 import axios from "axios";
-import "./Dashboard.css";
+import userresourceApi from "../../api/userresource";
+import { useAuth } from "../../context/useAuth";
+import { Resources } from "../../types";
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  Typography,
+  CircularProgress,
+} from "@mui/material";
 
 const Dashboard = () => {
-  const [metrics, setMetrics] = useState<any>(null);
+  const [metrics, setMetrics] = useState<unknown>(null);
   const [loading, setLoading] = useState(true);
+  const { user } = useAuth();
+  const [userResource, setUserResources] = useState<Resources[]>([]);
 
   useEffect(() => {
     const fetchMetrics = async () => {
@@ -22,10 +34,37 @@ const Dashboard = () => {
     };
 
     fetchMetrics();
-  }, []);
+  }, []); // Empty dependency array to run the fetchMetrics only once when the component mounts.
+
+  useEffect(() => {
+    const fetchUserResources = async () => {
+      try {
+        const res = await userresourceApi.getAllUserResources({
+          userId: user.id,
+        });
+        setUserResources(res);
+        console.log(res);
+      } catch (error) {
+        console.error("Failed to fetch user resources:", error);
+      }
+    };
+
+    if (user.id) {
+      fetchUserResources();
+    }
+  }, [user.id]); // Run this effect when the user.id changes.
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        height="100vh"
+      >
+        <CircularProgress />
+      </Box>
+    );
   }
 
   if (!metrics) {
@@ -56,78 +95,113 @@ const Dashboard = () => {
   ];
 
   return (
-    <div className="dashboard-container">
+    <Box sx={{ padding: 3 }}>
+      <Typography variant="h4" gutterBottom>
+        Dashboard
+      </Typography>
+
       {/* Cards Section */}
-      <div className="cards-container">
-        <div className="card">
-          <h4>Memory</h4>
-          <p>Used: {memoryMetrics.usedMemoryGB} GB</p>
-          <p>Available: {memoryMetrics.availableMemoryGB} GB</p>
-        </div>
-        <div className="card">
-          <h4>Disk</h4>
-          <p>Used: {diskMetrics.usedDiskSpaceGB} GB</p>
-          <p>Free: {diskMetrics.freeDiskSpaceGB} GB</p>
-        </div>
-        <div className="card">
-          <h4>CPU</h4>
-          <p>Usage: {cpuMetrics.cpuUsagePercent.toFixed(2)}%</p>
-          <p>Idle: {(100 - cpuMetrics.cpuUsagePercent).toFixed(2)}%</p>
-        </div>
-        {/* <div className="card">
-          <h4>Network</h4>
-          <p>Received: {networkTraffic.totalBytesReceivedMB} MB</p>
-          <p>Sent: {networkTraffic.totalBytesSentMB} MB</p>
-        </div> */}
-      </div>
+      <Grid container spacing={3}>
+        <Grid item xs={12} sm={6} md={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Memory</Typography>
+              <Typography>Used: {memoryMetrics.usedMemoryGB} GB</Typography>
+              <Typography>
+                Available: {memoryMetrics.availableMemoryGB} GB
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
-      {/* Diagrams Section */}
-      <div className="diagram-container">
-        <h3>Memory Usage</h3>
-        <PieChart
-          series={[
-            {
-              data: memoryData,
-            },
-          ]}
-          height={300}
-          width={300}
-        />
+        <Grid item xs={12} sm={6} md={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">Disk</Typography>
+              <Typography>Used: {diskMetrics.usedDiskSpaceGB} GB</Typography>
+              <Typography>Free: {diskMetrics.freeDiskSpaceGB} GB</Typography>
+            </CardContent>
+          </Card>
+        </Grid>
 
-        <h3>Disk Usage</h3>
-        <PieChart
-          series={[
-            {
-              data: diskData,
-            },
-          ]}
-          height={300}
-          width={300}
-        />
+        <Grid item xs={12} sm={6} md={4}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6">CPU</Typography>
+              <Typography>
+                Usage: {cpuMetrics.cpuUsagePercent.toFixed(2)}%
+              </Typography>
+              <Typography>
+                Idle: {(100 - cpuMetrics.cpuUsagePercent).toFixed(2)}%
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+      </Grid>
 
-        <h3>CPU Usage</h3>
-        <PieChart
-          series={[
-            {
-              data: cpuData,
-            },
-          ]}
-          height={300}
-          width={300}
-        />
+      {/* Pie Charts Section */}
+      <Box sx={{ marginTop: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Tài nguyên máy tính
+        </Typography>
 
-        {/* <h3>Network Traffic</h3>
-        <PieChart
-          series={[
-            {
-              data: networkData,
-            },
-          ]}
-          height={300}
-          width={300}
-        /> */}
-      </div>
-    </div>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6">Memory Usage</Typography>
+            <PieChart
+              series={[{ data: memoryData }]}
+              height={300}
+              width={300}
+            />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6">Disk Usage</Typography>
+            <PieChart series={[{ data: diskData }]} height={300} width={300} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6">CPU Usage</Typography>
+            <PieChart series={[{ data: cpuData }]} height={300} width={300} />
+          </Grid>
+
+          <Grid item xs={12} sm={6} md={3}>
+            <Typography variant="h6">Network Traffic</Typography>
+            <PieChart
+              series={[{ data: networkData }]}
+              height={300}
+              width={300}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      {/* User Resources Section */}
+      <Box sx={{ marginTop: 4 }}>
+        <Typography variant="h5" gutterBottom>
+          Tài nguyên được cấp phát
+        </Typography>
+
+        <Grid container spacing={3}>
+          {userResource.map((resource) => (
+            <Grid item xs={12} sm={6} md={4} key={resource.id}>
+              <Card>
+                <CardContent>
+                  {resource.resourceType && (
+                    <Typography>
+                      Loại tài nguyên: {resource.resourceType}
+                    </Typography>
+                  )}
+                  {resource.quantity && (
+                    <Typography>Số lượng: {resource.quantity}</Typography>
+                  )}
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      </Box>
+    </Box>
   );
 };
 

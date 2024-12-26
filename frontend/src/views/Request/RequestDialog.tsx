@@ -7,12 +7,17 @@ import {
   TextField,
   MenuItem,
   DialogContentText,
+  Grid,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DateTimePicker } from "@mui/x-date-pickers/DateTimePicker";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider/LocalizationProvider";
-import { RESOURCETYPE } from "../../api/enum";
+import {
+  RESOURCETYPE,
+  STATUSREQUEST,
+  STATUSREQUEST_TRANSLATION,
+} from "../../api/enum";
 import { Requests, Resources } from "../../types";
 import requestApi from "../../api/request";
 import dayjs, { Dayjs } from "dayjs";
@@ -38,7 +43,9 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
       id: 0,
       type: undefined,
     },
+    approvedBy: null,
     createdAt: dayjs(),
+    status: STATUSREQUEST.PENDING,
   });
   const [resources, setResources] = useState<Resources[]>([]);
 
@@ -47,13 +54,14 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
       const users = await requestApi.getRequestById(id!);
       setRequest({
         ...users,
+        approvedBy: user,
         startTime: dayjs(users.startTime),
         endTime: dayjs(users.endTime),
       });
     } catch (error) {
       console.error(error);
     }
-  }, [id]);
+  }, [id, user]);
 
   const fetchAlllResources = useCallback(async () => {
     try {
@@ -65,9 +73,13 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
   }, []);
 
   const handleSubmit = async () => {
+    if (!validate()) return;
     try {
       if (type === "add") {
         await requestApi.createRequest(request);
+      } else if (type === "edit") {
+        console.log(request);
+        await requestApi.updateRequestStatus(id!, request.status);
       } else if (type === "delete") {
         await requestApi.deleteRequest(id!);
       }
@@ -112,26 +124,39 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
         }));
       }
     };
-
+  const validate = () => {
+    const newErrors: { [key: string]: string } = {};
+    if (request.quantity <= 0) newErrors.quantity = "Số lượng phải lớn hơn 0";
+    if (
+      !request.startTime ||
+      !request.endTime ||
+      dayjs(request.endTime).isBefore(request.startTime)
+    ) {
+      newErrors.dates = "Thời gian kết thúc phải sau thời gian bắt đầu";
+    }
+    return Object.keys(newErrors).length === 0;
+  };
   return (
     <>
-      <Dialog open={open} onClose={onClose}>
+      <Dialog
+        open={open}
+        onClose={onClose}
+        sx={{ "& .MuiDialog-paper": { width: "600px", maxWidth: "90%" } }}
+      >
         <DialogTitle>
           {type === "add"
-            ? "Thêm nhóm mới"
+            ? "Thêm yêu cầu mới"
             : type === "edit"
-              ? "Chỉnh sửa nhóm"
-              : "Xóa nhóm"}
+              ? "Chỉnh sửa yêu cầu"
+              : "Xóa yêu cầu"}
         </DialogTitle>
-        {type === "delete" ? (
-          <DialogContent>
+        <DialogContent>
+          {type === "delete" ? (
             <DialogContentText>
               Bạn có chắc chắn muốn xóa yêu cầu này không?
             </DialogContentText>
-          </DialogContent>
-        ) : (
-          <>
-            <DialogContent>
+          ) : type === "add" ? (
+            <>
               <TextField
                 name="resourceId"
                 label="Tên tài nguyên"
@@ -175,27 +200,60 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
                 fullWidth
                 margin="normal"
               />
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  label="Thời gian bắt đầu"
-                  value={request?.startTime || dayjs()}
-                  onChange={handleDateChange("startTime")}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              </LocalizationProvider>
-              <LocalizationProvider dateAdapter={AdapterDayjs}>
-                <DateTimePicker
-                  label="Thời gian kết thúc"
-                  value={request?.endTime || dayjs()}
-                  onChange={handleDateChange("endTime")}
-                  renderInput={(params) => <TextField {...params} fullWidth />}
-                />
-              </LocalizationProvider>
-
-              <pre>{JSON.stringify(request, null, 2)}</pre>
-            </DialogContent>
-          </>
-        )}
+              <Grid container spacing={2}>
+                <Grid item xs={6}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      label="Thời gian bắt đầu"
+                      value={request.startTime}
+                      onChange={(newValue) =>
+                        setRequest({ ...request, startTime: newValue })
+                      }
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+                <Grid item xs={6}>
+                  <LocalizationProvider dateAdapter={AdapterDayjs}>
+                    <DateTimePicker
+                      label="Thời gian kết thúc"
+                      value={request.endTime}
+                      onChange={(newValue) =>
+                        setRequest({ ...request, endTime: newValue })
+                      }
+                      renderInput={(params) => (
+                        <TextField fullWidth {...params} />
+                      )}
+                    />
+                  </LocalizationProvider>
+                </Grid>
+              </Grid>
+            </>
+          ) : type === "edit" ? (
+            <TextField
+              name="status"
+              label="Trạng thái"
+              value={request.status || ""}
+              select
+              fullWidth
+              margin="normal"
+              onChange={(e) =>
+                setRequest((prev) => ({ ...prev, status: e.target.value }))
+              }
+            >
+              {Object.entries(STATUSREQUEST_TRANSLATION).map(([key, value]) => (
+                <MenuItem key={key} value={key}>
+                  {value}
+                </MenuItem>
+              ))}
+            </TextField>
+          ) : (
+            ""
+          )}
+          <pre>{JSON.stringify(request, null, 2)}</pre>
+        </DialogContent>
         <DialogActions>
           <Button
             onClick={() => {

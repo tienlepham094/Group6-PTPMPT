@@ -20,6 +20,7 @@ interface Params {
 }
 export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
   const [group, setGroup] = useState<Groups>({
+    id: id,
     name: "",
     manager: {
       id: 0,
@@ -49,16 +50,25 @@ export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
       if (type === "add") {
         await groupApi.createGroup(group);
       } else if (type === "edit") {
-        // groupApi.(id!, group).then(() => {
-        //   setOpen(false);
-        //   });
+        await groupApi.updateGroup(group);
+      } else if (type == "delete") {
+        await groupApi.deleteGroup(id!);
       }
     } catch (error) {
       console.log(error);
     } finally {
-      setOpen(false);
+      handleClose();
     }
   };
+  const handleClose = useCallback(() => {
+    setGroup({
+      name: "",
+      manager: {
+        id: 0,
+      },
+    });
+    onClose();
+  }, [onClose]);
   useEffect(() => {
     fetchManager();
     if (type !== "add") {
@@ -76,7 +86,7 @@ export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
     <>
       <Dialog
         open={open}
-        onClose={() => onClose()}
+        onClose={handleClose}
         sx={{ "& .MuiDialog-paper": { width: "600px", maxWidth: "90%" } }}
       >
         <DialogTitle>
@@ -129,7 +139,7 @@ export const AddGroup = ({ open, type, id, setOpen, onClose }: Params) => {
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
+          <Button onClick={handleClose} color="primary">
             Hủy
           </Button>
           <Button onClick={handleSubmit} color="primary">

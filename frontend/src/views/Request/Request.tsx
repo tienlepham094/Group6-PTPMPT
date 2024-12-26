@@ -5,25 +5,47 @@ import { Box, Button, TextField, MenuItem, FormControl } from "@mui/material";
 import { Requests } from "../../types";
 import requestApi from "../../api/request";
 import { RequestDialog } from "./RequestDialog";
+import { useAuth } from "../../context/useAuth";
+import { STATUSREQUEST } from "../../api/enum";
 
 export const Request = () => {
+  const { user } = useAuth();
   const [request, setRequest] = useState<Requests[] | null>([]);
   const [openDialog, setOpenDialog] = useState(false);
   const [type, setType] = useState<"add" | "edit" | "delete">("add");
   const [requestId, setRequestId] = useState<number>(); // State for request to delete
-
   const fetchAllRequest = useCallback(async () => {
     try {
-      const request = await requestApi.getAllRequests();
-      setRequest(request);
+      const allRequest = await requestApi.getAllRequests();
+      // Filter out requests with status "CANCELLED"
+      const filteredRequests = allRequest.filter(
+        (request: { status: string }) => request.status !== "CANCELLED"
+      );
+      setRequest(filteredRequests);
+      console.log(filteredRequests);
     } catch (error) {
       console.error("Error fetching request:", error);
     }
   }, []);
-
+  const fetchRequestByUserId = useCallback(async () => {
+    try {
+      const allRequest = await requestApi.getRequestsByUserId(user.id);
+      setRequest(allRequest);
+    } catch (error) {
+      console.error("Error fetching request:", error);
+    }
+  }, [user.id]);
   useEffect(() => {
-    fetchAllRequest();
-  }, [fetchAllRequest]);
+    if (user.role === "ADMIN") {
+      fetchAllRequest();
+    }
+    if (user.role === "MANAGER") {
+      fetchAllRequest();
+    }
+    if (user.role === "USER") {
+      fetchRequestByUserId();
+    }
+  }, [fetchAllRequest, fetchRequestByUserId, user.role]);
 
   const columns: GridColDef[] = [
     {
@@ -118,7 +140,7 @@ export const Request = () => {
         alignItems="center"
         sx={{ marginBottom: 2 }}
       >
-        <FormControl fullWidth sx={{ maxWidth: 250 }}>
+        {/* <FormControl fullWidth sx={{ maxWidth: 250 }}>
           <TextField
             label="Nhóm quản lý"
             select
@@ -127,7 +149,7 @@ export const Request = () => {
             <MenuItem>Yêu cầu nhóm</MenuItem>
             <MenuItem>Yêu cầu cá nhân</MenuItem>
           </TextField>
-        </FormControl>
+        </FormControl> */}
         <Button
           variant="contained"
           color="secondary"
@@ -146,7 +168,15 @@ export const Request = () => {
         setOpen={setOpenDialog}
         onClose={() => {
           console.log("first");
-          fetchAllRequest();
+          if (user.role === "ADMIN") {
+            fetchAllRequest();
+          }
+          if (user.role === "MANAGER") {
+            fetchAllRequest();
+          }
+          if (user.role === "USER") {
+            fetchRequestByUserId();
+          }
           setOpenDialog(false);
         }}
         type={type}

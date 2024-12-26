@@ -6,7 +6,10 @@ const groupApi = {
     const response = await axiosClient.post("/auth/api/groups", data);
     return response.data;
   },
-
+  updateGroup: async (data: Groups) => {
+    const response = await axiosClient.put(`/auth/api/groups/${data.id}`, data);
+    return response.data;
+  },
   getGroupById: async (id: number) => {
     const response = await axiosClient.get(`/auth/api/groups/${id}`);
     return response.data;
