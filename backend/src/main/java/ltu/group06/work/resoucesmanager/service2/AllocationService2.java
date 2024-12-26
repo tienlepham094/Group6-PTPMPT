@@ -1,6 +1,7 @@
 package ltu.group06.work.resoucesmanager.service2;
 
 import ltu.group06.work.resoucesmanager.entity.Allocation2;
+import ltu.group06.work.resoucesmanager.entity.Request2;
 import ltu.group06.work.resoucesmanager.repository2.AllocationRepository2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -35,10 +36,20 @@ public class AllocationService2 {
     public void deleteAllocation(Long id) {
         allocationRepository.deleteById(id);
     }
+
+//    public List<Allocation2> getExpiredAllocations() {
+//        return allocationRepository.findAll().stream()
+//                .filter(allocation -> allocation.getEndTime().isBefore(LocalDateTime.now()))
+//                .collect(Collectors.toList());
+//    }
     public List<Allocation2> getExpiredAllocations() {
-        return allocationRepository.findAll().stream()
-                .filter(allocation -> allocation.getEndTime().isBefore(LocalDateTime.now()))
-                .collect(Collectors.toList());
+        return allocationRepository.findExpiredAllocations(LocalDateTime.now(), Request2.Status.APPROVED);
+    }
+    public List<Allocation2> getAllAllocations() {
+        return allocationRepository.findAll();
     }
 
+    public List<Allocation2> getAllocationsByUserId(Long userId) {
+        return allocationRepository.findByRequest_User_Id(userId);
+    }
 }

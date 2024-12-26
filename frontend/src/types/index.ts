@@ -35,6 +35,18 @@ type Requests = {
   startTime: Dayjs;
   endTime: Dayjs;
   status?: STATUSREQUEST;
+  approvedBy?: User | null;
   createdAt?: Dayjs;
 };
-export type { Groups, Resources, User, Requests };
+type Allocations = {
+  id: number;
+  user: User;
+  resource?: Resources;
+  quantity: number;
+  startTime: Dayjs;
+  endTime: Dayjs;
+  status?: STATUSREQUEST;
+  createdAt?: Dayjs;
+};
+
+export type { Groups, Resources, User, Requests, Allocations };

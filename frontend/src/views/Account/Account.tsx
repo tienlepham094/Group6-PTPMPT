@@ -1,20 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import Paper from "@mui/material/Paper";
-import {
-  Box,
-  Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  MenuItem,
-  TextField,
-} from "@mui/material";
-import { RegisterParams } from "../../context/types";
-import { EditAccount } from "./EditAccount";
+import { Box, Button, FormControl, MenuItem, TextField } from "@mui/material";
 import { useAuth } from "../../context/useAuth";
 import groupApi from "../../api/group";
 import usergroupApi from "../../api/usergroup";
@@ -30,23 +17,16 @@ interface User {
   name: string;
 }
 export const Account = () => {
-  const { setMessage, setOpenAlert, setSeverity, user } = useAuth();
+  const { user } = useAuth();
   const [groups, setGroups] = useState<Group[] | null>();
-  const [selectedGroupId, setSelectedGroupId] = useState<number>();
-  const [users, setUsers] = useState<User[] | null>();
-  const [openDeleteDialog, setOpenDeleteDialog] = useState(false); // Add delete dialog state
-  const [userToDelete, setUserToDelete] = useState<User | null>(null); // State for resource to delete
-
+  const [selectedGroupId, setSelectedGroupId] = useState<number>(0);
+  const [users, setUsers] = useState<User[] | []>([]);
   const [idToDelete, setIdToDelete] = useState<number>(); // State for resource to delete
-
   const [dialogOpen, setDialogOpen] = useState<boolean>(false);
   const [type, setType] = useState<"add" | "edit" | "delete">("add");
-  const [userId, setUserId] = useState<number>();
   const fetchAllAccounts = useCallback(async () => {
     try {
-      console.log("first");
-
-      const groups = await groupApi.getGroupsByManagerId(user.id);
+      const groups = await groupApi.getAllGroup();
       setGroups(groups);
       setSelectedGroupId(groups[0].id);
       const fetchedUsers = await usergroupApi.getUsersByGroupId(groups[0].id);
@@ -55,37 +35,33 @@ export const Account = () => {
     } catch (error) {
       console.error("Error fetching accounts:", error);
     }
-  }, [user.id]);
-  const handleSelectGroup = useCallback(async (value: number | "") => {
-    setSelectedGroupId(value);
-    try {
-      const fetchedUsers = await usergroupApi.getUsersByGroupId(
-        value as number
-      );
-      const userList = fetchedUsers.map((item: { user: User }) => item.user);
-      setUsers(userList);
-    } catch (error) {
-      console.log(error);
-    }
   }, []);
-  useEffect(() => {
-    fetchAllAccounts();
-  }, [fetchAllAccounts]);
-
-  const handleAdd = useCallback(async (newAccount: RegisterParams) => {}, []);
-
-  const handleEdit = useCallback(
-    async (updatedAccount: RegisterParams) => {},
-    []
+  const handleSelectGroup = useCallback(
+    async (value: number | "") => {
+      try {
+        if (user.role === "ADMIN") {
+          const groups = await groupApi.getAllGroup();
+          setGroups(groups);
+        } else {
+          const groups = await groupApi.getGroupsByManagerId(user.id);
+          setGroups(groups);
+        }
+        // setSelectedGroupId(groups[0].id);
+        setSelectedGroupId((value as number) || groups[0].id);
+        const fetchedUsers = await usergroupApi.getUsersByGroupId(
+          value as number
+        );
+        const userList = fetchedUsers.map((item: { user: User }) => item.user);
+        setUsers(userList);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [user.id]
   );
-
-  const handleRemoveFromGroup = useCallback(async () => {
-    try {
-      await usergroupApi.removeUserFromGroup(userToDelete?.id);
-    } catch (error) {
-      console.log(error);
-    }
-  }, [userToDelete?.id]);
+  useEffect(() => {
+    handleSelectGroup(selectedGroupId);
+  }, [handleSelectGroup, selectedGroupId]);
 
   const columns: GridColDef[] = [
     { field: "email", headerName: "Email", flex: 2 },
@@ -103,18 +79,6 @@ export const Account = () => {
           gap={0}
           sx={{ alignSelf: "center" }}
         >
-          {/* <Button
-            variant="outlined"
-            color="primary"
-            onClick={() => {
-              // setEditData(params.row);
-              setType("edit");
-
-              setDialogOpen(true);
-            }}
-          >
-            Chỉnh sửa
-          </Button> */}
           <Button
             variant="contained"
             color="error"
@@ -160,15 +124,19 @@ export const Account = () => {
           variant="outlined"
           sx={{ marginLeft: 2 }}
           color="primary"
-          onClick={() => setDialogOpen(true)}
+          onClick={() => {
+            setType("add");
+            setDialogOpen(true);
+          }}
         >
           Thêm thành viên
         </Button>
       </Box>
       <AddMember
         onClose={() => {
-          console.log("first");
-          fetchAllAccounts();
+          setDialogOpen(false);
+          // fetchAllAccounts();
+          handleSelectGroup(selectedGroupId);
         }}
         open={dialogOpen}
         setOpen={setDialogOpen}
@@ -182,7 +150,6 @@ export const Account = () => {
           columns={columns}
           getRowId={(row) => row.id}
           pageSizeOptions={[5, 10]}
-          checkboxSelection
           sx={{ border: 0 }}
           initialState={{ pagination: { paginationModel } }}
         />

@@ -41,4 +41,11 @@ public class GroupService {
     public void deleteGroup(Long id) {
         groupRepository.deleteById(id);
     }
+    public Optional<Group> updateGroup(Long id, Group groupDetails) {
+        return groupRepository.findById(id).map(group -> {
+            group.setName(groupDetails.getName()); // Cập nhật tên
+            group.setManager(groupDetails.getManager()); // Cập nhật ID người quản lý nếu cần
+            return groupRepository.save(group); // Lưu thay đổi
+        });
+    }
 }

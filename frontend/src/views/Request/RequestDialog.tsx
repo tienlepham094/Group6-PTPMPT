@@ -43,6 +43,7 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
       id: 0,
       type: undefined,
     },
+    approvedBy: null,
     createdAt: dayjs(),
     status: STATUSREQUEST.PENDING,
   });
@@ -53,13 +54,14 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
       const users = await requestApi.getRequestById(id!);
       setRequest({
         ...users,
+        approvedBy: user,
         startTime: dayjs(users.startTime),
         endTime: dayjs(users.endTime),
       });
     } catch (error) {
       console.error(error);
     }
-  }, [id]);
+  }, [id, user]);
 
   const fetchAlllResources = useCallback(async () => {
     try {
@@ -76,6 +78,7 @@ export const RequestDialog = ({ onClose, open, setOpen, type, id }: Params) => {
       if (type === "add") {
         await requestApi.createRequest(request);
       } else if (type === "edit") {
+        console.log(request);
         await requestApi.updateRequestStatus(id!, request.status);
       } else if (type === "delete") {
         await requestApi.deleteRequest(id!);

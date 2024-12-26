@@ -9,4 +9,5 @@ import java.util.List;
 public interface RequestRepository2 extends JpaRepository<Request2, Long> {
     List<Request2> findByUser_Id(Long userId);
     List<Request2> findByStatus(Request2.Status status);
+//    List<Request2> findByGroupId(Long groupId);
 }

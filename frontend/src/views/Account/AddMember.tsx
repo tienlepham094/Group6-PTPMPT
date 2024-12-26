@@ -8,8 +8,7 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useCallback, useEffect, useState } from "react";
-import userApi from "../../api/user";
-import { Groups, User } from "../../types";
+import { User } from "../../types";
 import usergroupApi from "../../api/usergroup";
 interface Params {
   open: boolean;
@@ -19,14 +18,7 @@ interface Params {
   id?: number;
   groupId?: number;
 }
-export const AddMember = ({
-  onClose,
-  open,
-  setOpen,
-  type,
-  id,
-  groupId,
-}: Params) => {
+export const AddMember = ({ onClose, open, type, id, groupId }: Params) => {
   const [users, setUsers] = useState<User[]>([]);
   const [userId, setUserId] = useState<number>();
 
@@ -34,19 +26,10 @@ export const AddMember = ({
     try {
       const users = await usergroupApi.getUsersNotInGroupId(groupId!);
       setUsers(users);
-      console.log(users);
     } catch (error) {
       console.log(error);
     }
   }, [groupId]);
-  const fetchGroup = useCallback(async () => {
-    try {
-      const users = await userApi.getAllUser();
-      setUsers(users);
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
   const handleSubmit = async () => {
     try {
       if (type === "add") {
@@ -55,34 +38,27 @@ export const AddMember = ({
           group: { id: groupId as number },
         });
       } else if (type === "delete") {
-        console.log("first");
-
         await usergroupApi.removeUserFromGroup(groupId as number, id as number);
       }
     } catch (error) {
       console.log(error);
     } finally {
-      setOpen(false);
+      handleClose();
     }
   };
   useEffect(() => {
-    if (groupId) {
-      fetchUser();
-      // fetchGroup();
-    }
-  }, [fetchGroup, fetchUser, groupId, id]);
-  // const handleFormChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const { name, value } = e.target;
-  //   setGroup((prev) => ({
-  //     ...prev,
-  //     [name]: value,
-  //   }));
-  // };
+    fetchUser();
+  }, [fetchUser]);
+  const handleClose = useCallback(() => {
+    setUserId(undefined);
+    fetchUser();
+    onClose();
+  }, [fetchUser, onClose]);
   return (
     <>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={handleClose}
         sx={{ "& .MuiDialog-paper": { width: "600px", maxWidth: "90%" } }}
       >
         <DialogTitle>
@@ -116,13 +92,12 @@ export const AddMember = ({
                   </MenuItem>
                 ))}
               </TextField>
-              ll
               <pre>{JSON.stringify(userId, null, 2)}</pre>
             </>
           )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setOpen(false)} color="primary">
+          <Button onClick={handleClose} color="primary">
             Hủy
           </Button>
           <Button onClick={handleSubmit} color="primary">

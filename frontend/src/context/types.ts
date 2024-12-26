@@ -17,7 +17,7 @@ export type UserDataType = {
   id: number;
   username: string;
   password: string;
-  role?: "admin" | "user";
+  role?: "ADMIN" | "USER" | "MANAGER";
 };
 export type RequestParams = {
   resourceType: RESOURCETYPE;

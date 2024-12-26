@@ -80,5 +80,13 @@ public class ResourceService2 {
             return false; // Tài nguyên không tồn tại
         }
     }
-
+    public Optional<Resource2> updateResource(Long id, Resource2 resourceDetails) {
+        return resourceRepository.findById(id).map(resource -> {
+            resource.setName(resourceDetails.getName());
+            resource.setType(resourceDetails.getType());
+            resource.setDescription(resourceDetails.getDescription());
+            resource.setGroup(resourceDetails.getGroup());
+            return resourceRepository.save(resource);
+        });
+    }
 }

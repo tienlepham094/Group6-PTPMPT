@@ -59,6 +59,11 @@ public class RequestController2 {
         List<Request2> requests = requestService.getRequestsByStatus(status);
         return ResponseEntity.ok(requests);
     }
+//    @GetMapping("/group/{groupId}")
+//    public ResponseEntity<List<Request2>> getRequestsByGroupId(@PathVariable Long groupId) {
+//        List<Request2> requests = requestService.getRequestsByGroupId(groupId);
+//        return ResponseEntity.ok(requests);
+//    }
 
 
     @DeleteMapping("/{id}")

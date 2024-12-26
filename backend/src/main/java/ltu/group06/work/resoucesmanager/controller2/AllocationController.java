@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/allocations")
+@RequestMapping("/auth/api/allocations")
 public class AllocationController {
 
     @Autowired
@@ -39,5 +39,15 @@ public class AllocationController {
     public ResponseEntity<Void> deleteAllocation(@PathVariable Long id) {
         allocationService.deleteAllocation(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping
+    public ResponseEntity<List<Allocation2>> getAllAllocations() {
+        List<Allocation2> allocations = allocationService.getAllAllocations();
+        return ResponseEntity.ok(allocations);
+    }
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<List<Allocation2>> getAllocationsByUserId(@PathVariable Long userId) {
+        List<Allocation2> allocations = allocationService.getAllocationsByUserId(userId);
+        return ResponseEntity.ok(allocations);
     }
 }

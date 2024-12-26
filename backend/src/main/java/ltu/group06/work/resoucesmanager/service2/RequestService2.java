@@ -32,6 +32,9 @@ public class RequestService2 {
     public List<Request2> getRequestsByStatus(Request2.Status status) {
         return requestRepository.findByStatus(status);
     }
+//    public List<Request2> getRequestsByGroupId(Long groupId) {
+//        return requestRepository.findByGroupId(groupId);
+//    }
 
     public void updateRequestStatus(Long requestId, Request2.Status status) {
         Optional<Request2> requestOptional = requestRepository.findById(requestId);

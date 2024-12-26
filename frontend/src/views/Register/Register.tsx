@@ -50,12 +50,43 @@ const Register = () => {
       setOpenAlert(true);
     }
   };
+  const departments = ["kinhdoanh", "marketing", "hr", "it", "taichinh"]; // Các phòng ban
+
+  const generateAccounts = async () => {
+    try {
+      // Lặp qua từng phòng ban
+      for (const department of departments) {
+        // Lặp qua 100 tài khoản
+        for (let i = 1; i <= 1; i++) {
+          const email = `truongphong${department}_${i}@gmail.com`;
+          const username = `truongphong${department}_${i}`;
+          const password = `nhanvien_${department}_${i}`;
+
+          // Gọi hàm đăng ký với các thông tin đã tạo
+          const registerParams = {
+            email,
+            username,
+            password,
+            confirmPassword: password,
+          };
+
+          await registerUser(registerParams); // Giả sử registerUser là API đăng ký
+          console.log(`Đăng ký thành công: ${email}`); // Log khi đăng ký thành công
+        }
+      }
+      toast.success("Đăng ký tất cả tài khoản thành công!");
+    } catch (error) {
+      toast.error("Có lỗi xảy ra khi đăng ký tài khoản.");
+    }
+  };
 
   return (
     <div className="card-container">
       <div className="title">
         <h3>Register Form</h3>
       </div>
+      <button onClick={generateAccounts}>Đăng ký 100 tài khoản</button>
+
       <form onSubmit={handleSubmit(handleRegister)} className="form-container">
         <div className="form-controller">
           <TextField
@@ -101,7 +132,7 @@ const Register = () => {
             style={{
               backgroundColor: "#1976d2",
               color: "white",
-              fontWeight: 'bold'
+              fontWeight: "bold",
             }}
           />
         </div>

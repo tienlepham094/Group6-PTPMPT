@@ -14,6 +14,7 @@ import { UserProvider } from "../context/useAuth"; // Import UserProvider
 import { Approval } from "../views/Approval/Approval";
 import { Group } from "../views/Group/Group";
 import Spam from "../views/Spam/Spam";
+import { History } from "../views/History/History";
 
 export const router = createBrowserRouter([
   {
@@ -70,6 +71,14 @@ export const router = createBrowserRouter([
         element: (
           <ProtectedRoute>
             <Request />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: "history",
+        element: (
+          <ProtectedRoute>
+            <History />
           </ProtectedRoute>
         ),
       },
