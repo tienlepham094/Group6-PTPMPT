@@ -22,13 +22,7 @@ type Params = {
   id?: number;
 };
 
-export const ResourceDialog = ({
-  open,
-  type,
-  id,
-  setOpen,
-  onClose,
-}: Params) => {
+export const ResourceDialog = ({ open, type, id, onClose }: Params) => {
   const { user } = useAuth();
   const [resource, setResource] = useState<Resources>({
     id: 0,
@@ -46,17 +40,22 @@ export const ResourceDialog = ({
     const { name, value } = e.target;
     setResource((prev) => ({
       ...prev,
-      [name]: value,
+      [name]: name === "group" ? { id: parseInt(value) } : value, // Đảm bảo `group` là object
     }));
   };
+
   const fetchResource = useCallback(async () => {
     try {
       const resources = await resourceApi.getResourceById(id!);
-      setResource(resources);
+      setResource(() => ({
+        ...resources,
+        group: resources.group || { id: 0, name: "" }, // Đảm bảo group không null
+      }));
     } catch (error) {
       console.error("Error fetching resources:", error);
     }
   }, [id]);
+
   const fetchGroups = useCallback(async () => {
     try {
       const groups = await groupApi.getAllGroup();
@@ -66,28 +65,42 @@ export const ResourceDialog = ({
     }
   }, []);
   useEffect(() => {
+    fetchGroups();
     if (type === "edit" && id) {
       fetchResource();
     }
-    fetchGroups();
   }, [fetchResource, fetchGroups, type, id]);
   const handleSubmit = async () => {
     try {
       if (type === "add") {
         await resourceApi.createResource(resource);
       } else if (type === "edit") {
-        // const response = await resourceApi.createResource(resource);
+        await resourceApi.updateResource(resource);
       } else {
         await resourceApi.deleteResource(id!);
       }
     } catch (error) {
       console.error("Error adding resource:", error);
     } finally {
-      onClose();
+      handleClose();
     }
   };
+  const handleClose = useCallback(() => {
+    setResource({
+      id: 0,
+      name: "",
+      description: "",
+      totalQuantity: 0,
+      availableQuantity: 0,
+      type: RESOURCETYPE.CPU,
+      createdBy: { id: user.id },
+      group: null,
+      createdAt: new Date(),
+    });
+    onClose();
+  }, [onClose, user.id]);
   return (
-    <Dialog open={open} onClose={() => onClose()} fullWidth maxWidth="sm">
+    <Dialog open={open} onClose={handleClose} fullWidth maxWidth="sm">
       <DialogTitle>
         {type === "add"
           ? "Nhập thông tin tài nguyên muốn thêm"
@@ -116,63 +129,72 @@ export const ResourceDialog = ({
               fullWidth
               margin="normal"
             />
-            <TextField
-              name="type"
-              select
-              label="Loại"
-              value={resource.type}
-              onChange={handleFormChange}
-              fullWidth
-              margin="normal"
-            >
-              {Object.values(RESOURCETYPE).map((type) => (
-                <MenuItem key={type} value={type}>
-                  {type}
-                </MenuItem>
-              ))}
-            </TextField>
-            <TextField
-              name="totalQuantity"
-              label="Số lượng hiện có"
-              value={resource.totalQuantity}
-              onChange={handleFormChange}
-              fullWidth
-              margin="normal"
-              type="number"
-            />
-            <TextField
-              name="availableQuantity"
-              label="Số lượng khả dụng"
-              value={resource.availableQuantity}
-              onChange={handleFormChange}
-              fullWidth
-              margin="normal"
-              type="number"
-            />
-
-            <TextField
-              name="group"
-              label="Nhóm cấp phát"
-              value={resource.group?.id}
-              select
-              onChange={handleFormChange}
-              fullWidth
-              margin="normal"
-            >
-              {groups.map((group) => (
-                <MenuItem key={group.id} value={group.id}>
-                  {group.name}
-                </MenuItem>
-              ))}
-            </TextField>
-
+            {type === "edit" ? (
+              ""
+            ) : (
+              <>
+                <TextField
+                  name="type"
+                  select
+                  label="Loại"
+                  value={resource.type}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                >
+                  {Object.values(RESOURCETYPE).map((type) => (
+                    <MenuItem key={type} value={type}>
+                      {type}
+                    </MenuItem>
+                  ))}
+                </TextField>
+                <TextField
+                  name="totalQuantity"
+                  label="Số lượng hiện có"
+                  value={resource.totalQuantity}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                />
+                <TextField
+                  name="availableQuantity"
+                  label="Số lượng khả dụng"
+                  value={resource.availableQuantity}
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                  type="number"
+                />
+              </>
+            )}
+            {resource.group?.name ? (
+              ""
+            ) : (
+              <>
+                <TextField
+                  name="group"
+                  label="Nhóm cấp phát"
+                  value={resource.group?.id || ""}
+                  select
+                  onChange={handleFormChange}
+                  fullWidth
+                  margin="normal"
+                >
+                  {groups.map((group) => (
+                    <MenuItem key={group.id} value={group.id}>
+                      {group.name}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </>
+            )}
             <pre>{JSON.stringify(resource, null, 2)}</pre>
           </>
         )}
       </DialogContent>
-
       <DialogActions>
-        <Button onClick={onClose} color="secondary">
+        <Button onClick={handleClose} color="secondary">
           Hủy
         </Button>
         <Button onClick={handleSubmit} color="primary" variant="contained">

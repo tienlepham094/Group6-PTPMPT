@@ -7,8 +7,10 @@ import ltu.group06.work.resoucesmanager.service.UserResourcesService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
-@RequestMapping("/api/user/resources")
+@RequestMapping("/auth/api/user/resources")
 public class UserResourcesController {
 
     @Autowired
@@ -28,6 +30,11 @@ public class UserResourcesController {
     @GetMapping("/get")
     public UserResources getUserResources(@RequestParam Long userId, @RequestParam Resource.ResourceType resourceType) {
         return userResourcesService.getUserResources(userId, resourceType);
+    }
+    // API để lấy tất cả tài nguyên của một người dùng
+    @GetMapping("/getAll")
+    public List<UserResources> getAllUserResources(@RequestParam Long userId) {
+        return userResourcesService.getAllUserResources(userId);
     }
 
     // API để giải phóng tài nguyên

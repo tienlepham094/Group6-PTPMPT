@@ -7,6 +7,14 @@ const resourceApi = {
     return response.data;
   },
 
+  updateResource: async (data: Resources) => {
+    const response = await axiosClient.put(
+      `/auth/api/resources/${data.id}`,
+      data
+    );
+    return response.data;
+  },
+
   getAllResources: async () => {
     const response = await axiosClient.get(`/auth/api/resources`);
     return response.data;
